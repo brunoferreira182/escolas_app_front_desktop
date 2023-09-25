@@ -174,10 +174,15 @@ const useUtils = {
   },
   getDrawerOptions(type) {
     const obj = {
-      admin: [
+      users: [
+        {
+          label: "Aguardando aprovação",
+          route: "/users/usersWaitingApprovalList",
+          icon: "access_time_filled",
+        },
         {
           label: "Lista de Usuários",
-          route: "/admin/usersList",
+          route: "/users/usersList",
           icon: "group",
         },
       ],

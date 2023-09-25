@@ -201,7 +201,8 @@
               </q-list>
             </div>
             <div class="col-9">
-              <DrawerLogo />
+              <DrawerLogo
+              />
               <q-list class="q-mx-xs q-gutter-y-xs">
                 <q-item
                   class="redondo"
@@ -299,7 +300,6 @@ export default defineComponent({
         this.$route.path === "/plans/home"
       ) {
         this.options = utils.getDrawerOptions("plans");
-        console.log('Quando entrou aqui?')
         this.active = this.options[0].label;
       } else {
         this.options = utils.getDrawerOptions(this.$route.path.split("/")[1]);
