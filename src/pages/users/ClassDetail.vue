@@ -176,6 +176,32 @@
               </q-table>
             </div>
           </div>
+          <q-dialog v-model="dialogInsertStudent.open" @hide="clearDialog()">
+            <q-card style="border-radius: 1rem">
+              <q-card-section>
+                <div class="text-h6 text-center">
+                  Deseja confirmar a inserção deste aluno na turma?
+                </div>
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn
+                  flat
+                  label="Depois"
+                  no-caps
+                  color="primary"
+                  @click="dialogInsertStudent.open = false"
+                />
+                <q-btn
+                  unelevated
+                  rounded
+                  label="Confirmar"
+                  no-caps
+                  color="primary"
+                  @click="addChildToClass"
+                />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
         </q-tab-panel>
       </q-tab-panels>
     </q-page>
@@ -214,6 +240,10 @@ export default defineComponent({
         rowsNumber: 0,
         sortBy: "",
       },
+      dialogInsertStudent: {
+        open: false,
+        data: {}
+      },
       usersList: [],
     };
   },
@@ -225,14 +255,38 @@ export default defineComponent({
     this.getChildrenNotInClass()
   },
   methods: {
+    clearDialog(){
+      this.dialogInsertStudent.open = false
+      this.dialogInsertStudent.data = {}
+    },
     clkManageUser(e, r){
-      console.log(r.childId)
+      this.dialogInsertStudent.data = r
+      this.dialogInsertStudent.open = true
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getChildrenNotInClass();
+    },
+    addChildToClass() {
+      const opt = {
+        route: "/desktop/classes/addChildToClass",
+        body: {
+          childId: this.dialogInsertStudent.data.childId,
+          classId: this.$route.query.classId
+        },
+      };
+      useFetch(opt).then((r) => {
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.clearDialog()
+          this.$q.notify('Usuário inserido na turma')
+          this.getChildrenNotInClass()
+        }
+      });
     },
     getChildrenNotInClass() {
       const page = this.pagination.page
@@ -250,7 +304,7 @@ export default defineComponent({
       };
       useFetch(opt).then((r) => {
         this.usersList = r.data[0].list
-        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
+        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
       });
     },
     getClassDetailById() {
