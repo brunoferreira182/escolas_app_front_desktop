@@ -185,6 +185,11 @@ const useUtils = {
           route: "/users/usersList",
           icon: "group",
         },
+        {
+          label: "Lista de turmas",
+          route: "/users/classesList",
+          icon: "school",
+        },
       ],
     };
     return obj[type];

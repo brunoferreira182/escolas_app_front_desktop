@@ -1,41 +1,30 @@
 <template>
   <q-page-container class="no-padding">
     <q-page>
-      <q-table 
-        flat class="bg-accent" 
-        title="Usuários aguardando aprovação" 
-        :columns="columnsData" 
-        :rows="usersList" 
+      <q-table
+        flat class="bg-accent"
+        title="Usuários aguardando aprovação"
+        :columns="columnsData"
+        :rows="usersList"
         row-key="_id"
-        @row-click="clkOpenSolicitation" 
-        virtual-scroll 
+        @row-click="clkOpenSolicitation"
+        virtual-scroll
         rows-per-page-label="Registros por página"
-        no-data-label="Nenhum dado inserido até o momento" 
+        no-data-label="Nenhum dado inserido até o momento"
         no-results-label="A pesquisa não retornou nenhum resultado"
-        :rows-per-page-options="[10, 20, 30, 50]" 
-        :filter="filter" 
-        v-model:pagination="pagination" 
+        :rows-per-page-options="[10, 20, 30, 50]"
+        :filter="filter"
+        v-model:pagination="pagination"
         @request="nextPage">
         <template #top-right>
           <div class="flex row q-gutter-sm items-center text-right">
             <div class="col">
-              <q-select 
-                outlined 
-                dense 
-                debounce="300" 
-                stack-label
-                v-model="selectFilter" 
-                :options="selectStatus"
-                @update:model-value="getUsersList"
-              />
-            </div>
-            <div class="col">
-              <q-input 
-                @keyup="getUsersList" 
-                outlined 
-                dense 
-                debounce="300" 
-                v-model="filter" 
+              <q-input
+                @keyup="getUsersList"
+                outlined
+                dense
+                debounce="300"
+                v-model="filter"
                 placeholder="Procurar"
               >
                 <template #append>
@@ -43,20 +32,6 @@
                 </template>
               </q-input>
             </div>
-            <!-- <div>
-              <q-btn 
-                @click="$router.push('/admin/createOrganism')" 
-                color="primary" 
-                unelevated 
-                class="q-pa-sm"
-                no-caps 
-                rounded 
-                dense
-                icon="add"
-              >
-                Criar Organismo
-              </q-btn>
-            </div> -->
           </div>
         </template>
         <template #body-cell-status="props">
@@ -88,6 +63,18 @@
           </q-td>
         </template>
       </q-table>
+      <div class="q-gutter-md q-pa-sm">
+        <q-btn
+          v-for="button in filterBtns"
+          :key="button"
+          :label="button.label"
+          :color="button.color"
+          @click="getUsersListByFilter(button)"
+          outline
+          no-caps
+          unelevated
+        />
+      </div>
       <q-dialog v-model="dialogOpenSolicitation.open" @hide="clearDialogSolicitation">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div class="text-center" v-if="hideDiv">
@@ -100,13 +87,13 @@
             <q-card-actions align="center">
               <div class="row justify-center">
                 <div class="col-10">
-                  <q-btn 
+                  <q-btn
                     v-for="btn in arrayButtons"
                     :key="btn"
                     :label="btn.label"
                     class="full-width q-ma-sm text-subtitle1"
                     :color="btn.color"
-                    @click="changeUserStatus(btn)"
+                    @click="changeStatus(btn)"
                     outline
                     no-caps
                     unelevated
@@ -139,10 +126,15 @@ export default defineComponent({
       filter: "",
       filterRow: [],
       arrayButtons: [
+        {label: 'Aprovar como criança', color: 'primary', callback: 'childApproval'},
         {label: 'Aprovar como pai', color: 'primary', callback: 'parentAproval'},
         {label: 'Aprovar como interno', color: 'primary', callback: 'internalApproval'},
         {label: 'Aprovar como ambos', color: 'primary', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', callback: 'refused'},
+      ],
+      filterBtns: [
+        {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
+        {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
       ],
       selectFilter: null,
       dialogOpenSolicitation: {
@@ -186,7 +178,7 @@ export default defineComponent({
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersList();
     },
-    changeUserStatus(btn){
+    changeStatus(btn){
       const opt = {
         route: "/desktop/users/changeUserStatus",
         body: {
@@ -194,6 +186,11 @@ export default defineComponent({
         },
       };
       switch(btn.callback){
+        case 'childApproval':
+          opt.route = '/desktop/users/changeChildStatus'
+          opt.body.status = {label: 'Ativo', status: 'active'}
+          opt.body.childId = this.dialogOpenSolicitation.data._id
+        break;
         case 'parentAproval':
           opt.body.status = {label: 'Ativo', status: 'active'}
           opt.body.permissionIds = [1]
@@ -222,6 +219,7 @@ export default defineComponent({
         setTimeout(() => {
           this.hideDiv = false;
           this.dialogOpenSolicitation.open = false
+          this.clearDialogSolicitation()
           this.getUsersList()
         }, 3800);
       })
@@ -238,6 +236,35 @@ export default defineComponent({
         this.userPermissionsOptions = r.data
       })
     },
+    getUsersListByFilter(button) {
+      const page = this.pagination.page
+      const rowsPerPage = this.pagination.rowsPerPage
+      const searchString = this.filter
+      const sortBy = this.pagination.sortBy
+      const opt = {
+        route: "/desktop/users/getUsersList",
+        body: {
+          page: page,
+          rowsPerPage: rowsPerPage,
+          searchString: searchString,
+          sortBy: sortBy,
+          status: 'waitingApproval',
+        },
+      };
+      switch(button.callback){
+        case 'parent':
+          opt.body.type = 'user'
+        break;
+        case 'child':
+          opt.body.type = 'child'
+        break;
+      }
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        this.usersList = r.data.list
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
+      });
+    },
     getUsersList() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
@@ -253,11 +280,6 @@ export default defineComponent({
           status: 'waitingApproval'
         },
       };
-      if (this.selectFilter === "Ativos") {
-        opt.body.isActive = 1;
-      } else if (this.selectFilter === "Inativos") {
-        opt.body.isActive = 0;
-      }
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
         this.usersList = r.data.list
@@ -266,6 +288,7 @@ export default defineComponent({
     },
     clearDialogSolicitation(){
       this.dialogOpenSolicitation.open = false
+      this.dialogOpenSolicitation.data = {}
       this.hideDiv = false
     },
   },

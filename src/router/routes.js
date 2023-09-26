@@ -7,7 +7,9 @@ const routes = [
       { path: '/users', redirect: '/users/UsersWaitingApprovalList' },
       { path: '/users/usersWaitingApprovalList', component: () => import('pages/users/UsersWaitingApprovalList.vue') },
       { path: '/users/usersList', component: () => import('pages/users/UsersList.vue') },
-      { path: '/users/userDetail', component: () => import('pages/users/UserDetail.vue') }
+      { path: '/users/userDetail', component: () => import('pages/users/UserDetail.vue') },
+      { path: '/users/classesList', component: () => import('pages/users/ClassesList.vue') },
+      { path: '/users/createClass', component: () => import('pages/users/CreateClass.vue') },
     ]
   },
   {

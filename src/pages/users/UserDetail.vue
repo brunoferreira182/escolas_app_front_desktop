@@ -54,7 +54,7 @@
               :key="permission"
               class="col-12 q-my-xs"
             >
-              <q-checkbox 
+              <q-checkbox
                 @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
                 :label="permission.label"
                 v-model="permission.checked"
@@ -90,9 +90,9 @@ export default defineComponent({
   methods: {
     updateUserPermissions(value, evt, permission) {
       console.log('permission', permission)
-      console.log('value', value[0])
+      console.log('value', value)
       console.log('evt', evt)
-      const isActive = value[0] ? true : false
+      const isActive = value ? true : false
       const opt = {
         route: "/desktop/users/updateUserPermissions",
         body: {
@@ -126,7 +126,7 @@ export default defineComponent({
           this.allPermissions = r.data.allPermissions,
           this.userIdSQL = r.data.userId
           this.checkedPermissionsList = r.data.permissions
-          // this.allPermissions.forEach((all, i) => {this.allPermissions[i].checked = false;})
+          this.allPermissions.forEach((all, i) => {this.allPermissions[i].checked = false;})
           this.allPermissions.forEach((all, i) => {
             this.checkedPermissionsList.forEach((checked) => {
               if (all.id === checked.id) {

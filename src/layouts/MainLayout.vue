@@ -306,7 +306,7 @@ export default defineComponent({
       }
       this.permissions.forEach((element) => {
         if (this.$route.path.split("/")[1] === element.role.toLowerCase()) {
-          
+
           this.activeRightDrawer = element.id;
           this.indexMenu1 = this.permissions.indexOf(element);
         }
