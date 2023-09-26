@@ -181,9 +181,7 @@ export default defineComponent({
     changeStatus(btn){
       const opt = {
         route: "/desktop/users/changeUserStatus",
-        body: {
-          userId: this.dialogOpenSolicitation.data.userId,
-        },
+        body: {},
       };
       switch(btn.callback){
         case 'childApproval':
@@ -193,19 +191,30 @@ export default defineComponent({
         break;
         case 'parentAproval':
           opt.body.status = {label: 'Ativo', status: 'active'}
+          opt.body.userId = this.dialogOpenSolicitation.data.userId
           opt.body.permissionIds = [1]
         break;
         case 'internalApproval':
           opt.body.status = {label: 'Ativo', status: 'active'}
+          opt.body.userId = this.dialogOpenSolicitation.data.userId
           opt.body.permissionIds = [2]
         break;
         case 'bothApproval':
           opt.body.status = {label: 'Ativo', status: 'active'}
+          opt.body.userId = this.dialogOpenSolicitation.data.userId
           opt.body.permissionIds = [1, 2]
         break;
         case 'refused':
-          opt.body.status = {label: 'Recusado', status: 'refused'}
-          opt.body.permissionIds = []
+          if(this.dialogOpenSolicitation.data.type === 'child'){
+            opt.route = '/desktop/users/changeChildStatus'
+            opt.body.childId = this.dialogOpenSolicitation.data._id
+            opt.body.status = {label: 'Recusado', status: 'refused'}
+            opt.body.permissionIds = []
+          }else{
+            opt.body.status = {label: 'Recusado', status: 'refused'}
+            opt.body.userId = this.dialogOpenSolicitation.data.userId
+            opt.body.permissionIds = []
+          }
         break;
       }
       this.$q.loading.show()

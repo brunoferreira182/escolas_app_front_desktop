@@ -10,6 +10,7 @@ const routes = [
       { path: '/users/userDetail', component: () => import('pages/users/UserDetail.vue') },
       { path: '/users/classesList', component: () => import('pages/users/ClassesList.vue') },
       { path: '/users/createClass', component: () => import('pages/users/CreateClass.vue') },
+      { path: '/users/classDetail', component: () => import('pages/users/ClassDetail.vue') },
     ]
   },
   {

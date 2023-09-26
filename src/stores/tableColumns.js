@@ -25,7 +25,7 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
     ],
-    classesList: [
+    usersListInsideClass: [
       {
         name: "name",
         align: "left",
@@ -33,18 +33,27 @@ export const useTableColumns = defineStore("tableColumns", {
         field: "name",
         sortable: true,
       },
+    ],
+    classesList: [
       {
-        name: "document",
+        name: "className",
         align: "left",
-        label: "CPF",
-        field: "document",
+        label: "Nome da turma",
+        field: "className",
         sortable: true,
       },
+      // {
+      //   name: "document",
+      //   align: "left",
+      //   label: "CPF",
+      //   field: "document",
+      //   sortable: true,
+      // },
       {
         name: "status",
         align: "left",
         label: "Status",
-        field: (row) => row.status.status,
+        field: 'status',
         sortable: true,
       },
     ],

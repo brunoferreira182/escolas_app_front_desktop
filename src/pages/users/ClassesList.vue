@@ -7,7 +7,7 @@
         :columns="columnsData"
         :rows="classesList"
         row-key="_id"
-        @row-click="clkOpenSolicitation"
+        @row-click="clkOpenClassDetail"
         virtual-scroll
         rows-per-page-label="Registros por página"
         no-data-label="Nenhum dado inserido até o momento"
@@ -18,6 +18,17 @@
         @request="nextPage">
         <template #top-right>
           <div class="flex row q-gutter-sm items-center text-right">
+            <div class="col">
+              <q-select
+                outlined
+                dense
+                label="Filtro"
+                debounce="300"
+                v-model="selectFilter"
+                :options="selectStatus"
+                @update:model-value="getClassesList"
+              ></q-select>
+            </div>
             <div class="col">
               <q-input
                 @keyup="getClassesList"
@@ -50,7 +61,7 @@
           <q-td :props="props">
             <q-chip
               outline
-              v-if="props.row.status && props.row.status.status === 'active'"
+              v-if="props.row.isActive === 1"
               color="green-8"
               size="14px"
             >
@@ -58,19 +69,11 @@
             </q-chip>
             <q-chip
               outline
-              v-if="props.row.status && props.row.status.status === 'waitingApproval'"
-              color="yellow-8"
-              size="14px"
-            >
-              Aguardando aprovação
-            </q-chip>
-            <q-chip
-              outline
-              v-else-if="props.row.status && props.row.status.status === 'refused'"
+              v-if="props.row.isActive === 0"
               color="red-8"
               size="14px"
             >
-              Recusado
+              Inativo
             </q-chip>
           </q-td>
         </template>
@@ -128,19 +131,9 @@ export default defineComponent({
     this.getClassesList();
   },
   methods: {
-    clkOpenSolicitation(e, r){
-      switch(!r.status || r.status.status){
-        case 'active':
-          this.$q.notify('O usuário está ativo')
-        break
-        case 'refused':
-          this.$q.notify('A solicitação já foi recusada')
-        break;
-        case 'waitingApproval':
-          this.dialogOpenSolicitation.data = r
-          this.dialogOpenSolicitation.open = true
-        break
-      }
+    clkOpenClassDetail(e, r){
+      const classId = r._id
+      this.$router.push('/users/classDetail?classId=' + classId)
     },
     getClassesList() {
       const page = this.pagination.page
@@ -154,11 +147,17 @@ export default defineComponent({
           rowsPerPage: rowsPerPage,
           searchString: searchString,
           sortBy: sortBy,
-          descending: 'waitingApproval'
         },
       };
+      switch(this.selectFilter){
+        case 'Ativos:':
+          opt.body.isActive = 1
+        break;
+        case 'Inativos:':
+          opt.body.isActive = 0
+        break;
+      }
       useFetch(opt).then((r) => {
-        this.$q.loading.hide()
         this.classesList = r.data.list
         r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });

@@ -19,47 +19,57 @@
       </div>
       <q-separator class="q-mx-md"></q-separator>
       <div class="row justify-between items-start">
-        <div class="col-6 q-pa-md q-gutter-lg">
-          <div class="text-grey-8 text-h6">
+        <div class="col-6 q-pa-md ">
+          <div class="text-grey-8 text-h6 q-pa-xs">
             Informações
           </div>
-          <q-input
-            outlined
-            readonly
-            v-model="userData.email"
-            label="E-mail"
-          />
-          <q-input
-            outlined
-            readonly
-            v-model="userData.phone"
-            label="Telefone"
-          />
-          <q-input
-            outlined
-            readonly
-            v-model="userData.user "
-            label="Usuário"
-          />
+          <div class="q-gutter-lg q-py-md" v-if="!userData">
+            <q-input
+              outlined
+              readonly
+              v-model="userData.email"
+              label="E-mail"
+            />
+            <q-input
+              outlined
+              readonly
+              v-model="userData.phone"
+              label="Telefone"
+            />
+            <q-input
+              outlined
+              readonly
+              v-model="userData.user "
+              label="Usuário"
+            />
+          </div>
+          <div v-else class="text-grey-8 q-ma-sm">
+            Este usuário não possui dados compartilhados <q-icon name="warning" size="sm" color="yellow-8"/>
+          </div>
         </div>
         <q-separator vertical />
         <div class="col-6 q-pa-md q-gutter-md">
           <div class="text-grey-8 text-h6 q-px-xs">Permissões:</div>
-          <div class="text-caption text-grey-8 q-ma-none q-mt-sm q-px-md">
-            Gerencie as permissões deste usuário
-          </div>
-          <div class="visions-field q-mt-none row">
-            <div
-              v-for="permission in allPermissions"
-              :key="permission"
-              class="col-12 q-my-xs"
-            >
-              <q-checkbox
-                @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
-                :label="permission.label"
-                v-model="permission.checked"
-              />
+          <div  v-if="allPermissions && allPermissions.length">
+            <div class="text-caption text-grey-8 q-ma-none q-mt-sm q-px-md" >
+              Gerencie as permissões deste usuário
             </div>
+            <div class="visions-field q-mt-none row">
+              <div
+                v-for="permission in allPermissions"
+                :key="permission"
+                class="col-12 q-my-xs"
+              >
+                <q-checkbox
+                  @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
+                  :label="permission.label"
+                  v-model="permission.checked"
+                />
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-grey-8">
+            Este usuário não possui permissões <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
           </div>
         </div>
       </div>
@@ -122,7 +132,7 @@ export default defineComponent({
         if (r.error) {
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
-          this.userData = r.data
+          this.userData = r.data.userData
           this.allPermissions = r.data.allPermissions,
           this.userIdSQL = r.data.userId
           this.checkedPermissionsList = r.data.permissions
