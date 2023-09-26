@@ -133,9 +133,65 @@
         <q-tab-panel name="manageClass" class="no-padding">
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
-              <div class="text-h5">
+              <div class="text-h5 q-mt-lg">
                 Alunos
+                <q-btn icon="history" flat color="primary">
+                  <q-tooltip>Histórico</q-tooltip>
+                </q-btn>
               </div>
+              <q-list>
+                <q-item
+                  style="border-radius: 0.5rem;"
+                  class="bg-grey-3 q-ma-xs"
+                  dense
+                >
+                  <q-item-section avatar>
+                    <q-avatar rounded>
+                      <img src="https://cdn.quasar.dev/img/avatar.png" />
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section class="text-wrap" lines="2">
+                    nome
+                    <div class="text-caption text-grey-7" >
+                      Data início:
+                      222222
+                    </div>
+                    <div
+                      class="text-caption text-grey-7"
+                    >
+                      Data Fim: 123123
+                    </div>
+                  </q-item-section>
+                  <q-item-section side >
+                    <div class="text-grey-8 q-gutter-xs">
+                      <q-btn
+                        @click="insertObservation(user)"
+                        class="gt-xs"
+                        size="12px"
+                        color="secondary"
+                        flat
+                        dense
+                        round
+                        icon="library_books"
+                      >
+                        <q-tooltip> Observações </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        @click="deleteUserFromFunction(user)"
+                        class="gt-xs"
+                        size="12px"
+                        color="red-8"
+                        flat
+                        dense
+                        round
+                        icon="delete"
+                      >
+                        <q-tooltip> Deletar usuário da turma </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </q-item-section>
+                </q-item>
+              </q-list>
             </div>
             <q-separator vertical />
             <div class="col-6 q-gutter-md" align="start">
@@ -189,7 +245,7 @@
                   label="Depois"
                   no-caps
                   color="primary"
-                  @click="dialogInsertStudent.open = false"
+                  @click="clearDialog"
                 />
                 <q-btn
                   unelevated
