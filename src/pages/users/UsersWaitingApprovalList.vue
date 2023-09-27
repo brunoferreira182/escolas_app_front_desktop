@@ -299,7 +299,8 @@ export default defineComponent({
           rowsPerPage: rowsPerPage,
           searchString: searchString,
           sortBy: sortBy,
-          status: 'waitingApproval'
+          status: 'waitingApproval',
+          
         },
       };
       useFetch(opt).then((r) => {
