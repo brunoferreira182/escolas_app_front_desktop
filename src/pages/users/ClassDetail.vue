@@ -139,58 +139,58 @@
                   <q-tooltip>Histórico</q-tooltip>
                 </q-btn>
               </div>
-              <q-list>
-                <q-item
-                  style="border-radius: 0.5rem;"
-                  class="bg-grey-3 q-ma-xs"
-                  dense
-                >
-                  <q-item-section avatar>
-                    <q-avatar rounded>
-                      <img src="https://cdn.quasar.dev/img/avatar.png" />
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section class="text-wrap" lines="2">
-                    nome
-                    <div class="text-caption text-grey-7" >
-                      Data início:
-                      222222
-                    </div>
-                    <div
-                      class="text-caption text-grey-7"
+              <q-item
+                style="border-radius: 0.5rem;"
+                class="bg-grey-3 q-ma-xs"
+                dense
+              >
+                <q-item-section avatar>
+                  <q-avatar rounded>
+                    <img src="https://cdn.quasar.dev/img/avatar.png" />
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section class="text-wrap" lines="2">
+                  nome
+                  <div class="text-caption text-grey-7" >
+                    Data início:
+                    222222
+                  </div>
+                  <div
+                    class="text-caption text-grey-7"
+                  >
+                    Data Fim: 123123
+                  </div>
+                </q-item-section>
+                <q-item-section side >
+                  <div class="text-grey-8 q-gutter-xs">
+                    <q-btn
+                      @click="insertObservation(user)"
+                      class="gt-xs"
+                      size="12px"
+                      color="secondary"
+                      flat
+                      dense
+                      round
+                      icon="library_books"
                     >
-                      Data Fim: 123123
-                    </div>
-                  </q-item-section>
-                  <q-item-section side >
-                    <div class="text-grey-8 q-gutter-xs">
-                      <q-btn
-                        @click="insertObservation(user)"
-                        class="gt-xs"
-                        size="12px"
-                        color="secondary"
-                        flat
-                        dense
-                        round
-                        icon="library_books"
-                      >
-                        <q-tooltip> Observações </q-tooltip>
-                      </q-btn>
-                      <q-btn
-                        @click="deleteUserFromFunction(user)"
-                        class="gt-xs"
-                        size="12px"
-                        color="red-8"
-                        flat
-                        dense
-                        round
-                        icon="delete"
-                      >
-                        <q-tooltip> Deletar usuário da turma </q-tooltip>
-                      </q-btn>
-                    </div>
-                  </q-item-section>
-                </q-item>
+                      <q-tooltip> Observações </q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      @click="deleteUserFromFunction(user)"
+                      class="gt-xs"
+                      size="12px"
+                      color="red-8"
+                      flat
+                      dense
+                      round
+                      icon="delete"
+                    >
+                      <q-tooltip> Deletar usuário da turma </q-tooltip>
+                    </q-btn>
+                  </div>
+                </q-item-section>
+              </q-item>
+              <q-list>
               </q-list>
             </div>
             <q-separator vertical />

@@ -86,7 +86,20 @@
             </div>
             <q-card-actions align="center">
               <div class="row justify-center">
-                <div class="col-10">
+                <div class="col-10" v-if="dialogOpenSolicitation.data.type === 'user' || btn.type === 'user'">
+                  <q-btn
+                    v-for="btn in arrayButtons"
+                    :key="btn"
+                    :label="btn.label"
+                    class="full-width q-ma-sm text-subtitle1"
+                    :color="btn.color"
+                    @click="changeStatus(btn)"
+                    outline
+                    no-caps
+                    unelevated
+                  />
+                </div>
+                <div class="col-10" v-else-if="dialogOpenSolicitation.data.type === 'child' || btn.type === 'user'">
                   <q-btn
                     v-for="btn in arrayButtons"
                     :key="btn"
@@ -126,11 +139,11 @@ export default defineComponent({
       filter: "",
       filterRow: [],
       arrayButtons: [
-        {label: 'Aprovar como criança', color: 'primary', callback: 'childApproval'},
-        {label: 'Aprovar como pai', color: 'primary', callback: 'parentAproval'},
-        {label: 'Aprovar como interno', color: 'primary', callback: 'internalApproval'},
-        {label: 'Aprovar como ambos', color: 'primary', callback: 'bothApproval'},
-        {label: 'Recusar', color: 'red-8', callback: 'refused'},
+        {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
+        {label: 'Aprovar como pai', color: 'primary', type: 'user', callback: 'parentAproval'},
+        {label: 'Aprovar como interno', color: 'primary', type: 'user', callback: 'internalApproval'},
+        {label: 'Aprovar como ambos', color: 'primary', type: 'user', callback: 'bothApproval'},
+        {label: 'Recusar', color: 'red-8', type: 'user', callback: 'refused'},
       ],
       filterBtns: [
         {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
