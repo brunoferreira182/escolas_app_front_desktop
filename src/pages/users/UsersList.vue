@@ -1,41 +1,41 @@
 <template>
   <q-page-container class="no-padding">
     <q-page>
-      <q-table 
-        flat class="bg-accent" 
-        title="Usuários" 
-        :columns="columnsData" 
-        :rows="usersList" 
+      <q-table
+        flat class="bg-accent"
+        title="Usuários"
+        :columns="columnsData"
+        :rows="usersList"
         row-key="_id"
-        @row-click="clkOpenUserDetail" 
-        virtual-scroll 
+        @row-click="clkOpenUserDetail"
+        virtual-scroll
         rows-per-page-label="Registros por página"
-        no-data-label="Nenhum dado inserido até o momento" 
+        no-data-label="Nenhum dado inserido até o momento"
         no-results-label="A pesquisa não retornou nenhum resultado"
-        :rows-per-page-options="[10, 20, 30, 50]" 
-        :filter="filter" 
-        v-model:pagination="pagination" 
+        :rows-per-page-options="[10, 20, 30, 50]"
+        :filter="filter"
+        v-model:pagination="pagination"
         @request="nextPage">
         <template #top-right>
           <div class="flex row q-gutter-sm items-center text-right">
             <div class="col">
-              <q-select 
-                outlined 
-                dense 
-                debounce="300" 
+              <q-select
+                outlined
+                dense
+                debounce="300"
                 stack-label
-                v-model="selectFilter" 
+                v-model="selectFilter"
                 :options="selectStatus"
                 @update:model-value="getUsersList"
               />
             </div>
             <div class="col">
-              <q-input 
-                @keyup="getUsersList" 
-                outlined 
-                dense 
-                debounce="300" 
-                v-model="filter" 
+              <q-input
+                @keyup="getUsersList"
+                outlined
+                dense
+                debounce="300"
+                v-model="filter"
                 placeholder="Procurar"
               >
                 <template #append>
@@ -44,6 +44,16 @@
               </q-input>
             </div>
           </div>
+        </template>
+        <template #body-cell-document="props">
+          <q-td :props="props">
+            <div v-if="props.row.document">
+              {{ props.row.document }}
+            </div>
+            <div v-else-if="!props.row.document">
+              Não informado
+            </div>
+          </q-td>
         </template>
         <template #body-cell-status="props">
           <q-td :props="props">
@@ -86,7 +96,7 @@
             <q-card-actions align="center">
               <div class="row justify-center">
                 <div class="col-10">
-                  <q-btn 
+                  <q-btn
                     v-for="btn in arrayButtons"
                     :key="btn"
                     :label="btn.label"
@@ -240,7 +250,7 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente por favor')
           return
-        }else{ 
+        }else{
           this.$q.notify('Convite recusado!')
           this.dialogOpenSolicitation.open = false
           this.getFunctionsSolicitationsByUserId()

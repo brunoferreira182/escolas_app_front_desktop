@@ -4,6 +4,17 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+
+      //admin
+      { path: "/admin", redirect: "/admin/FunctionsTypesList" },
+      {
+        path: "/admin/functionsTypesList",
+        component: () => import("pages/admin/FunctionsTypesList.vue"),
+      },
+      { path: "/admin/createFunctionType", component: () => import("pages/admin/CreateFunctionType.vue"),},
+      { path: "/admin/functionTypeDetail", component: () => import("pages/admin/FunctionTypeDetail.vue"),},
+
+      //users
       { path: '/users', redirect: '/users/UsersWaitingApprovalList' },
       { path: '/users/usersWaitingApprovalList', component: () => import('pages/users/UsersWaitingApprovalList.vue') },
       { path: '/users/usersList', component: () => import('pages/users/UsersList.vue') },
@@ -11,6 +22,7 @@ const routes = [
       { path: '/users/classesList', component: () => import('pages/users/ClassesList.vue') },
       { path: '/users/createClass', component: () => import('pages/users/CreateClass.vue') },
       { path: '/users/classDetail', component: () => import('pages/users/ClassDetail.vue') },
+
     ]
   },
   {

@@ -60,10 +60,6 @@
       >
         <q-tab name="infos" label="Informações"/>
         <q-tab name="manageClass" label="Gerenciar turma" />
-        <!-- <q-tab
-          name="solicitations"
-          label="Solicitações"
-        /> -->
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -133,17 +129,148 @@
         <q-tab-panel name="manageClass" class="no-padding">
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
+              <q-table
+                flat
+                class="bg-accent"
+                title="Adicionar usuários"
+                :columns="columnsData"
+                :rows="usersList"
+                row-key="_id"
+                @row-click="clkManageUser"
+                virtual-scroll
+                rows-per-page-label="Registros por página"
+                no-data-label="Nenhum dado inserido até o momento"
+                no-results-label="A pesquisa não retornou nenhum resultado"
+                :rows-per-page-options="[10, 20, 30, 50]"
+                :filter="filter"
+                v-model:pagination="paginationUsersTable"
+                @request="nextPageUserTable">
+                <template #top-right>
+                  <div class="flex row q-gutter-sm items-center text-right">
+                    <div class="col">
+                      <q-input
+                        @keyup="getChildrenNotInClass"
+                        outlined
+                        dense
+                        debounce="300"
+                        v-model="filter"
+                        placeholder="Procurar"
+                      >
+                        <template #append>
+                          <q-icon name="search" />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                </template>
+              </q-table>
+            </div>
+            <q-separator vertical />
+            <div class="col-6 q-gutter-md" align="start">
+              <q-table
+                flat
+                class="bg-accent"
+                title="Adicionar alunos"
+                :columns="columnsData"
+                :rows="childrenList"
+                row-key="_id"
+                @row-click="clkManageUser"
+                virtual-scroll
+                rows-per-page-label="Registros por página"
+                no-data-label="Nenhum dado inserido até o momento"
+                no-results-label="A pesquisa não retornou nenhum resultado"
+                :rows-per-page-options="[10, 20, 30, 50]"
+                :filter="filter"
+                v-model:pagination="paginationChildrenTable"
+                @request="nextPageChildrenTable">
+                <template #top-right>
+                  <div class="flex row q-gutter-sm items-center text-right">
+                    <div class="col">
+                      <q-input
+                        @keyup="getChildrenNotInClass"
+                        outlined
+                        dense
+                        debounce="300"
+                        v-model="filter"
+                        placeholder="Procurar"
+                      >
+                        <template #append>
+                          <q-icon name="search" />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                </template>
+              </q-table>
+            </div>
+          </div>
+          <q-separator></q-separator>
+          <div class="row justify-center">
+            <div class="col-12 q-gutter-md" align="start">
               <div class="text-h5 q-mt-lg">
                 Alunos
                 <q-btn icon="history" flat color="primary">
                   <q-tooltip>Histórico</q-tooltip>
                 </q-btn>
               </div>
-              <q-item
+              <q-expansion-item
+                style="border-radius: 0.5rem;"
+                class="bg-grey-5 q-ma-xs"
+              >
+                <template v-slot:header="{ expanded }">
+                  <q-item-section avatar>
+                    <q-avatar>
+                      <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                    </q-avatar>
+                  </q-item-section>
+
+                  <q-item-section>
+                    Nome da criança
+                  </q-item-section>
+                </template>
+
+                <q-card class="bg-grey-3">
+                  <q-card-section side class="no-padding" align="end">
+                    <div class="text-grey-8 q-gutter-xs">
+                      <q-btn
+                        @click="insertObservation(user)"
+                        class="gt-xs"
+                        size="12px"
+                        color="secondary"
+                        flat
+                        dense
+                        round
+                        icon="library_books"
+                      >
+                        <q-tooltip> Observações </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        @click="deleteUserFromFunction(user)"
+                        class="gt-xs"
+                        size="12px"
+                        color="red-8"
+                        flat
+                        dense
+                        round
+                        icon="delete"
+                      >
+                        <q-tooltip> Deletar usuário da turma </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </q-card-section>
+                  <q-card-section>
+                    [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
+                    [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
+                    Sua curiosidade é uma qualidade admirável que sempre encorajamos.
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+              <!-- <q-item
                 style="border-radius: 0.5rem;"
                 class="bg-grey-3 q-ma-xs"
                 dense
               >
+
                 <q-item-section avatar>
                   <q-avatar rounded>
                     <img src="https://cdn.quasar.dev/img/avatar.png" />
@@ -189,47 +316,9 @@
                     </q-btn>
                   </div>
                 </q-item-section>
-              </q-item>
-              <q-list>
-              </q-list>
-            </div>
-            <q-separator vertical />
-            <div class="col-6 q-gutter-md" align="start">
-              <q-table
-                flat
-                class="bg-accent"
-                title="Usuários"
-                :columns="columnsData"
-                :rows="usersList"
-                row-key="_id"
-                @row-click="clkManageUser"
-                virtual-scroll
-                rows-per-page-label="Registros por página"
-                no-data-label="Nenhum dado inserido até o momento"
-                no-results-label="A pesquisa não retornou nenhum resultado"
-                :rows-per-page-options="[10, 20, 30, 50]"
-                :filter="filter"
-                v-model:pagination="pagination"
-                @request="nextPage">
-                <template #top-right>
-                  <div class="flex row q-gutter-sm items-center text-right">
-                    <div class="col">
-                      <q-input
-                        @keyup="getChildrenNotInClass"
-                        outlined
-                        dense
-                        debounce="300"
-                        v-model="filter"
-                        placeholder="Procurar"
-                      >
-                        <template #append>
-                          <q-icon name="search" />
-                        </template>
-                      </q-input>
-                    </div>
-                  </div>
-                </template>
-              </q-table>
+              </q-item> -->
+              <!-- <q-list>
+              </q-list> -->
             </div>
           </div>
           <q-dialog v-model="dialogInsertStudent.open" @hide="clearDialog()">
@@ -253,7 +342,7 @@
                   label="Confirmar"
                   no-caps
                   color="primary"
-                  @click="addChildToClass"
+                  @click="addUserToClass"
                 />
               </q-card-actions>
             </q-card>
@@ -290,9 +379,15 @@ export default defineComponent({
         { label: 'Semestre 1', semester: 1},
         { label: 'Semestre 2', semester: 2 },
       ],
-      pagination: {
+      paginationUsersTable: {
         page: 1,
-        rowsPerPage: 100,
+        rowsPerPage: 5,
+        rowsNumber: 0,
+        sortBy: "",
+      },
+      paginationChildrenTable: {
+        page: 1,
+        rowsPerPage: 5,
         rowsNumber: 0,
         sortBy: "",
       },
@@ -301,6 +396,7 @@ export default defineComponent({
         data: {}
       },
       usersList: [],
+      childrenList: [],
     };
   },
   mounted() {
@@ -309,6 +405,7 @@ export default defineComponent({
   beforeMount() {
     this.getClassDetailById()
     this.getChildrenNotInClass()
+    this.getUsersNotInClass()
   },
   methods: {
     clearDialog(){
@@ -319,21 +416,29 @@ export default defineComponent({
       this.dialogInsertStudent.data = r
       this.dialogInsertStudent.open = true
     },
-    nextPage(e) {
-      this.pagination.page = e.pagination.page;
-      this.pagination.sortBy = e.pagination.sortBy;
-      this.pagination.rowsPerPage = e.pagination.rowsPerPage;
+    nextPageChildrenTable(e) {
+      this.paginationChildrenTable.page = e.pagination.page;
+      this.paginationChildrenTable.sortBy = e.pagination.sortBy;
+      this.paginationChildrenTable.rowsPerPage = e.pagination.rowsPerPage;
       this.getChildrenNotInClass();
     },
-    addChildToClass() {
+    nextPageUserTable(e) {
+      this.paginationUsersTable.page = e.pagination.page;
+      this.paginationUsersTable.sortBy = e.pagination.sortBy;
+      this.paginationUsersTable.rowsPerPage = e.pagination.rowsPerPage;
+      this.getUsersNotInClass();
+    },
+    addUserToClass() {
       const opt = {
-        route: "/desktop/classes/addChildToClass",
+        route: "/desktop/classes/addUserToClass",
         body: {
           childId: this.dialogInsertStudent.data.childId,
           classId: this.$route.query.classId
         },
       };
+      this.$q.loading.show()
       useFetch(opt).then((r) => {
+        this.$q.loading.hide()
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
@@ -344,11 +449,30 @@ export default defineComponent({
         }
       });
     },
-    getChildrenNotInClass() {
-      const page = this.pagination.page
-      const rowsPerPage = this.pagination.rowsPerPage
+    getUsersNotInClass() {
+      const page = this.paginationUsersTable.page
+      const rowsPerPage = this.paginationUsersTable.rowsPerPage
       const searchString = this.filter
-      const sortBy = this.pagination.sortBy
+      const sortBy = this.paginationUsersTable.sortBy
+      const opt = {
+        route: "/desktop/classes/getUsersNotInClass",
+        body: {
+          page: page,
+          rowsPerPage: rowsPerPage,
+          searchString: searchString,
+          sortBy: sortBy,
+        },
+      };
+      useFetch(opt).then((r) => {
+        this.usersList = r.data[0].list
+        r.data[0].count[0] ? this.paginationUsersTable.rowsNumber = r.data[0].count[0].count : this.paginationUsersTable.rowsNumber = 0
+      });
+    },
+    getChildrenNotInClass() {
+      const page = this.paginationChildrenTable.page
+      const rowsPerPage = this.paginationChildrenTable.rowsPerPage
+      const searchString = this.filter
+      const sortBy = this.paginationChildrenTable.sortBy
       const opt = {
         route: "/desktop/classes/getChildrenNotInClass",
         body: {
@@ -359,8 +483,8 @@ export default defineComponent({
         },
       };
       useFetch(opt).then((r) => {
-        this.usersList = r.data[0].list
-        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
+        this.childrenList = r.data[0].list
+        r.data[0].count[0] ? this.paginationChildrenTable.rowsNumber = r.data[0].count[0].count : this.paginationChildrenTable.rowsNumber = 0
       });
     },
     getClassDetailById() {

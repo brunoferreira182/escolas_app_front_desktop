@@ -34,6 +34,16 @@
             </div>
           </div>
         </template>
+        <template #body-cell-document="props">
+          <q-td :props="props">
+            <div v-if="props.row.document">
+              {{ props.row.document }}
+            </div>
+            <div v-else-if="!props.row.document">
+              Não informado
+            </div>
+          </q-td>
+        </template>
         <template #body-cell-status="props">
           <q-td :props="props">
             <q-chip
@@ -89,7 +99,7 @@
             </div>
             <q-card-actions align="center">
               <div class="row justify-center full-width">
-                <div class="col-10" v-if="!dialogOpenSolicitation.data.type">
+                <div class="col-10" v-if="dialogOpenSolicitation.data.type === 'user'">
                   <q-btn
                     v-for="btn in buttonsUser"
                     :key="btn"

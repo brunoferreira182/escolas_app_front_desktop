@@ -174,6 +174,13 @@ const useUtils = {
   },
   getDrawerOptions(type) {
     const obj = {
+      admin: [
+        {
+          label: "Tipos de funções",
+          route: "/admin/functionsTypesList",
+          icon: "format_list_numbered",
+        },
+      ],
       users: [
         {
           label: "Aguardando aprovação",

@@ -3,11 +3,11 @@
     <q-page>
       <q-table
         flat class="bg-accent"
-        title="Turmas"
+        title="Tipos de funções"
         :columns="columnsData"
-        :rows="classesList"
+        :rows="functionsTypesList"
         row-key="_id"
-        @row-click="clkOpenClassDetail"
+        @row-click="clkOpenFunctionTypeDetail"
         virtual-scroll
         rows-per-page-label="Registros por página"
         no-data-label="Nenhum dado inserido até o momento"
@@ -26,12 +26,12 @@
                 debounce="300"
                 v-model="selectFilter"
                 :options="selectStatus"
-                @update:model-value="getClassesList"
+                @update:model-value="getFunctions"
               ></q-select>
             </div>
             <div class="col">
               <q-input
-                @keyup="getClassesList"
+                @keyup="getFunctions"
                 outlined
                 dense
                 debounce="300"
@@ -45,14 +45,14 @@
             </div>
             <div class="col text-right">
               <q-btn
-                @click="$router.push('/users/CreateClass')"
+                @click="$router.push('/admin/createFunctionType')"
                 color="primary"
                 unelevated
                 no-caps
                 rounded
                 icon="add"
                 class="q-pa-sm"
-                label="Nova turma"
+                label="Novo tipo"
                 />
             </div>
           </div>
@@ -88,33 +88,15 @@ import gif from 'assets/gif.gif'
 import { useTableColumns } from "stores/tableColumns";
 
 export default defineComponent({
-  name: "ClassesList",
+  name: "FunctionsTypesList",
   data() {
     return {
       gif,
-      columnsData: useTableColumns().classesList,
-      classesList: [],
-      organismsConfigsNamesList: [],
-      hideDiv: false,
+      columnsData: useTableColumns().functionsTypesList,
+      functionsTypesList: [],
       selectStatus: ["Ativos", "Inativos"],
       selectFilter: null,
       filter: "",
-      filterRow: [],
-      arrayButtons: [
-        {label: 'Aprovar como criança', color: 'primary', callback: 'childApproval'},
-        {label: 'Aprovar como pai', color: 'primary', callback: 'parentAproval'},
-        {label: 'Aprovar como interno', color: 'primary', callback: 'internalApproval'},
-        {label: 'Aprovar como ambos', color: 'primary', callback: 'bothApproval'},
-        {label: 'Recusar', color: 'red-8', callback: 'refused'},
-      ],
-      filterBtns: [
-        {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
-        {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
-      ],
-      dialogOpenSolicitation: {
-        open: false,
-        data: {},
-      },
       pagination: {
         page: 1,
         rowsPerPage: 10,
@@ -128,20 +110,20 @@ export default defineComponent({
     this.$q.loading.hide();
   },
   beforeMount() {
-    this.getClassesList();
+    this.getFunctions();
   },
   methods: {
-    clkOpenClassDetail(e, r){
-      const classId = r._id
-      this.$router.push('/users/classDetail?classId=' + classId)
+    clkOpenFunctionTypeDetail(e, r){
+      const functionId = r._id
+      this.$router.push('/admin/functionTypeDetail?functionId=' + functionId)
     },
-    getClassesList() {
+    getFunctions() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
       const opt = {
-        route: "/desktop/classes/getClassesList",
+        route: "/desktop/adm/getFunctions",
         body: {
           page: page,
           rowsPerPage: rowsPerPage,
@@ -151,22 +133,22 @@ export default defineComponent({
       };
       switch(this.selectFilter){
         case 'Ativos:':
-          opt.body.isActive = 1
+          opt.body.status = 'active'
         break;
         case 'Inativos:':
-          opt.body.isActive = 0
+          opt.body.status = 'inactive'
         break;
       }
       useFetch(opt).then((r) => {
-        this.classesList = r.data.list
-        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
+        this.functionsTypesList = r.data[0].list
+        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
       });
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
-      this.getClassesList();
+      this.getFunctions();
     },
   },
 });
