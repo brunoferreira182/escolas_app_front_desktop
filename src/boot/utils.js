@@ -6,6 +6,7 @@ import {
 import CryptoJS from "crypto-js";
 import { Loading, Notify, LocalStorage } from "quasar";
 import useFetch from "./useFetch";
+import { masterServerRoute } from './masterServerRoutes.js'
 
 let loadingVar = [];
 let updateUserInfoOnNextRoute = false;
