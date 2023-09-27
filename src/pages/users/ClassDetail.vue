@@ -59,7 +59,7 @@
         narrow-indicator
       >
         <q-tab name="infos" label="Informações"/>
-        <q-tab name="manageClass" label="Gerenciar turma" />
+        <q-tab name="manageClass" label="Gerenciar turma"/>
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -129,53 +129,82 @@
         <q-tab-panel name="manageClass" class="no-padding">
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
-              <q-table
-                flat
-                class="bg-accent"
-                title="Adicionar usuários"
-                :columns="columnsData"
-                :rows="usersList"
-                row-key="_id"
-                @row-click="clkManageUser"
-                virtual-scroll
-                rows-per-page-label="Registros por página"
-                no-data-label="Nenhum dado inserido até o momento"
-                no-results-label="A pesquisa não retornou nenhum resultado"
-                :rows-per-page-options="[10, 20, 30, 50]"
-                :filter="filter"
-                v-model:pagination="paginationUsersTable"
-                @request="nextPageUserTable">
-                <template #top-right>
-                  <div class="flex row q-gutter-sm items-center text-right">
-                    <div class="col">
-                      <q-input
-                        @keyup="getChildrenNotInClass"
-                        outlined
-                        dense
-                        debounce="300"
-                        v-model="filter"
-                        placeholder="Procurar"
-                      >
-                        <template #append>
-                          <q-icon name="search" />
-                        </template>
-                      </q-input>
-                    </div>
-                  </div>
-                </template>
-              </q-table>
+              <div class="text-h5 q-mt-lg">
+                Alunos
+                <q-btn icon="history" flat color="primary">
+                  <q-tooltip>Histórico</q-tooltip>
+                </q-btn>
+              </div>
+              <Transition name="bounce">
+                <div>
+
+                  <q-expansion-item
+                    v-for="child in users"
+                    :ley="child"
+                    style="border-radius: 0.5rem;"
+                    class="bg-grey-5 q-ma-xs"
+                  >
+                    <template v-slot:header="{ expanded }">
+                      <q-item-section avatar>
+                        <q-avatar>
+                          <img :src="child.image">
+                        </q-avatar>
+                      </q-item-section>
+                      <q-item-section>
+                        {{ child.userName }}
+                      </q-item-section>
+                    </template>
+                    <q-card class="bg-grey-3">
+                      <q-card-section side class="no-padding" align="end">
+                        <div class="text-grey-8 q-gutter-xs">
+                          <q-btn
+                            @click="insertObservation(user)"
+                            class="gt-xs"
+                            size="12px"
+                            color="secondary"
+                            flat
+                            dense
+                            round
+                            icon="library_books"
+                          >
+                            <q-tooltip> Observações </q-tooltip>
+                          </q-btn>
+                          <q-btn
+                            @click="deleteUserFromFunction(user)"
+                            class="gt-xs"
+                            size="12px"
+                            color="red-8"
+                            flat
+                            dense
+                            round
+                            icon="delete"
+                          >
+                            <q-tooltip> Deletar usuário da turma </q-tooltip>
+                          </q-btn>
+                        </div>
+                      </q-card-section>
+                      <q-card-section>
+                        [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
+                        [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
+                        Sua curiosidade é uma qualidade admirável que sempre encorajamos.
+                      </q-card-section>
+                    </q-card>
+                  </q-expansion-item>
+                </div>
+              </Transition>
             </div>
             <q-separator vertical />
             <div class="col-6 q-gutter-md" align="start">
               <q-table
                 flat
                 class="bg-accent"
-                title="Adicionar alunos"
+                :title="selectedFilter.type === 'user' ? 'Adicionar usuário' : 'Adicionar aluno'"
                 :columns="columnsData"
                 :rows="childrenList"
                 row-key="_id"
-                @row-click="clkManageUser"
+                @row-click="clkManageChildOrUser"
                 virtual-scroll
+                :virtual-scroll-item-size="48"
                 rows-per-page-label="Registros por página"
                 no-data-label="Nenhum dado inserido até o momento"
                 no-results-label="A pesquisa não retornou nenhum resultado"
@@ -186,6 +215,17 @@
                 <template #top-right>
                   <div class="flex row q-gutter-sm items-center text-right">
                     <div class="col">
+                      <q-select
+                        outlined
+                        dense
+                        label="Filtro"
+                        debounce="300"
+                        v-model="selectedFilter"
+                        :options="filterUserOrChildOptions"
+                        @update:model-value="selectedFilter.type === 'user' ? getUsersNotInClass() : getChildrenNotInClass()"
+                      ></q-select>
+                    </div>
+                    <div class="col">
                       <q-input
                         @keyup="getChildrenNotInClass"
                         outlined
@@ -204,129 +244,33 @@
               </q-table>
             </div>
           </div>
-          <q-separator></q-separator>
-          <div class="row justify-center">
-            <div class="col-12 q-gutter-md" align="start">
-              <div class="text-h5 q-mt-lg">
-                Alunos
-                <q-btn icon="history" flat color="primary">
-                  <q-tooltip>Histórico</q-tooltip>
-                </q-btn>
-              </div>
-              <q-expansion-item
-                style="border-radius: 0.5rem;"
-                class="bg-grey-5 q-ma-xs"
-              >
-                <template v-slot:header="{ expanded }">
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-                    </q-avatar>
-                  </q-item-section>
-
-                  <q-item-section>
-                    Nome da criança
-                  </q-item-section>
-                </template>
-
-                <q-card class="bg-grey-3">
-                  <q-card-section side class="no-padding" align="end">
-                    <div class="text-grey-8 q-gutter-xs">
-                      <q-btn
-                        @click="insertObservation(user)"
-                        class="gt-xs"
-                        size="12px"
-                        color="secondary"
-                        flat
-                        dense
-                        round
-                        icon="library_books"
-                      >
-                        <q-tooltip> Observações </q-tooltip>
-                      </q-btn>
-                      <q-btn
-                        @click="deleteUserFromFunction(user)"
-                        class="gt-xs"
-                        size="12px"
-                        color="red-8"
-                        flat
-                        dense
-                        round
-                        icon="delete"
-                      >
-                        <q-tooltip> Deletar usuário da turma </q-tooltip>
-                      </q-btn>
-                    </div>
-                  </q-card-section>
-                  <q-card-section>
-                    [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
-                    [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
-                    Sua curiosidade é uma qualidade admirável que sempre encorajamos.
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
-              <!-- <q-item
-                style="border-radius: 0.5rem;"
-                class="bg-grey-3 q-ma-xs"
-                dense
-              >
-
-                <q-item-section avatar>
-                  <q-avatar rounded>
-                    <img src="https://cdn.quasar.dev/img/avatar.png" />
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section class="text-wrap" lines="2">
-                  nome
-                  <div class="text-caption text-grey-7" >
-                    Data início:
-                    222222
-                  </div>
-                  <div
-                    class="text-caption text-grey-7"
-                  >
-                    Data Fim: 123123
-                  </div>
-                </q-item-section>
-                <q-item-section side >
-                  <div class="text-grey-8 q-gutter-xs">
-                    <q-btn
-                      @click="insertObservation(user)"
-                      class="gt-xs"
-                      size="12px"
-                      color="secondary"
-                      flat
-                      dense
-                      round
-                      icon="library_books"
-                    >
-                      <q-tooltip> Observações </q-tooltip>
-                    </q-btn>
-                    <q-btn
-                      @click="deleteUserFromFunction(user)"
-                      class="gt-xs"
-                      size="12px"
-                      color="red-8"
-                      flat
-                      dense
-                      round
-                      icon="delete"
-                    >
-                      <q-tooltip> Deletar usuário da turma </q-tooltip>
-                    </q-btn>
-                  </div>
-                </q-item-section>
-              </q-item> -->
-              <!-- <q-list>
-              </q-list> -->
-            </div>
-          </div>
-          <q-dialog v-model="dialogInsertStudent.open" @hide="clearDialog()">
+          <q-dialog v-model="dialogManageUserOrChild.open" @hide="clearDialog()" @before-show="dialogManageUserOrChild.type === 'user' ? getFunctions() : ''">
             <q-card style="border-radius: 1rem">
               <q-card-section>
                 <div class="text-h6 text-center">
-                  Deseja confirmar a inserção deste aluno na turma?
+                  Deseja confirmar a inserção deste {{ dialogManageUserOrChild.data.childId ? 'aluno' : 'usuário' }} na turma?
                 </div>
+              </q-card-section>
+              <q-card-section v-if="dialogManageUserOrChild.type === 'user'">
+                <q-select
+                  v-model="functionSelected"
+                  outlined
+                  label="Nome da função"
+                  option-label="name"
+                  hint="Informe a função do usuário"
+                  map-options
+                  emit-value
+                  :options="functionsOptions"
+                  :option-value="(item) => item._id"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Nenhum resultado
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </q-card-section>
               <q-card-actions align="center">
                 <q-btn
@@ -368,9 +312,16 @@ export default defineComponent({
       filter: "",
       dialogInactiveClass: false,
       yearSelected: '',
+      selectedFilter: 'Aluno',
+      functionsOptions: [],
+      functionSelected: '',
       semesterSelected: '',
       typeSelected: '',
       isActive: null,
+      filterUserOrChildOptions: [
+        {label: 'Aluno', type: 'child'},
+        {label: 'Usuário', type: 'user'},
+      ],
       classType: [
         { label: 'Anual', type: 'yearly' },
         { label: 'Semestral', type: 'semesterly' },
@@ -387,15 +338,16 @@ export default defineComponent({
       },
       paginationChildrenTable: {
         page: 1,
-        rowsPerPage: 5,
+        rowsPerPage: 100,
         rowsNumber: 0,
         sortBy: "",
       },
-      dialogInsertStudent: {
+      dialogManageUserOrChild: {
         open: false,
+        type: '',
         data: {}
       },
-      usersList: [],
+      users: [],
       childrenList: [],
     };
   },
@@ -405,16 +357,26 @@ export default defineComponent({
   beforeMount() {
     this.getClassDetailById()
     this.getChildrenNotInClass()
-    this.getUsersNotInClass()
   },
   methods: {
     clearDialog(){
-      this.dialogInsertStudent.open = false
-      this.dialogInsertStudent.data = {}
+      this.dialogManageUserOrChild.open = false
+      this.dialogManageUserOrChild.type = ''
+      this.functionSelected = ''
+      this.dialogManageUserOrChild.data = {}
     },
-    clkManageUser(e, r){
-      this.dialogInsertStudent.data = r
-      this.dialogInsertStudent.open = true
+    clkManageChildOrUser(e, r){
+      console.log(r, 'rowwwww' )
+      this.dialogManageUserOrChild.data = r
+      this.dialogManageUserOrChild.open = true
+      switch(r.userId || r.childId){
+        case r.userId:
+          this.dialogManageUserOrChild.type = 'user'
+        break;
+        case r.childId:
+          this.dialogManageUserOrChild.type = 'child'
+        break;
+      }
     },
     nextPageChildrenTable(e) {
       this.paginationChildrenTable.page = e.pagination.page;
@@ -426,16 +388,50 @@ export default defineComponent({
       this.paginationUsersTable.page = e.pagination.page;
       this.paginationUsersTable.sortBy = e.pagination.sortBy;
       this.paginationUsersTable.rowsPerPage = e.pagination.rowsPerPage;
-      this.getUsersNotInClass();
+      this.getUsersByPermissionId();
+    },
+    getUsersByPermissionId() {
+      const opt = {
+        route: "/desktop/classes/getUsersByPermissionId",
+        body: {
+          permissionId: 2,
+          page: 1,
+          rowsPerPage: 1000,
+        },
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro ao tentar exibir funções, tente novamente mais tarde.')
+          return
+        }else{
+          this.functionsOptions = r.data
+        }
+      });
     },
     addUserToClass() {
+      if(this.dialogManageUserOrChild.type === 'user' && this.functionSelected === ''){
+        this.$q.notify('Para adicionar um usuário na turma, é necessário especificar sua função nela.')
+        return
+      }
       const opt = {
         route: "/desktop/classes/addUserToClass",
         body: {
-          childId: this.dialogInsertStudent.data.childId,
           classId: this.$route.query.classId
         },
       };
+      switch(this.dialogManageUserOrChild.type){
+        case 'child':
+          opt.body.userId = this.dialogManageUserOrChild.data.childId
+          opt.body.type = 'child'
+        break;
+        case 'user':
+          opt.body.userId = this.dialogManageUserOrChild.data.userId
+          opt.body.type = 'user'
+          opt.body.functionId = this.functionSelected
+        break;
+      }
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
@@ -443,10 +439,38 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
         }else{
-          this.clearDialog()
-          this.$q.notify('Usuário inserido na turma')
-          this.getChildrenNotInClass()
+          if(this.dialogManageUserOrChild.type === 'child'){
+            this.getChildrenNotInClass()
+            this.$q.notify('Aluno inserido na turma')
+            this.getClassDetailById()
+            this.clearDialog()
+          }else if(this.dialogManageUserOrChild.type === 'user'){
+            this.getUsersByPermissionId()
+            this.$q.notify('Usuário inserido na turma')
+            this.getClassDetailById()
+            this.clearDialog()
+          }
         }
+      });
+    },
+    getFunctions() {
+      const page = this.paginationUsersTable.page
+      const rowsPerPage = this.paginationUsersTable.rowsPerPage
+      const searchString = this.filter
+      const sortBy = this.paginationUsersTable.sortBy
+      const opt = {
+        route: "/desktop/classes/getFunctions",
+        body: {
+          page: page,
+          rowsPerPage: rowsPerPage,
+          searchString: searchString,
+          sortBy: sortBy,
+        },
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        this.functionsOptions = r.data
       });
     },
     getUsersNotInClass() {
@@ -463,8 +487,10 @@ export default defineComponent({
           sortBy: sortBy,
         },
       };
+      this.$q.loading.show()
       useFetch(opt).then((r) => {
-        this.usersList = r.data[0].list
+        this.$q.loading.hide()
+        this.childrenList = r.data[0].list
         r.data[0].count[0] ? this.paginationUsersTable.rowsNumber = r.data[0].count[0].count : this.paginationUsersTable.rowsNumber = 0
       });
     },
@@ -482,7 +508,9 @@ export default defineComponent({
           sortBy: sortBy,
         },
       };
+      this.$q.loading.show()
       useFetch(opt).then((r) => {
+        this.$q.loading.hide()
         this.childrenList = r.data[0].list
         r.data[0].count[0] ? this.paginationChildrenTable.rowsNumber = r.data[0].count[0].count : this.paginationChildrenTable.rowsNumber = 0
       });
@@ -502,6 +530,7 @@ export default defineComponent({
           return
         }
         this.isActive = r.data.isActive
+        this.users = r.data.users
         if(r.data.classData.type === 'semesterly'){
           this.typeSelected = 'semesterly'
           this.classData.name = r.data.className
@@ -553,3 +582,23 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>

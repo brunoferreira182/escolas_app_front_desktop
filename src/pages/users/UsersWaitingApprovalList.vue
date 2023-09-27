@@ -288,7 +288,6 @@ export default defineComponent({
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
-      let type = null;
       const opt = {
         route: "/desktop/users/getUsersList",
         body: {
@@ -297,13 +296,12 @@ export default defineComponent({
           searchString: searchString,
           sortBy: sortBy,
           status: 'waitingApproval',
-          type: type
         },
       };
       if (button.callback === 'parent' && this.selectedFilters.parent) {
-        type = 'user';
+        opt.body.type = 'user';
       } else if (button.callback === 'child' && this.selectedFilters.child) {
-        type = 'child';
+        opt.body.type = 'child';
       }
       this.$q.loading.show()
       useFetch(opt).then((r) => {
