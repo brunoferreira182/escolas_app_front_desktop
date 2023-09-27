@@ -23,7 +23,7 @@
           <div class="text-grey-8 text-h6 q-pa-xs">
             Informações
           </div>
-          <div class="q-gutter-lg q-py-md" v-if="!userData">
+          <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
             <q-input
               outlined
               readonly
@@ -133,7 +133,8 @@ export default defineComponent({
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
           this.userData = r.data.userData
-          this.allPermissions = r.data.allPermissions,
+          r.data.allPermissions ? this.allPermissions = r.data.allPermissions :
+          this.allPermissions = [],
           this.userIdSQL = r.data.userId
           this.checkedPermissionsList = r.data.permissions
           this.allPermissions.forEach((all, i) => {this.allPermissions[i].checked = false;})
