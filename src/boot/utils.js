@@ -150,6 +150,10 @@ const useUtils = {
   setActiveUser(id) {
     window.localStorage.setItem("au", id);
   },
+  makeFileUrl (filename) {
+    if (!filename) return '/assets/default_avatar.svg'
+    return this.attachmentsAddress() + filename + '?' + new Date().getTime()
+  },
   attachmentsAddress() {
     if (
       MODE_MASTER_SERVER === "dev" &&
