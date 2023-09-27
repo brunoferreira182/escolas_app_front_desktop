@@ -147,7 +147,7 @@
                     <template v-slot:header="{ expanded }">
                       <q-item-section avatar>
                         <q-avatar>
-                          <img :src="child.image">
+                          <img :src="utils.makeFileUrl(child.image)">
                         </q-avatar>
                       </q-item-section>
                       <q-item-section>
@@ -299,11 +299,13 @@
 <script>
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
+import utils from "../../boot/utils"
 import { useTableColumns } from "stores/tableColumns";
 export default defineComponent({
   name: "ClassDetail",
   data() {
     return {
+      utils,
       columnsData: useTableColumns().usersListInsideClass,
       tab: 'infos',
       classData: {
