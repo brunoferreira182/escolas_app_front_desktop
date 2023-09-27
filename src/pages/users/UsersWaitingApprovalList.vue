@@ -64,16 +64,19 @@
         </template>
       </q-table>
       <div class="q-gutter-md q-pa-sm">
-        <q-btn
+        <q-chip
           v-for="button in filterBtns"
           :key="button"
           :label="button.label"
           :color="button.color"
-          @click="getUsersListByFilter(button)"
+          :class="{ 'q-chip-selected': selectedFilters[button.callback] }"
+          @click="toggleFilter(button.callback)"
           outline
+          clickable
           no-caps
-          unelevated
-        />
+        >
+          <q-icon name="check" size="20px" v-if="selectedFilters[button.callback]"/>
+        </q-chip>
       </div>
       <q-dialog v-model="dialogOpenSolicitation.open" @hide="clearDialogSolicitation">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
@@ -85,10 +88,10 @@
               Como deseja proceder com essa solicitação?
             </div>
             <q-card-actions align="center">
-              <div class="row justify-center">
-                <div class="col-10" v-if="dialogOpenSolicitation.data.type === 'user' || btn.type === 'user'">
+              <div class="row justify-center full-width">
+                <div class="col-10" v-if="!dialogOpenSolicitation.data.type">
                   <q-btn
-                    v-for="btn in arrayButtons"
+                    v-for="btn in buttonsUser"
                     :key="btn"
                     :label="btn.label"
                     class="full-width q-ma-sm text-subtitle1"
@@ -99,9 +102,9 @@
                     unelevated
                   />
                 </div>
-                <div class="col-10" v-else-if="dialogOpenSolicitation.data.type === 'child' || btn.type === 'user'">
+                <div class="col-10 " v-else-if="dialogOpenSolicitation.data.type === 'child'">
                   <q-btn
-                    v-for="btn in arrayButtons"
+                    v-for="btn in buttonsChild"
                     :key="btn"
                     :label="btn.label"
                     class="full-width q-ma-sm text-subtitle1"
@@ -138,12 +141,15 @@ export default defineComponent({
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
       filterRow: [],
-      arrayButtons: [
-        {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
+      buttonsUser: [
         {label: 'Aprovar como pai', color: 'primary', type: 'user', callback: 'parentAproval'},
         {label: 'Aprovar como interno', color: 'primary', type: 'user', callback: 'internalApproval'},
         {label: 'Aprovar como ambos', color: 'primary', type: 'user', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', type: 'user', callback: 'refused'},
+      ],
+      buttonsChild: [
+        {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
+        {label: 'Recusar', color: 'red-8', type: 'child', callback: 'refused'},
       ],
       filterBtns: [
         {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
@@ -159,6 +165,10 @@ export default defineComponent({
         rowsPerPage: 10,
         rowsNumber: 0,
         sortBy: "",
+      },
+      selectedFilters: {
+        parent: false,
+        child: false,
       },
       userPermissionsOptions: [],
     };
@@ -258,11 +268,17 @@ export default defineComponent({
         this.userPermissionsOptions = r.data
       })
     },
+    toggleFilter(filter) {
+      this.selectedFilters[filter] = !this.selectedFilters[filter];
+      this.getUsersListByFilter({ callback: filter });
+    },
     getUsersListByFilter(button) {
+      console.log(button)
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
+      let type = null;
       const opt = {
         route: "/desktop/users/getUsersList",
         body: {
@@ -271,16 +287,15 @@ export default defineComponent({
           searchString: searchString,
           sortBy: sortBy,
           status: 'waitingApproval',
+          type: type
         },
       };
-      switch(button.callback){
-        case 'parent':
-          opt.body.type = 'user'
-        break;
-        case 'child':
-          opt.body.type = 'child'
-        break;
+      if (button.callback === 'parent' && this.selectedFilters.parent) {
+        type = 'user';
+      } else if (button.callback === 'child' && this.selectedFilters.child) {
+        type = 'child';
       }
+      this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
         this.usersList = r.data.list
@@ -300,7 +315,7 @@ export default defineComponent({
           searchString: searchString,
           sortBy: sortBy,
           status: 'waitingApproval',
-          
+
         },
       };
       useFetch(opt).then((r) => {
