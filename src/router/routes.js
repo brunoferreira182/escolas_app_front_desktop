@@ -28,6 +28,7 @@ const routes = [
       { path: '/social', redirect: '/social/PostsList' },
       { path: '/social/postsList', component: () => import('pages/social/PostsList.vue') },
       { path: '/social/createNewPost', component: () => import('pages/social/CreateNewPost.vue') },
+      { path: '/social/postDetail', component: () => import('pages/social/PostDetail.vue') },
 
     ]
   },

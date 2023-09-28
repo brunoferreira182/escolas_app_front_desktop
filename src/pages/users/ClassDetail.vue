@@ -146,112 +146,109 @@
                 </q-btn>
               </div>
               <div v-if="selectedFilter.type === 'user'">
-                <q-expansion-item
+                <q-item
                   v-for="child in users"
                   :key="child._id"
+
                   style="border-radius: 0.5rem;"
-                  class="bg-grey-5 q-ma-xs"
+                  class="bg-grey-4 q-ma-sm"
                 >
-                  <template v-slot:header="{ expanded }">
-                    <q-item-section avatar>
+                  <q-item-section avatar>
                       <q-avatar>
                         <img :src="utils.makeFileUrl(child.image)">
                       </q-avatar>
                     </q-item-section>
-                    <q-item-section>
-                      {{ child.userName }}
-                    </q-item-section>
-                  </template>
-                  <q-card class="bg-grey-3">
-                    <q-card-section side class="no-padding" align="end">
-                      <div class="text-grey-8 q-gutter-xs">
-                        <q-btn
-                          @click="insertObservation(child)"
-                          class="gt-xs"
-                          size="12px"
-                          color="secondary"
-                          flat
-                          dense
-                          round
-                          icon="library_books"
-                        >
-                          <q-tooltip> Observações </q-tooltip>
-                        </q-btn>
-                        <q-btn
-                          @click="clkOpenDialogRemoveUserFromClass(child)"
-                          class="gt-xs"
-                          size="12px"
-                          color="red-8"
-                          flat
-                          dense
-                          round
-                          icon="delete"
-                        >
-                          <q-tooltip> Deletar usuário da turma </q-tooltip>
-                        </q-btn>
-                      </div>
-                    </q-card-section>
-                    <q-card-section>
-                      [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
-                      [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
-                      Sua curiosidade é uma qualidade admirável que sempre encorajamos.
-                    </q-card-section>
-                  </q-card>
-                </q-expansion-item>
+                  <q-item-section class="text-wrap" lines="2">
+                    {{ child.userName }}
+                  </q-item-section>
+                  <q-item-section side >
+                    <div class="text-grey-8 q-gutter-xs">
+                      <q-btn
+                        @click="insertObservation(child)"
+                        class="gt-xs"
+                        size="12px"
+                        color="secondary"
+                        flat
+                        dense
+                        round
+                        icon="library_books"
+                      >
+                        <q-tooltip> Observações </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        @click="clkOpenDialogRemoveUserFromClass(child)"
+                        class="gt-xs"
+                        size="12px"
+                        color="red-8"
+                        flat
+                        dense
+                        round
+                        icon="delete"
+                      >
+                        <q-tooltip> Deletar usuário da turma </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </q-item-section>
+                </q-item>
               </div>
               <div v-else-if="selectedFilter.type === 'child'">
-                <q-expansion-item
+                <q-item
                   v-for="child in childrenInClassList"
                   :key="child._id"
                   style="border-radius: 0.5rem;"
-                  class="bg-grey-5 q-ma-xs"
+                  class="bg-grey-4 q-ma-sm"
                 >
-                  <template v-slot:header="{ expanded }">
-                    <q-item-section avatar>
+                  <q-item-section avatar>
                       <q-avatar>
                         <img :src="utils.makeFileUrl(child.image)">
                       </q-avatar>
                     </q-item-section>
-                    <q-item-section>
-                      {{ child.userName }}
-                    </q-item-section>
-                  </template>
-                  <q-card class="bg-grey-3">
-                    <q-card-section side class="no-padding" align="end">
-                      <div class="text-grey-8 q-gutter-xs">
-                        <q-btn
-                          @click="insertObservation(child)"
-                          class="gt-xs"
-                          size="12px"
-                          color="secondary"
-                          flat
-                          dense
-                          round
-                          icon="library_books"
-                        >
-                          <q-tooltip> Observações </q-tooltip>
-                        </q-btn>
-                        <q-btn
-                          @click="clkOpenDialogRemoveUserFromClass(child)"
-                          class="gt-xs"
-                          size="12px"
-                          color="red-8"
-                          flat
-                          dense
-                          round
-                          icon="delete"
-                        >
-                          <q-tooltip> Deletar usuário da turma </q-tooltip>
-                        </q-btn>
-                      </div>
-                    </q-card-section>
-                    <q-card-section>
-                      [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
-                      [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
-                      Sua curiosidade é uma qualidade admirável que sempre encorajamos.
-                    </q-card-section>
-                  </q-card>
-                </q-expansion-item>
+                  <q-item-section class="text-wrap" lines="2">
+                    {{ child.userName }}
+                  </q-item-section>
+                  <q-item-section side >
+                    <div class="text-grey-8 q-gutter-xs">
+                      <q-btn
+                        @click="clkOpenDialogInsertFamilyMember(child)"
+                        class="gt-xs"
+                        size="12px"
+                        color="blue-8"
+                        flat
+                        dense
+                        round
+                        icon="family_restroom"
+                      >
+                        <q-tooltip>
+                          Inserir familiar
+                        </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        @click="insertObservation(child)"
+                        class="gt-xs"
+                        size="12px"
+                        color="secondary"
+                        flat
+                        dense
+                        round
+                        icon="library_books"
+                      >
+                        <q-tooltip> Observações </q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        @click="clkOpenDialogRemoveUserFromClass(child)"
+                        class="gt-xs"
+                        size="12px"
+                        color="red-8"
+                        flat
+                        dense
+                        round
+                        icon="delete"
+                      >
+                        <q-tooltip> Deletar usuário da turma </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </q-item-section>
+                </q-item>
               </div>
             </div>
             <q-separator vertical />
@@ -377,7 +374,6 @@ import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import utils from "../../boot/utils"
 import { useTableColumns } from "stores/tableColumns";
-import { formToJSON } from "axios";
 export default defineComponent({
   name: "ClassDetail",
   data() {

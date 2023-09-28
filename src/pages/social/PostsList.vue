@@ -90,8 +90,8 @@ export default defineComponent({
   name: "PostsList",
   data() {
     return {
-      columnsData: useTableColumns().functionsTypesList,
-      functionsTypesList: [],
+      columnsData: useTableColumns().postsList,
+      postsList: [],
       selectStatus: ["Ativos", "Inativos"],
       selectFilter: null,
       filter: "",
@@ -138,8 +138,8 @@ export default defineComponent({
         break;
       }
       useFetch(opt).then((r) => {
-        this.functionsTypesList = r.data[0].list
-        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
+        this.postsList = r.data.list
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });
     },
     nextPage(e) {
