@@ -202,6 +202,18 @@ const useUtils = {
           route: "/users/classesList",
           icon: "school",
         },
+        {
+          label: "Lista de chats",
+          route: "/users/chatList",
+          icon: "question_answer",
+        },
+      ],
+      social: [
+        {
+          label: "Lista de postagens",
+          route: "/social/postsList",
+          icon: "format_list_bulleted",
+        },
       ],
     };
     return obj[type];

@@ -127,71 +127,132 @@
           </div>
         </q-tab-panel>
         <q-tab-panel name="manageClass" class="no-padding">
+
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
+              <q-select
+                outlined
+                dense
+                label="Filtro"
+                debounce="300"
+                v-model="selectedFilter"
+                :options="filterUserOrChildOptions"
+                @update:model-value="selectedFilter.type === 'user' ? getUsersNotInClass() : getChildrenNotInClass()"
+              ></q-select>
               <div class="text-h5 q-mt-lg">
-                Alunos
+                {{ this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
                 <q-btn icon="history" flat color="primary">
                   <q-tooltip>Histórico</q-tooltip>
                 </q-btn>
               </div>
-              <Transition name="bounce">
-                <div>
-
-                  <q-expansion-item
-                    v-for="child in users"
-                    :ley="child"
-                    style="border-radius: 0.5rem;"
-                    class="bg-grey-5 q-ma-xs"
-                  >
-                    <template v-slot:header="{ expanded }">
-                      <q-item-section avatar>
-                        <q-avatar>
-                          <img :src="utils.makeFileUrl(child.image)">
-                        </q-avatar>
-                      </q-item-section>
-                      <q-item-section>
-                        {{ child.userName }}
-                      </q-item-section>
-                    </template>
-                    <q-card class="bg-grey-3">
-                      <q-card-section side class="no-padding" align="end">
-                        <div class="text-grey-8 q-gutter-xs">
-                          <q-btn
-                            @click="insertObservation(user)"
-                            class="gt-xs"
-                            size="12px"
-                            color="secondary"
-                            flat
-                            dense
-                            round
-                            icon="library_books"
-                          >
-                            <q-tooltip> Observações </q-tooltip>
-                          </q-btn>
-                          <q-btn
-                            @click="deleteUserFromFunction(user)"
-                            class="gt-xs"
-                            size="12px"
-                            color="red-8"
-                            flat
-                            dense
-                            round
-                            icon="delete"
-                          >
-                            <q-tooltip> Deletar usuário da turma </q-tooltip>
-                          </q-btn>
-                        </div>
-                      </q-card-section>
-                      <q-card-section>
-                        [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
-                        [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
-                        Sua curiosidade é uma qualidade admirável que sempre encorajamos.
-                      </q-card-section>
-                    </q-card>
-                  </q-expansion-item>
-                </div>
-              </Transition>
+              <div v-if="selectedFilter.type === 'user'">
+                <q-expansion-item
+                  v-for="child in users"
+                  :key="child._id"
+                  style="border-radius: 0.5rem;"
+                  class="bg-grey-5 q-ma-xs"
+                >
+                  <template v-slot:header="{ expanded }">
+                    <q-item-section avatar>
+                      <q-avatar>
+                        <img :src="utils.makeFileUrl(child.image)">
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>
+                      {{ child.userName }}
+                    </q-item-section>
+                  </template>
+                  <q-card class="bg-grey-3">
+                    <q-card-section side class="no-padding" align="end">
+                      <div class="text-grey-8 q-gutter-xs">
+                        <q-btn
+                          @click="insertObservation(child)"
+                          class="gt-xs"
+                          size="12px"
+                          color="secondary"
+                          flat
+                          dense
+                          round
+                          icon="library_books"
+                        >
+                          <q-tooltip> Observações </q-tooltip>
+                        </q-btn>
+                        <q-btn
+                          @click="clkOpenDialogRemoveUserFromClass(child)"
+                          class="gt-xs"
+                          size="12px"
+                          color="red-8"
+                          flat
+                          dense
+                          round
+                          icon="delete"
+                        >
+                          <q-tooltip> Deletar usuário da turma </q-tooltip>
+                        </q-btn>
+                      </div>
+                    </q-card-section>
+                    <q-card-section>
+                      [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
+                      [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
+                      Sua curiosidade é uma qualidade admirável que sempre encorajamos.
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+              </div>
+              <div v-else-if="selectedFilter.type === 'child'">
+                <q-expansion-item
+                  v-for="child in childrenInClassList"
+                  :key="child._id"
+                  style="border-radius: 0.5rem;"
+                  class="bg-grey-5 q-ma-xs"
+                >
+                  <template v-slot:header="{ expanded }">
+                    <q-item-section avatar>
+                      <q-avatar>
+                        <img :src="utils.makeFileUrl(child.image)">
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>
+                      {{ child.userName }}
+                    </q-item-section>
+                  </template>
+                  <q-card class="bg-grey-3">
+                    <q-card-section side class="no-padding" align="end">
+                      <div class="text-grey-8 q-gutter-xs">
+                        <q-btn
+                          @click="insertObservation(child)"
+                          class="gt-xs"
+                          size="12px"
+                          color="secondary"
+                          flat
+                          dense
+                          round
+                          icon="library_books"
+                        >
+                          <q-tooltip> Observações </q-tooltip>
+                        </q-btn>
+                        <q-btn
+                          @click="clkOpenDialogRemoveUserFromClass(child)"
+                          class="gt-xs"
+                          size="12px"
+                          color="red-8"
+                          flat
+                          dense
+                          round
+                          icon="delete"
+                        >
+                          <q-tooltip> Deletar usuário da turma </q-tooltip>
+                        </q-btn>
+                      </div>
+                    </q-card-section>
+                    <q-card-section>
+                      [Nome da Criança], que é uma criança incrivelmente esforçada e inteligente.
+                      [Ele/Ela] demonstra um grande interesse em aprender e frequentemente compartilha suas ideias criativas durante as atividades em sala de aula.
+                      Sua curiosidade é uma qualidade admirável que sempre encorajamos.
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+              </div>
             </div>
             <q-separator vertical />
             <div class="col-6 q-gutter-md" align="start">
@@ -215,17 +276,6 @@
                 <template #top-right>
                   <div class="flex row q-gutter-sm items-center text-right">
                     <div class="col">
-                      <q-select
-                        outlined
-                        dense
-                        label="Filtro"
-                        debounce="300"
-                        v-model="selectedFilter"
-                        :options="filterUserOrChildOptions"
-                        @update:model-value="selectedFilter.type === 'user' ? getUsersNotInClass() : getChildrenNotInClass()"
-                      ></q-select>
-                    </div>
-                    <div class="col">
                       <q-input
                         @keyup="getChildrenNotInClass"
                         outlined
@@ -244,6 +294,32 @@
               </q-table>
             </div>
           </div>
+          <q-dialog v-model="dialogRemoveUserInClass.open" @hide="clearDialog()">
+            <q-card style="border-radius: 1rem">
+              <q-card-section>
+                <div class="text-h6 text-center">
+                  Deseja deletar este {{ dialogRemoveUserInClass.type === 'child' ? 'aluno' : 'usuário' }} da classe?
+                </div>
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn
+                  flat
+                  label="Depois"
+                  no-caps
+                  color="primary"
+                  @click="clearDialog"
+                />
+                <q-btn
+                  unelevated
+                  rounded
+                  label="Confirmar"
+                  no-caps
+                  color="primary"
+                  @click="removeUsersFromClass"
+                />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
           <q-dialog v-model="dialogManageUserOrChild.open" @hide="clearDialog()" @before-show="dialogManageUserOrChild.type === 'user' ? getFunctions() : ''">
             <q-card style="border-radius: 1rem">
               <q-card-section>
@@ -301,6 +377,7 @@ import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import utils from "../../boot/utils"
 import { useTableColumns } from "stores/tableColumns";
+import { formToJSON } from "axios";
 export default defineComponent({
   name: "ClassDetail",
   data() {
@@ -349,7 +426,13 @@ export default defineComponent({
         type: '',
         data: {}
       },
+      dialogRemoveUserInClass: {
+        open: false,
+        type: '',
+        data: {}
+      },
       users: [],
+      childrenInClassList: [],
       childrenList: [],
     };
   },
@@ -365,6 +448,9 @@ export default defineComponent({
       this.dialogManageUserOrChild.open = false
       this.dialogManageUserOrChild.type = ''
       this.functionSelected = ''
+      this.dialogRemoveUserInClass.type = ''
+      this.dialogRemoveUserInClass.open = false
+      this.dialogRemoveUserInClass.data = {}
       this.dialogManageUserOrChild.data = {}
     },
     clkManageChildOrUser(e, r){
@@ -409,6 +495,50 @@ export default defineComponent({
           return
         }else{
           this.functionsOptions = r.data
+        }
+      });
+    },
+    clkOpenDialogRemoveUserFromClass(child){
+      console.log(child)
+      this.dialogRemoveUserInClass.data = child
+      this.dialogRemoveUserInClass.open = true
+      switch(child.type){
+        case 'user':
+          this.dialogRemoveUserInClass.type = 'user'
+        break;
+        case 'child':
+          this.dialogRemoveUserInClass.type = 'child'
+        break;
+      }
+    },
+    removeUsersFromClass() {
+      const opt = {
+        route: "/desktop/classes/removeUsersFromClass",
+        body: {
+          classId: this.$route.query.classId
+        },
+      };
+      switch(this.dialogRemoveUserInClass.type){
+        case 'user':
+          opt.body.type = 'user'
+          opt.body.userId = this.dialogRemoveUserInClass.data.userId
+          opt.body.functionId = this.dialogRemoveUserInClass.data.functionId
+        break;
+        case 'child':
+          opt.body.userId = this.dialogRemoveUserInClass.data.userId
+          opt.body.type = 'child'
+        break;
+      }
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro ao tentar exibir funções, tente novamente mais tarde.')
+          return
+        }else{
+          this.clearDialog()
+          this.getClassDetailById()
+          this.$q.notify(`${this.dialogRemoveUserInClass.type === 'user' ? 'Usuário removido com sucesso' : 'Aluno removido com sucesso'}` )
         }
       });
     },
@@ -532,7 +662,8 @@ export default defineComponent({
           return
         }
         this.isActive = r.data.isActive
-        this.users = r.data.users
+        this.users = r.data.users.filter((item) => item.type === 'user');
+        this.childrenInClassList = r.data.users.filter((item) => item.type === 'child');
         if(r.data.classData.type === 'semesterly'){
           this.typeSelected = 'semesterly'
           this.classData.name = r.data.className
