@@ -365,6 +365,80 @@
               </q-card-actions>
             </q-card>
           </q-dialog>
+          <q-dialog v-model="dialogInsertFamilyMemberIntoClass.open" @hide="clearDialog()" @before-show="getChildParents() || getFunctions()">
+            <q-card style="border-radius: 1rem">
+              <q-card-section>
+                <div class="text-h6 text-center">
+                  Selecione um familiar de {{ dialogInsertFamilyMemberIntoClass.data.userName }} para inserir como representante de turma
+                </div>
+              </q-card-section>
+              <q-card-section class="q-gutter-md">
+                <q-select
+                  v-model="familiarSelected"
+                  outlined
+                  label="Nome do familiar"
+                  option-label="name"
+                  hint="Selecione o familiar que será representante de classe"
+                  map-options
+                  emit-value
+                  :options="childFamilyOptions"
+                  :option-value="(item) => item.parentId"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Nenhum resultado
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.parentName }}</q-item-label>
+                        <q-item-label caption>{{ scope.opt.parentPhone }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <q-select
+                  v-model="functionSelected"
+                  outlined
+                  label="Nome da função"
+                  option-label="name"
+                  hint="Informe a função do usuário"
+                  map-options
+                  emit-value
+                  :options="functionsOptions"
+                  :option-value="(item) => item._id"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Nenhum resultado
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn
+                  flat
+                  label="Depois"
+                  no-caps
+                  color="primary"
+                  @click="clearDialog"
+                />
+                <q-btn
+                  unelevated
+                  rounded
+                  label="Confirmar"
+                  no-caps
+                  color="primary"
+                  @click="addFamiliarIntoClass"
+                />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
         </q-tab-panel>
       </q-tab-panels>
     </q-page>
@@ -385,6 +459,7 @@ export default defineComponent({
       classData: {
         name: '',
       },
+      familiarSelected: '',
       filter: "",
       dialogInactiveClass: false,
       yearSelected: '',
@@ -428,7 +503,12 @@ export default defineComponent({
         type: '',
         data: {}
       },
+      dialogInsertFamilyMemberIntoClass: {
+        open: false,
+        data: {}
+      },
       users: [],
+      childFamilyOptions: [],
       childrenInClassList: [],
       childrenList: [],
     };
@@ -441,7 +521,15 @@ export default defineComponent({
     this.getChildrenNotInClass()
   },
   methods: {
+    clkOpenDialogInsertFamilyMember(child){
+      console.log(child)
+      this.dialogInsertFamilyMemberIntoClass.open = true
+      this.dialogInsertFamilyMemberIntoClass.data = child
+    },
     clearDialog(){
+      this.dialogInsertFamilyMemberIntoClass.open = false
+      this.dialogInsertFamilyMemberIntoClass.data = {}
+      this.familiarSelected = ''
       this.dialogManageUserOrChild.open = false
       this.dialogManageUserOrChild.type = ''
       this.functionSelected = ''
@@ -474,6 +562,26 @@ export default defineComponent({
       this.paginationUsersTable.sortBy = e.pagination.sortBy;
       this.paginationUsersTable.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersByPermissionId();
+    },
+    getChildParents() {
+      const opt = {
+        route: "/desktop/users/getChildParents",
+        body: {
+          userId: this.dialogInsertFamilyMemberIntoClass.data.userId,
+          page: 1,
+          rowsPerPage: 1000,
+        },
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro ao tentar exibir os familiares, tente novamente mais tarde.')
+          return
+        }else{
+          this.childFamilyOptions = r.data.list
+        }
+      });
     },
     getUsersByPermissionId() {
       const opt = {
@@ -539,6 +647,33 @@ export default defineComponent({
         }
       });
     },
+    addFamiliarIntoClass() {
+      if(this.familiarSelected === '' || this.functionSelected === ''){
+        this.$q.notify('Para adicionar um representante na turma, é necessário selecioná-lo primeiro e informar sua função')
+        return
+      }
+      const opt = {
+        route: "/desktop/classes/addUserToClass",
+        body: {
+          classId: this.$route.query.classId,
+          parentId: this.dialogInsertFamilyMemberIntoClass.data.parentId,
+          functionId: this.functionSelected
+        },
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.getChildrenNotInClass()
+          this.$q.notify('Familiar inserido na turma')
+          this.getClassDetailById()
+          this.clearDialog()
+        }
+      });
+    },
     addUserToClass() {
       if(this.dialogManageUserOrChild.type === 'user' && this.functionSelected === ''){
         this.$q.notify('Para adicionar um usuário na turma, é necessário especificar sua função nela.')
@@ -547,7 +682,8 @@ export default defineComponent({
       const opt = {
         route: "/desktop/classes/addUserToClass",
         body: {
-          classId: this.$route.query.classId
+          classId: this.$route.query.classId,
+
         },
       };
       switch(this.dialogManageUserOrChild.type){
