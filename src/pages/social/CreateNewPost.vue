@@ -322,6 +322,10 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then(r => {
         this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Erro ao criar postagem, tente novamente mais tarde.')
+          return
+        }this.$router.back()
       })
     }
   }

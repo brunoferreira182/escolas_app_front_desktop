@@ -1,5 +1,5 @@
 //////////// VARIAVEIS DA APLICACAO //////
-const MODE_MASTER_SERVER = "darta";
+const MODE_MASTER_SERVER = "tiago";
 const COMPANY_ID = 1;
 // NAO ALTERAR //
 const MODE_IFRAME = MODE_MASTER_SERVER;

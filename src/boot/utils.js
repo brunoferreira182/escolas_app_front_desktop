@@ -214,6 +214,11 @@ const useUtils = {
           route: "/social/postsList",
           icon: "format_list_bulleted",
         },
+        {
+          label: 'Gerenciar comentários',
+          route: '/social/manageComments',
+          icon: 'chat'
+        },
       ],
     };
     return obj[type];
