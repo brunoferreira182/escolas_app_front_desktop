@@ -88,7 +88,7 @@
           <q-icon name="check" size="20px" v-if="selectedFilters[button.callback]"/>
         </q-chip>
       </div>
-      <q-dialog v-model="dialogOpenSolicitation.open" @hide="clearDialogSolicitation">
+      <q-dialog v-model="dialogOpenSolicitation.open" @before-hide="clearDialogSolicitation() || getUsersList()">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div class="text-center" v-if="hideDiv">
             <img :src="gif" />
@@ -191,6 +191,11 @@ export default defineComponent({
     this.getUserPermissionsOptions()
   },
   methods: {
+    clearDialogSolicitation(){
+      this.dialogOpenSolicitation.open = false
+      this.dialogOpenSolicitation.data = {}
+      this.hideDiv = false
+    },
     clkOpenSolicitation(e, r){
       switch(!r.status || r.status.status){
         case 'active':
@@ -259,10 +264,7 @@ export default defineComponent({
         }
         this.hideDiv = true;
         setTimeout(() => {
-          this.hideDiv = false;
-          this.dialogOpenSolicitation.open = false
           this.clearDialogSolicitation()
-          this.getUsersList()
         }, 3800);
       })
     },
@@ -332,11 +334,7 @@ export default defineComponent({
         r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });
     },
-    clearDialogSolicitation(){
-      this.dialogOpenSolicitation.open = false
-      this.dialogOpenSolicitation.data = {}
-      this.hideDiv = false
-    },
+
   },
 });
 </script>

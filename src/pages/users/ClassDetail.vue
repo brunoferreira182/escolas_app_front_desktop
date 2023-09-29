@@ -127,7 +127,6 @@
           </div>
         </q-tab-panel>
         <q-tab-panel name="manageClass" class="no-padding">
-
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
               <q-select
@@ -161,6 +160,9 @@
                     </q-item-section>
                   <q-item-section class="text-wrap" lines="2">
                     {{ child.userName }}
+                    <div class="text-caption">
+                      {{ child.userFunction }}
+                    </div>
                   </q-item-section>
                   <q-item-section side >
                     <div class="text-grey-8 q-gutter-xs">
@@ -192,7 +194,7 @@
                   </q-item-section>
                 </q-item>
               </div>
-              <div v-else-if=" selectedFilter === 'Aluno' || selectedFilter.type === 'child'">
+              <div v-else-if="selectedFilter === 'Aluno' || selectedFilter.type === 'child'">
                 <q-item
                   v-for="child in childrenInClassList"
                   :key="child._id"
@@ -377,7 +379,7 @@
                   v-model="familiarSelected"
                   outlined
                   label="Nome do familiar"
-                  option-label="name"
+                  option-label="parentName"
                   hint="Selecione o familiar que será representante de classe"
                   map-options
                   emit-value
@@ -643,6 +645,7 @@ export default defineComponent({
         }else{
           this.clearDialog()
           this.getClassDetailById()
+          this.getChildrenNotInClass()
           this.$q.notify(`${this.dialogRemoveUserInClass.type === 'user' ? 'Usuário removido com sucesso' : 'Aluno removido com sucesso'}` )
         }
       });
@@ -655,8 +658,9 @@ export default defineComponent({
       const opt = {
         route: "/desktop/classes/addUserToClass",
         body: {
+          type: 'user',
           classId: this.$route.query.classId,
-          parentId: this.dialogInsertFamilyMemberIntoClass.data.parentId,
+          userId: this.familiarSelected,
           functionId: this.functionSelected
         },
       };
