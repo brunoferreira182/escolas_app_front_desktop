@@ -12,7 +12,7 @@
               dense
               type="search"
               class="q-mx-sm"
-              placeholder="Buscar clientes"
+              placeholder="Buscar usuários"
             >
               <template v-slot:append>
                 <q-icon name="search" />
@@ -97,7 +97,7 @@
           </div>
           <div style="background-color: #f9f9f9; height: 94%;position: relative;width: 100%;border-left: 1px ridge #e1e1e1;">
             <div v-if="!selectedClient" style="position: absolute;top: 42%;" class="full-width text-center text-h6 text-grey-8">
-              Selecione um cliente para começar a conversar
+              Selecione um usuário para começar a conversar
             </div>
             <q-scroll-area v-if="messagesLoaded"  ref="chatscrollarea" style="height: 100%;padding-bottom: 75px;">
               <div style="display: flex;flex-direction: column;width: 100%;padding-inline: 10px;" class="q-mt-sm">

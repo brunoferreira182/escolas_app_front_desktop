@@ -74,7 +74,7 @@
                 map-options
                 :option-value="(item) => item.type"
                 v-model="typeSelected"
-                hint="Especifique se a turma é semestral ou anual"
+                hint="Semestral ou anual"
                 :options="classType"
               />
               <q-select
@@ -86,14 +86,14 @@
                 map-options
                 :option-value="(item) => item.semester"
                 v-model="semesterSelected"
-                hint="Informe o semestre"
+                hint="Semestre"
                 :options="classSemester"
               />
               <q-input
                 v-if="typeSelected === 'semesterly' || typeSelected === 'yearly'"
                 outlined
                 label="Ano"
-                hint="Informe o ano vigente"
+                hint="Ano vigente"
                 v-model="yearSelected"
               />
             </div>
@@ -137,10 +137,11 @@
                 debounce="300"
                 v-model="selectedFilter"
                 :options="filterUserOrChildOptions"
+                :option-value="(item) => item.type"
                 @update:model-value="selectedFilter.type === 'user' ? getUsersNotInClass() : getChildrenNotInClass()"
               ></q-select>
               <div class="text-h5 q-mt-lg">
-                {{ this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
+                {{ selectedFilter === 'Aluno' || this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
                 <q-btn icon="history" flat color="primary">
                   <q-tooltip>Histórico</q-tooltip>
                 </q-btn>
@@ -191,7 +192,7 @@
                   </q-item-section>
                 </q-item>
               </div>
-              <div v-else-if="selectedFilter.type === 'child'">
+              <div v-else-if=" selectedFilter === 'Aluno' || selectedFilter.type === 'child'">
                 <q-item
                   v-for="child in childrenInClassList"
                   :key="child._id"
@@ -219,7 +220,7 @@
                         icon="family_restroom"
                       >
                         <q-tooltip>
-                          Inserir familiar
+                          Definir  um familiar para representante de turma
                         </q-tooltip>
                       </q-btn>
                       <q-btn
