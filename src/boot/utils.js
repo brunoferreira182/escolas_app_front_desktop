@@ -185,6 +185,11 @@ const useUtils = {
           route: "/admin/functionsTypesList",
           icon: "format_list_numbered",
         },
+        {
+          label: "Lista de atividades",
+          route: "/admin/eventsList",
+          icon: "format_list_numbered",
+        },
       ],
       users: [
         {

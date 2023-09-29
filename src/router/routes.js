@@ -13,6 +13,9 @@ const routes = [
       },
       { path: "/admin/createFunctionType", component: () => import("pages/admin/CreateFunctionType.vue"),},
       { path: "/admin/functionTypeDetail", component: () => import("pages/admin/FunctionTypeDetail.vue"),},
+      { path: "/admin/eventsList", component: () => import("pages/admin/EventsList.vue"),},
+      { path: "/admin/createEvent", component: () => import("pages/admin/CreateEvent.vue"),},
+      { path: "/admin/eventDetail", component: () => import("pages/admin/EventDetail.vue"),},
 
       //users
       { path: '/users', redirect: '/users/UsersWaitingApprovalList' },
