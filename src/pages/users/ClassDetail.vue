@@ -257,27 +257,41 @@
             <q-separator vertical />
             <div class="col-6 q-gutter-md" align="start">
               <q-table
-                flat
-                class="bg-accent"
-                :title="selectedFilter.type === 'user' ? 'Adicionar usuário' : 'Adicionar aluno'"
+                flat class="bg-accent"
+                title="Usuários"
                 :columns="columnsData"
-                :rows="childrenList"
                 row-key="_id"
-                @row-click="clkManageChildOrUser"
                 virtual-scroll
-                :virtual-scroll-item-size="48"
                 rows-per-page-label="Registros por página"
                 no-data-label="Nenhum dado inserido até o momento"
                 no-results-label="A pesquisa não retornou nenhum resultado"
                 :rows-per-page-options="[10, 20, 30, 50]"
                 :filter="filter"
-                v-model:pagination="paginationChildrenTable"
-                @request="nextPageChildrenTable">
+                :title="selectedFilter.type === 'user' ? 'Adicionar usuário' : 'Adicionar aluno'"
+                :rows="childrenList"
+                @row-click="clkManageChildOrUser"
+                :virtual-scroll-item-size="48"
+                v-model:pagination="pagination"
+                @request="nextPage">
                 <template #top-right>
                   <div class="flex row q-gutter-sm items-center text-right">
-                    <div class="col">
+                    <div class="col" >
                       <q-input
-                        @keyup="getChildrenNotInClass"
+                        v-if="selectedFilter.type === 'user' || selectedFilter === 'Usuário'"
+                        @keyup="getUsersNotInClass()"
+                        outlined
+                        dense
+                        debounce="300"
+                        v-model="filter"
+                        placeholder="Procurar"
+                      >
+                        <template #append>
+                          <q-icon name="search" />
+                        </template>
+                      </q-input>
+                      <q-input
+                        v-else-if="selectedFilter.type === 'child' || selectedFilter === 'Aluno'"
+                        @keyup="getChildrenNotInClass()"
                         outlined
                         dense
                         debounce="300"
@@ -483,15 +497,15 @@ export default defineComponent({
         { label: 'Semestre 1', semester: 1},
         { label: 'Semestre 2', semester: 2 },
       ],
-      paginationUsersTable: {
+      // paginationUsersTable: {
+      //   page: 1,
+      //   rowsPerPage: 10,
+      //   rowsNumber: 0,
+      //   sortBy: "",
+      // },
+      pagination: {
         page: 1,
-        rowsPerPage: 5,
-        rowsNumber: 0,
-        sortBy: "",
-      },
-      paginationChildrenTable: {
-        page: 1,
-        rowsPerPage: 100,
+        rowsPerPage: 10,
         rowsNumber: 0,
         sortBy: "",
       },
@@ -512,6 +526,7 @@ export default defineComponent({
       users: [],
       childFamilyOptions: [],
       childrenInClassList: [],
+      usersList: [],
       childrenList: [],
     };
   },
@@ -553,17 +568,15 @@ export default defineComponent({
         break;
       }
     },
-    nextPageChildrenTable(e) {
-      this.paginationChildrenTable.page = e.pagination.page;
-      this.paginationChildrenTable.sortBy = e.pagination.sortBy;
-      this.paginationChildrenTable.rowsPerPage = e.pagination.rowsPerPage;
-      this.getChildrenNotInClass();
-    },
-    nextPageUserTable(e) {
-      this.paginationUsersTable.page = e.pagination.page;
-      this.paginationUsersTable.sortBy = e.pagination.sortBy;
-      this.paginationUsersTable.rowsPerPage = e.pagination.rowsPerPage;
-      this.getUsersByPermissionId();
+    nextPage(e) {
+      this.pagination.page = e.pagination.page;
+      this.pagination.sortBy = e.pagination.sortBy;
+      this.pagination.rowsPerPage = e.pagination.rowsPerPage;
+      if(this.selectedFilter.type === 'user' || this.selectedFilter === 'Usuário'){
+        this.getUsersNotInClass()
+      }else if(this.selectedFilter.type === 'child' || this.selectedFilter === 'Aluno'){
+        this.getChildrenNotInClass();
+      }
     },
     getChildParents() {
       const opt = {
@@ -643,10 +656,17 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro ao tentar exibir funções, tente novamente mais tarde.')
           return
         }else{
-          this.clearDialog()
+          if(this.dialogRemoveUserInClass.type === 'user'){
+            this.$q.notify('Usuário removido com sucesso' )
+            this.clearDialog()
+            this.getUsersNotInClass()
+            this.getClassDetailById()
+            return
+          }
           this.getClassDetailById()
+          this.clearDialog()
+          this.$q.notify('Aluno removido com sucesso' )
           this.getChildrenNotInClass()
-          this.$q.notify(`${this.dialogRemoveUserInClass.type === 'user' ? 'Usuário removido com sucesso' : 'Aluno removido com sucesso'}` )
         }
       });
     },
@@ -671,7 +691,7 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
         }else{
-          this.getChildrenNotInClass()
+          this.getUsersNotInClass()
           this.$q.notify('Familiar inserido na turma')
           this.getClassDetailById()
           this.clearDialog()
@@ -723,10 +743,10 @@ export default defineComponent({
       });
     },
     getFunctions() {
-      const page = this.paginationUsersTable.page
-      const rowsPerPage = this.paginationUsersTable.rowsPerPage
+      const page = this.pagination.page
+      const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
-      const sortBy = this.paginationUsersTable.sortBy
+      const sortBy = this.pagination.sortBy
       const opt = {
         route: "/desktop/classes/getFunctions",
         body: {
@@ -743,10 +763,10 @@ export default defineComponent({
       });
     },
     getUsersNotInClass() {
-      const page = this.paginationUsersTable.page
-      const rowsPerPage = this.paginationUsersTable.rowsPerPage
+      const page = this.pagination.page
+      const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
-      const sortBy = this.paginationUsersTable.sortBy
+      const sortBy = this.pagination.sortBy
       const opt = {
         route: "/desktop/classes/getUsersNotInClass",
         body: {
@@ -760,14 +780,14 @@ export default defineComponent({
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
         this.childrenList = r.data[0].list
-        r.data[0].count[0] ? this.paginationUsersTable.rowsNumber = r.data[0].count[0].count : this.paginationUsersTable.rowsNumber = 0
+        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
       });
     },
     getChildrenNotInClass() {
-      const page = this.paginationChildrenTable.page
-      const rowsPerPage = this.paginationChildrenTable.rowsPerPage
+      const page = this.pagination.page
+      const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
-      const sortBy = this.paginationChildrenTable.sortBy
+      const sortBy = this.pagination.sortBy
       const opt = {
         route: "/desktop/classes/getChildrenNotInClass",
         body: {
@@ -781,7 +801,7 @@ export default defineComponent({
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
         this.childrenList = r.data[0].list
-        r.data[0].count[0] ? this.paginationChildrenTable.rowsNumber = r.data[0].count[0].count : this.paginationChildrenTable.rowsNumber = 0
+        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
       });
     },
     getClassDetailById() {
