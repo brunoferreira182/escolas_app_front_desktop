@@ -303,7 +303,7 @@ export default defineComponent({
       this.postData.detail.forEach(item => {
         if(item.type === 'image') {
           if (item.value === null) {
-            this.$q.notify('Erro ao criar postagem, verifique se todos os campos estão preenchidos.')
+            this.$q.notify('Erro ao criar postagem, insira uma imagem.')
             return
           }
           files.push({file:item.value,name:'postImage'})

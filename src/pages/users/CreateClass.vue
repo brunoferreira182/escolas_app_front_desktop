@@ -94,9 +94,6 @@ export default defineComponent({
   mounted() {
     this.$q.loading.hide();
   },
-  beforeMount() {
-
-  },
   methods: {
     createNewClass() {
       const opt = {

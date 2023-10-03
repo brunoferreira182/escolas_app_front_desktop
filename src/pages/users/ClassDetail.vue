@@ -35,15 +35,10 @@
             rounded
             color="primary"
             unelevated
+            @click="updateClassDetail"
             no-caps
-          >
-            {{
-              $route.path === "/users/classDetail"
-                ? "Salvar"
-                : "Criar"
-            }}
-            turma
-          </q-btn>
+            label="Salvar"
+          />
         </div>
       </div>
       <q-separator class="q-mx-md" />
@@ -96,6 +91,11 @@
                 hint="Ano vigente"
                 v-model="yearSelected"
               />
+              <q-file
+                label="Foto da turma - Clique aqui para escolher uma imagem"
+                outlined
+                v-model="classImg"
+              />
             </div>
             <q-dialog v-model="dialogInactiveClass" @hide="dialogInactiveClass = false">
               <q-card style="border-radius: 1rem">
@@ -137,7 +137,7 @@
                 v-model="selectedFilter"
                 :options="filterUserOrChildOptions"
                 :option-value="(item) => item.type"
-                @update:model-value="selectedFilter.type === 'user' ? getUsersNotInClass() : getChildrenNotInClass()"
+                @update:model-value="selectedFilter.type === 'user' ? getUsers() : getChildrenNotInClass()"
               ></q-select>
               <div class="text-h5 q-mt-lg">
                 {{ selectedFilter === 'Aluno' || this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
@@ -258,7 +258,6 @@
             <div class="col-6 q-gutter-md" align="start">
               <q-table
                 flat class="bg-accent"
-                title="Usuários"
                 :columns="columnsData"
                 row-key="_id"
                 virtual-scroll
@@ -278,7 +277,7 @@
                     <div class="col" >
                       <q-input
                         v-if="selectedFilter.type === 'user' || selectedFilter === 'Usuário'"
-                        @keyup="getUsersNotInClass()"
+                        @keyup="getUsers()"
                         outlined
                         dense
                         debounce="300"
@@ -485,6 +484,7 @@ export default defineComponent({
       semesterSelected: '',
       typeSelected: '',
       isActive: null,
+      classImg: null,
       filterUserOrChildOptions: [
         {label: 'Aluno', type: 'child'},
         {label: 'Usuário', type: 'user'},
@@ -497,12 +497,6 @@ export default defineComponent({
         { label: 'Semestre 1', semester: 1},
         { label: 'Semestre 2', semester: 2 },
       ],
-      // paginationUsersTable: {
-      //   page: 1,
-      //   rowsPerPage: 10,
-      //   rowsNumber: 0,
-      //   sortBy: "",
-      // },
       pagination: {
         page: 1,
         rowsPerPage: 10,
@@ -539,7 +533,6 @@ export default defineComponent({
   },
   methods: {
     clkOpenDialogInsertFamilyMember(child){
-      console.log(child)
       this.dialogInsertFamilyMemberIntoClass.open = true
       this.dialogInsertFamilyMemberIntoClass.data = child
     },
@@ -556,7 +549,6 @@ export default defineComponent({
       this.dialogManageUserOrChild.data = {}
     },
     clkManageChildOrUser(e, r){
-      console.log(r, 'rowwwww' )
       this.dialogManageUserOrChild.data = r
       this.dialogManageUserOrChild.open = true
       switch(r.userId || r.childId){
@@ -573,7 +565,7 @@ export default defineComponent({
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       if(this.selectedFilter.type === 'user' || this.selectedFilter === 'Usuário'){
-        this.getUsersNotInClass()
+        this.getUsers()
       }else if(this.selectedFilter.type === 'child' || this.selectedFilter === 'Aluno'){
         this.getChildrenNotInClass();
       }
@@ -659,7 +651,7 @@ export default defineComponent({
           if(this.dialogRemoveUserInClass.type === 'user'){
             this.$q.notify('Usuário removido com sucesso' )
             this.clearDialog()
-            this.getUsersNotInClass()
+            this.getUsers()
             this.getClassDetailById()
             return
           }
@@ -667,6 +659,40 @@ export default defineComponent({
           this.clearDialog()
           this.$q.notify('Aluno removido com sucesso' )
           this.getChildrenNotInClass()
+        }
+      });
+    },
+    updateClassDetail() {
+      const files = [{file:this.classImg,name:'classImg'}]
+      const opt = {
+        route: "/desktop/classes/updateClassDetail",
+        body: {
+          classId: this.$route.query.classId,
+          className: this.classData.name,
+          classData: {},
+        },
+        file:files
+      };
+      switch(this.typeSelected){
+        case 'semesterly':
+          opt.body.classData.type = 'semesterly'
+          opt.body.classData.semesterSelected = this.semesterSelected
+          opt.body.classData.yearSelected = this.yearSelected
+        break;
+        case 'yearly':
+          opt.body.classData.type = 'yearly'
+          opt.body.classData.yearSelected = this.yearSelected
+        break;
+      }
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.$q.notify('Turma atualizada com sucesso!')
+          this.getClassDetailById()
         }
       });
     },
@@ -691,7 +717,7 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
         }else{
-          this.getUsersNotInClass()
+          this.getUsers()
           this.$q.notify('Familiar inserido na turma')
           this.getClassDetailById()
           this.clearDialog()
@@ -750,7 +776,7 @@ export default defineComponent({
       const opt = {
         route: "/desktop/classes/getFunctions",
         body: {
-          page: page,
+          page: 1,
           rowsPerPage: rowsPerPage,
           searchString: searchString,
           sortBy: sortBy,
@@ -762,13 +788,13 @@ export default defineComponent({
         this.functionsOptions = r.data
       });
     },
-    getUsersNotInClass() {
+    getUsers() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
       const opt = {
-        route: "/desktop/classes/getUsersNotInClass",
+        route: "/desktop/classes/getUsers",
         body: {
           page: page,
           rowsPerPage: rowsPerPage,
