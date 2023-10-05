@@ -30,7 +30,7 @@ export const useTableColumns = defineStore("tableColumns", {
         name: "name",
         align: "left",
         label: "Nome da postagem",
-        field: (row) => row.postData.detail[0].value,
+        field: (row) => row.postData.detail[0].value ? row.postData.detail[0].value : row.postData.resume.title,
         sortable: true,
       },
       {

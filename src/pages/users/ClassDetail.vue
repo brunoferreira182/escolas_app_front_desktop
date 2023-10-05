@@ -671,8 +671,11 @@ export default defineComponent({
           className: this.classData.name,
           classData: {},
         },
-        file:files
+        file: null
       };
+      if(this.classImg !== null){
+        opt.file = files
+      }
       switch(this.typeSelected){
         case 'semesterly':
           opt.body.classData.type = 'semesterly'
