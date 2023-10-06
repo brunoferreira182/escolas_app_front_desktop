@@ -1,26 +1,31 @@
 <template>
   <div class="q-pa-md row">
     <div class="col">
-      <div class="row">
-        <div class="col-4">
-          <div class="text-h5 q-mb-md">Criar novo post</div>
-        </div>
-        <div class="col-4 text-caption q-pa-xs">
-          <q-checkbox
+      <div class="text-h5 q-mb-md">Criar novo post</div>
+      <div class="row q-gutter-lg">
+        <q-checkbox
             dense
             label="Post em formato reduzido"
-            v-model="isPostLight"
+            v-model="isPostLite"
           >
             <q-tooltip>
               Formato reduzido é ideal para postagens informativas
             </q-tooltip>
           </q-checkbox>
-        </div>
+          <q-checkbox
+            dense
+            label="Post tipo stories"
+            v-model="isPostStories"
+          >
+            <q-tooltip>
+              Post tipo stories em formato carousel
+            </q-tooltip>
+          </q-checkbox>
       </div>
-      <div class="text-h6 q-mt-md" v-if="!isPostLight">Conteúdo</div>
+      <div class="text-h6 q-mt-md" v-if="!isPostLite">Conteúdo</div>
 
       <Container
-        v-if="!isPostLight"
+        v-if="!isPostLite"
         @drop="onDrop"
         lock-axis="y"
         :get-ghost-parent="getGhostParent"
@@ -34,7 +39,7 @@
               <span class=" column-drag-handle" style="float:left;scale: 1.5;color: #c6c6c6 ;cursor:grabbing;;padding-inline:10px;margin-left: -10px;">&#x2630;</span>
               <q-input
                 style="width: 100%;"
-                v-if="item.type === 'text' && !isPostLight"
+                v-if="item.type === 'text' && !isPostLite"
                 :label="item.label"
                 outlined
                 v-model="item.value"
@@ -60,7 +65,7 @@
               </q-input>
               <q-input
                 style="width: 100%;"
-                v-if="item.type === 'date' && isPostLight"
+                v-if="item.type === 'date' && isPostLite"
                 :label="item.label"
                 outlined
                 v-model="item.value"
@@ -134,7 +139,7 @@
         </Draggable>
       </Container>
       <!-- botões -->
-      <div class="row" v-if="!isPostLight">
+      <div class="row" v-if="!isPostLite">
         <div v-for="(item,i) in elementTypes" :key="i" class="row ">
           <q-btn
             :style="`color:white; ${item.class.includes('gold') ? 'background-color: #c2955d' : 'background-color: #222'}`"
@@ -179,16 +184,7 @@
           color="primary"
           no-caps
           unelevated
-          v-if="!isPostLight"
           @click="createPost"
-        />
-        <q-btn
-          label="Criar postagem"
-          color="primary"
-          no-caps
-          unelevated
-          v-else-if="isPostLight"
-          @click="createNewSchoolEvent"
         />
         <q-dialog v-model="cardDialog">
           <div id="post" style="width: 370px;color: #222222;background-color: #f1e6db;border-radius: 0.4rem;overflow: hidden;">
@@ -252,7 +248,8 @@ export default defineComponent({
       viewCard: false,
       image: null,
       cardDialog: false,
-      isPostLight: false,
+      isPostLite: false,
+      isPostStories: false,
       cardImgURL: '',
       postData: {
         resume: {
@@ -361,40 +358,6 @@ export default defineComponent({
     onDropReady(dropResult){
       console.log('drop ready', dropResult);
     },
-    createNewSchoolEvent () {
-      if (!this.postData.resume.img) {
-        this.$q.notify('Erro ao criar postagem, verifique se todos os campos estão preenchidos.')
-        return
-      }
-      const files = [{file:this.postData.resume.img,name:'postImage'}]
-      this.postData.detail.forEach(item => {
-        if(item.type === 'image') {
-          if (item.value === null) {
-            this.$q.notify('Erro ao criar postagem, insira uma imagem.')
-            return
-          }
-          files.push({file:item.value,name:'postImage'})
-          delete item.value
-          delete item.url
-        }
-        delete this.postData.resume.img
-      })
-      console.log(this.postData.detail)
-      console.log('array de imagens',files)
-      const opt = {
-        route: '/desktop/social/createNewSchoolEvent',
-        body: this.postData,
-        file: files
-      }
-      this.$q.loading.show()
-      useFetch(opt).then(r => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Erro ao criar postagem, tente novamente mais tarde.')
-          return
-        }this.$router.back()
-      })
-    },
     createPost () {
       if (!this.postData.resume.img) {
         this.$q.notify('Erro ao criar postagem, verifique se todos os campos estão preenchidos.')
@@ -417,8 +380,18 @@ export default defineComponent({
       console.log('array de imagens',files)
       const opt = {
         route: '/desktop/social/addNewPost',
-        body: this.postData,
+        body: {
+          postType: 'normal',
+          type: 'feed',
+          resume: this.postData.resume,
+          detail: this.postData.detail
+        },
         file: files
+      }
+      if(this.isPostLite){
+        opt.body.postType = 'lite'
+      }if(this.isPostStories){
+        opt.body.type = 'story'
       }
       this.$q.loading.show()
       useFetch(opt).then(r => {

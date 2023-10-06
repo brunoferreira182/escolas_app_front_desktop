@@ -212,6 +212,7 @@ const useUtils = {
           route: "/users/chatList",
           icon: "question_answer",
         },
+
       ],
       social: [
         {
@@ -223,6 +224,11 @@ const useUtils = {
           label: 'Gerenciar comentários',
           route: '/social/manageComments',
           icon: 'chat'
+        },
+        {
+          label: 'Lista de eventos',
+          route: '/social/schoolEventsList',
+          icon: 'format_list_bulleted'
         },
       ],
     };

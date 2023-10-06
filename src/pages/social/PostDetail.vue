@@ -65,11 +65,11 @@
                   <q-btn icon="colorize" :disabled="item.type !== 'text'" dense flat>
                     <q-menu auto-close anchor="bottom right" self="top right" style="width: 54px;overflow: hidden;">
                       <q-color
-                      no-footer
-                      v-model="item.color"
-                      no-header
-                      default-view="palette"
-                      :palette="['#c2955d', '#222222','#6e6e6e']"
+                        no-footer
+                        v-model="item.color"
+                        no-header
+                        default-view="palette"
+                        :palette="['#c2955d', '#222222','#6e6e6e']"
 
                       />
                     </q-menu>

@@ -27,12 +27,17 @@ const routes = [
       { path: '/users/createClass', component: () => import('pages/users/CreateClass.vue') },
       { path: '/users/classDetail', component: () => import('pages/users/ClassDetail.vue') },
 
+
+
       //social
       { path: '/social', redirect: '/social/PostsList' },
       { path: '/social/postsList', component: () => import('pages/social/PostsList.vue') },
       { path: '/social/createNewPost', component: () => import('pages/social/CreateNewPost.vue') },
       { path: '/social/postDetail', component: () => import('pages/social/PostDetail.vue') },
       { path: '/social/manageComments', component: () => import('pages/social/ManageComments.vue') },
+      { path: '/social/createNewSchoolEvent', component: () => import('pages/social/CreateNewSchoolEvent.vue') },
+      { path: '/social/schoolEventsList', component: () => import('pages/social/SchoolEventsList.vue') },
+      // { path: '/social/classDetail', component: () => import('pages/social/ClassDetail.vue') },
 
     ]
   },
