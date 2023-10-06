@@ -1,5 +1,5 @@
 //////////// VARIAVEIS DA APLICACAO //////
-const MODE_MASTER_SERVER = "darta";
+const MODE_MASTER_SERVER = "tiago";
 const COMPANY_ID = 1;
 // NAO ALTERAR //
 const MODE_IFRAME = MODE_MASTER_SERVER;
@@ -8,7 +8,7 @@ const MODE_APP_SERVER = "local";
 const PROJECT_NAME = "escolas_app";
 const DEFAULT_SERVER_NAME = "application";
 const SYSTEM_COMPLETE = false;
-
+const MODE_SERVER = 'app'
 export {
   MODE_MASTER_SERVER,
   COMPANY_ID,
@@ -18,4 +18,5 @@ export {
   PROJECT_NAME,
   DEFAULT_SERVER_NAME,
   SYSTEM_COMPLETE,
+  MODE_SERVER,
 };

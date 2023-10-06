@@ -2,7 +2,7 @@ import axios from 'axios'
 import { LocalStorage, Loading, Notify } from 'quasar'
 import CryptoJS from 'crypto-js'
 import { masterServerRoute } from './masterServerRoutes.js'
-import { PROJECT_NAME, MODE_APP_SERVER, DEFAULT_SERVER_NAME, COMPANY_ID } from './variables.js'
+import { PROJECT_NAME, MODE_APP_SERVER, DEFAULT_SERVER_NAME, COMPANY_ID, MODE_SERVER } from './variables.js'
 
 const useFetch = async ({
   project,
@@ -69,6 +69,9 @@ const useFetch = async ({
   //////////////////////////////////////////////////
 
   if (destinationUrl) routeMasterServer = destinationUrl;
+
+  /////// tirando do master server
+  if (MODE_SERVER !== 'master') routeMasterServer += route
 
   let ret;
   try {

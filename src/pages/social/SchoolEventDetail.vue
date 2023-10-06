@@ -3,18 +3,42 @@
     <q-page>
       <div class="q-pa-md q-ml-sm row justify-between">
         <div class="col-6 text-h5 text-capitalize">
-          Novo evento
+          {{ eventName }}
         </div>
         <div class="col text-right">
           <q-btn
-            @click="createNewSchoolEvent"
+            v-if="isActive === 1"
+            @click="dialogInactiveEvent = true"
+            rounded
+            outline
+            color="red-8"
+            unelevated
+            no-caps
+            class="q-pa-sm"
+          >
+            Inativar evento
+          </q-btn>
+          <q-btn
+            v-if="isActive === 0"
+            @click="dialogInactiveEvent = true"
+            rounded
+            outline
+            color="green-8"
+            unelevated
+            no-caps
+            class="q-pa-sm"
+          >
+            Ativar evento
+          </q-btn>
+          <q-btn
+            @click="updateSchoolEvent"
             rounded
             color="primary"
             unelevated
             no-caps
           >
             {{
-              $route.path === "/social/eventDetail"
+              $route.path === "/social/schoolEventDetail"
                 ? "Salvar"
                 : "Criar"
             }}
@@ -26,7 +50,7 @@
       <div class="row justify-around q-pa-md" >
         <div class="col-12 q-gutter-md" align="start">
           <div class="text-h5">
-            Preencha os dados
+            Dados do evento
           </div>
           <q-input
             outlined
@@ -46,7 +70,6 @@
           />
           <q-input
             outlined
-            mask="#.##"
             prefix="R$"
             fill-mask="0"
             reverse-fill-mask
@@ -81,6 +104,33 @@
           />
         </div>
       </div>
+      <q-dialog v-model="dialogInactiveEvent" @hide="dialogInactiveEvent = false">
+        <q-card style="border-radius: 1rem">
+          <q-card-section>
+            <div class="text-h6 text-center">
+              Tem certeza que deseja {{ isActive ? "inativar" : "ativar" }} essa
+              atividade?
+            </div>
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn
+              flat
+              label="Depois"
+              no-caps
+              color="primary"
+              @click="dialogInactiveEvent"
+            />
+            <q-btn
+              unelevated
+              rounded
+              label="Confirmar"
+              no-caps
+              color="primary"
+              @click="changeStatusSchoolEvent"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-page>
   </q-page-container>
 </template>
@@ -103,7 +153,8 @@ export default defineComponent({
         {label: 'Feed', type:'feed'},
         {label: 'Story', type:'story'},
       ],
-      eventData: {},
+      isActive: null,
+      dialogInactiveEvent: false,
     };
   },
   mounted() {
@@ -130,12 +181,38 @@ export default defineComponent({
           this.requireParentsPermission = r.data.requireParentsPermission,
           this.eventDate = r.data.eventDate,
           this.paymentValue = r.data.paymentValue,
+          this.isActive = r.data.isActive
           this.deadlinePayment = r.data.deadlinePayment,
           this.eventTypeSelected = r.data.eventTypeSelected
       });
     },
-    createNewSchoolEvent() {
-      const files = [{file:this.classImg,name:'classImg'}]
+    changeStatusSchoolEvent() {
+      const opt = {
+        route: "/desktop/social/changeStatusSchoolEvent",
+        body: {
+          schoolEventId: this.$route.query.schoolEventId
+        },
+      };
+      switch(this.isActive){
+        case 1:
+          opt.body.isActive = 'inactive'
+        break;
+        case 0:
+          opt.body.isActive = 'active'
+        break;
+      }
+      this.$q.loading.show();
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }
+          this.$router.back()
+      });
+    },
+    updateSchoolEvent() {
+      const files = [{file:this.eventImg,name:'eventImg'}]
       if(
         this.eventName === '' ||
         this.eventDescription  === '' ||
@@ -148,7 +225,7 @@ export default defineComponent({
         return
       }
       const opt = {
-        route: "/desktop/social/createNewSchoolEvent",
+        route: "/desktop/social/updateSchoolEvent",
         body: {
           eventName: this.eventName,
           eventDescription: this.eventDescription,
@@ -156,7 +233,8 @@ export default defineComponent({
           eventDate: this.eventDate,
           paymentValue: this.paymentValue,
           deadlinePayment: this.deadlinePayment,
-          type: this.eventTypeSelected
+          type: this.eventTypeSelected,
+          schoolEventId: this.$route.query.schoolEventId
         },
         file: null
       };
@@ -169,7 +247,7 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
-        } this.$q.notify('Evento criado com sucesso!')
+        } this.$q.notify('Evento atualizado com sucesso!')
           this.$router.back()
       });
     },

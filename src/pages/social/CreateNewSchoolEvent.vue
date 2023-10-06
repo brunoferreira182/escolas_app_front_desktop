@@ -111,7 +111,7 @@ export default defineComponent({
   },
   methods: {
     createNewSchoolEvent() {
-      const files = [{file:this.classImg,name:'classImg'}]
+      const files = [{file:this.eventImg,name:'eventImg'}]
       if(
         this.eventName === '' ||
         this.eventDescription  === '' ||
