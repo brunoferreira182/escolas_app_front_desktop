@@ -20,7 +20,7 @@
           <div class="flex row q-gutter-sm items-center text-right">
             <div class="col">
               <q-input
-                @keyup="getChildEvents"
+                @keyup="getSchoolEvents"
                 outlined
                 dense
                 debounce="300"
@@ -123,26 +123,26 @@ export default defineComponent({
     this.$q.loading.hide();
   },
   beforeMount() {
-    this.getChildEvents();
+    this.getSchoolEvents();
   },
   methods: {
     clkOpenEventDetail(e, r){
-      const childEventId = r._id
-      this.$router.push('/admin/eventDetail?childEventId=' + childEventId)
+      const schoolEventId = r._id
+      this.$router.push('/social/schoolEventDetail?schoolEventId=' + schoolEventId)
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
-      this.getChildEvents();
+      this.getSchoolEvents();
     },
-    getChildEvents() {
+    getSchoolEvents() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
       const opt = {
-        route: "/desktop/adm/getChildEvents",
+        route: "/desktop/social/getSchoolEvents",
         body: {
           page: page,
           rowsPerPage: rowsPerPage,
@@ -151,8 +151,8 @@ export default defineComponent({
         },
       };
       useFetch(opt).then((r) => {
-        this.eventsList = r.data[0].list
-        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
+        this.schoolEvents = r.data.list
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });
     },
 

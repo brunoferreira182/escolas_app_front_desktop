@@ -4,17 +4,17 @@ export const useTableColumns = defineStore("tableColumns", {
   state: () => ({
     schoolEvents: [
       {
-        name: "name",
+        name: "eventName",
         align: "left",
         label: "Nome do evento",
-        field: "name",
+        field: "eventName",
         sortable: true,
       },
       {
-        name: "description",
+        name: "eventDescription",
         align: "left",
         label: "Descrição",
-        field: "description",
+        field: "eventDescription",
         sortable: true,
       },
       {

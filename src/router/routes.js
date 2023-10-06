@@ -37,7 +37,7 @@ const routes = [
       { path: '/social/manageComments', component: () => import('pages/social/ManageComments.vue') },
       { path: '/social/createNewSchoolEvent', component: () => import('pages/social/CreateNewSchoolEvent.vue') },
       { path: '/social/schoolEventsList', component: () => import('pages/social/SchoolEventsList.vue') },
-      // { path: '/social/classDetail', component: () => import('pages/social/ClassDetail.vue') },
+      { path: '/social/schoolEventDetail', component: () => import('pages/social/SchoolEventDetail.vue') },
 
     ]
   },
