@@ -5,7 +5,7 @@
         <div class="col-6 text-h5 text-capitalize">
           {{ eventName }}
         </div>
-        <div class="col text-right">
+        <div class="col text-right q-gutter-x-sm">
           <q-btn
             v-if="isActive === 1"
             @click="dialogInactiveEvent = true"

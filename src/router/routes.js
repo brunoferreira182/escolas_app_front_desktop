@@ -38,7 +38,9 @@ const routes = [
       { path: '/social/createNewSchoolEvent', component: () => import('pages/social/CreateNewSchoolEvent.vue') },
       { path: '/social/schoolEventsList', component: () => import('pages/social/SchoolEventsList.vue') },
       { path: '/social/schoolEventDetail', component: () => import('pages/social/SchoolEventDetail.vue') },
-
+      { path: '/social/notesList', component: () => import('pages/social/NotesList.vue') },
+      { path: '/social/createNewNote', component: () => import('pages/social/CreateNewNote.vue') },
+      { path: '/social/noteDetail', component: () => import('pages/social/NoteDetail.vue') },
     ]
   },
   {

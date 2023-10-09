@@ -228,7 +228,12 @@ const useUtils = {
         {
           label: 'Lista de eventos',
           route: '/social/schoolEventsList',
-          icon: 'format_list_bulleted'
+          icon: 'event'
+        },
+        {
+          label: 'Lista de recados',
+          route: '/social/notesList',
+          icon: 'note'
         },
       ],
     };

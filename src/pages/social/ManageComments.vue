@@ -50,7 +50,7 @@
         </div>
       </div>
       <div v-else class="text-subtitle1">
-        Nenhum comentário nesta postagem <q-icon name="warning" size="sm" color="red-8"/>
+        Nenhum comentário registrado <q-icon name="warning" size="sm" color="red-8"/>
       </div>
     </div>
 
