@@ -181,7 +181,7 @@ const useUtils = {
     const obj = {
       admin: [
         {
-          label: "Tipos de funções",
+          label: "Funções",
           route: "/admin/functionsTypesList",
           icon: "format_list_numbered",
         },

@@ -39,7 +39,7 @@
             <q-input
               outlined
               readonly
-              v-model="userData.user "
+              v-model="userData.user"
               label="Usuário"
             />
           </div>

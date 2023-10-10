@@ -3,7 +3,7 @@
     <q-page>
       <q-table
         flat class="bg-accent"
-        title="Tipos de funções"
+        title="Funções"
         :columns="columnsData"
         :rows="functionsTypesList"
         row-key="_id"

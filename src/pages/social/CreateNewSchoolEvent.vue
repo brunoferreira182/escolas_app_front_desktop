@@ -87,7 +87,6 @@
 <script>
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
-import { formToJSON } from "axios";
 export default defineComponent({
   name: "CreateNewSchoolEvent",
   data() {
