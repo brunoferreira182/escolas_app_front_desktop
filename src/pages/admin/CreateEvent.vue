@@ -31,6 +31,7 @@
           <q-input
             outlined
             label="Nome da atividade"
+            hint="Ex: Brincou, dormiu, comeu..."
             v-model="eventName"
           />
           <q-input

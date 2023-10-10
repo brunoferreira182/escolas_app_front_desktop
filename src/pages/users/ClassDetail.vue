@@ -129,21 +129,27 @@
         <q-tab-panel name="manageClass" class="no-padding">
           <div class="row justify-around q-pa-md" >
             <div class="col-6 q-gutter-md" align="start">
-              <q-select
-                outlined
-                dense
-                label="Filtro"
-                debounce="300"
-                v-model="selectedFilter"
-                :options="filterUserOrChildOptions"
-                :option-value="(item) => item.type"
-                @update:model-value="selectedFilter.type === 'user' ? getUsers() : getChildrenNotInClass()"
-              ></q-select>
-              <div class="text-h5 q-mt-lg">
-                {{ selectedFilter === 'Aluno' || this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
-                <q-btn icon="history" flat color="primary">
-                  <q-tooltip>Histórico</q-tooltip>
-                </q-btn>
+              <div class="row q-pt-md">
+                <div class="col-6">
+                  <div class="text-h5">
+                    {{ selectedFilter === 'Aluno' || this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
+                    <q-btn icon="history" flat color="primary">
+                      <q-tooltip>Histórico</q-tooltip>
+                    </q-btn>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <q-select
+                    outlined
+                    dense
+                    label="Filtro"
+                    debounce="300"
+                    v-model="selectedFilter"
+                    :options="filterUserOrChildOptions"
+                    :option-value="(item) => item.type"
+                    @update:model-value="selectedFilter.type === 'user' ? getUsers() : getChildrenNotInClass()"
+                  ></q-select>
+                </div>
               </div>
               <div v-if="selectedFilter.type === 'user'">
                 <q-item

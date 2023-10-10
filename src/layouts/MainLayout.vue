@@ -293,7 +293,7 @@ export default defineComponent({
     }
     utils.getPermissions().then((r) => {
       this.permissions = r.data;
-      this.activeRightDrawer = this.permissions[0].id;
+      this.permissions[0].id ? this.activeRightDrawer = this.permissions[0].id  : this.activeRightDrawer = 0
       if (
         this.$route.path === "/" ||
         this.$route.path === "/plans" ||

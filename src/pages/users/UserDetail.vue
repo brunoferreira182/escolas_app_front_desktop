@@ -20,7 +20,7 @@
       <q-separator class="q-mx-md"></q-separator>
       <div class="row justify-between items-start">
         <div class="col-6 q-pa-md ">
-          <div class="text-grey-8 text-h6 q-pa-xs">
+          <div class="text-grey-8 text-h6">
             Informações
           </div>
           <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
@@ -51,9 +51,6 @@
         <div class="col-6 q-pa-md q-gutter-md">
           <div class="text-grey-8 text-h6 q-px-xs">Permissões:</div>
           <div  v-if="allPermissions && allPermissions.length">
-            <div class="text-caption text-grey-8 q-ma-none q-mt-sm q-px-md" >
-              Gerencie as permissões deste usuário
-            </div>
             <div class="visions-field q-mt-none row">
               <div
                 v-for="permission in allPermissions"

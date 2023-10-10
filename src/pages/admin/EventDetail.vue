@@ -57,6 +57,7 @@
             outlined
             label="Nome da atividade"
             v-model="eventName"
+            hint="Ex: Brincou, dormiu, comeu..."
           />
           <q-input
             outlined

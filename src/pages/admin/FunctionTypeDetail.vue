@@ -43,7 +43,7 @@
                 ? "Salvar"
                 : "Criar"
             }}
-            tipo de função
+            função
           </q-btn>
         </div>
       </div>
@@ -55,7 +55,8 @@
           </div>
           <q-input
             outlined
-            label="Nome do tipo de função"
+            label="Nome da função"
+            hint="Ex: Representante de classe, professor(a)"
             v-model="functionName"
           />
           <q-input
