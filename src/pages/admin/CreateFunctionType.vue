@@ -64,6 +64,10 @@ export default defineComponent({
   },
   methods: {
     createFunction() {
+      if(this.functionName === '' || this.functionDescription === ''){
+        this.$q.notify('Preencha todos os campos para prosseguir.')
+        return
+      }
       const opt = {
         route: "/desktop/adm/createFunction",
         body: {

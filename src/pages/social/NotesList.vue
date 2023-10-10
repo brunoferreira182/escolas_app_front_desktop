@@ -2,7 +2,8 @@
   <q-page-container class="no-padding">
     <q-page>
       <q-table
-        flat class="bg-accent"
+        flat
+        class="bg-accent"
         title="Recados"
         :columns="columnsData"
         :rows="notesList"

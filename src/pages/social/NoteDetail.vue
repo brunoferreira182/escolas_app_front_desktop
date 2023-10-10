@@ -195,7 +195,7 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
-        } this.$q.notify('Recado criado com sucesso!')
+        } this.$q.notify('Recado atualizado com sucesso!')
           this.$router.back()
       });
     },

@@ -59,6 +59,10 @@ export default defineComponent({
   },
   methods: {
     createChildEvents() {
+      if(this.eventName === '' || this.eventDescription === ''){
+        this.$q.notify('Preencha todos os campos para prosseguir.')
+        return
+      }
       const opt = {
         route: "/desktop/adm/createChildEvents",
         body: {
