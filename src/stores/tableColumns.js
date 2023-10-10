@@ -11,10 +11,10 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
       {
-        name: "noteDescription",
+        name: "label",
         align: "left",
-        label: "Descrição",
-        field: "noteDescription",
+        label: "Tempo de expiração",
+        field: (row) => row.remaningDate.label,
         sortable: true,
       },
       {
