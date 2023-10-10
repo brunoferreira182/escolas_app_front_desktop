@@ -281,11 +281,15 @@ export default defineComponent({
       })
     },
     toggleFilter(filter) {
+      for (const key in this.selectedFilters) {
+        if (key !== filter) {
+          this.selectedFilters[key] = false;
+        }
+      }
       this.selectedFilters[filter] = !this.selectedFilters[filter];
       this.getUsersListByFilter({ callback: filter });
     },
     getUsersListByFilter(button) {
-      console.log(button)
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
