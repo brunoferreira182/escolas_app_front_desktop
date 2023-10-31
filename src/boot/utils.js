@@ -203,6 +203,11 @@ const useUtils = {
           icon: "group",
         },
         {
+          label: "Lista de Crianças",
+          route: "/users/childrenList",
+          icon: "child_care",
+        },
+        {
           label: "Lista de turmas",
           route: "/users/classesList",
           icon: "school",

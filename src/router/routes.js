@@ -26,6 +26,8 @@ const routes = [
       { path: '/users/classesList', component: () => import('pages/users/ClassesList.vue') },
       { path: '/users/createClass', component: () => import('pages/users/CreateClass.vue') },
       { path: '/users/classDetail', component: () => import('pages/users/ClassDetail.vue') },
+      { path: '/users/childrenList', component: () => import('pages/users/ChildrenList.vue') },
+      { path: '/users/childDetail', component: () => import('pages/users/ChildDetail.vue') },
 
 
 

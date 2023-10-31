@@ -3,18 +3,8 @@
     <q-page >
       <div class="q-pa-md q-ml-sm row justify-between">
         <div class="col-6 text-h5 text-capitalize">
-          {{ userData.name }}
-          <div class="text-caption">Dados de usuário</div>
-        </div>
-        <div class="col q-gutter-sm text-right">
-          <q-chip
-            v-if="userData.status"
-            color="green-8"
-            outline
-            size="medium"
-          >
-            {{ userData.status.label }}
-          </q-chip>
+          {{ childData.name }}
+          <div class="text-caption">Dados da criança</div>
         </div>
       </div>
       <q-separator class="q-mx-md"></q-separator>
@@ -23,70 +13,50 @@
           <div class="text-grey-8 text-h6">
             Informações
           </div>
-          <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
+          <div class="q-gutter-lg q-py-md" v-if="childData && childData !== ''">
             <q-input
               outlined
               readonly
-              v-model="userData.email"
-              label="E-mail"
+              v-model="childData.document"
+              mask="###.###.###-##"
+              label="CPF"
             />
             <q-input
               outlined
               readonly
-              v-model="userData.phone"
-              label="Telefone"
+              v-model="childData.name"
+              label="Nome"
             />
             <q-input
               outlined
               readonly
-              v-model="userData.user"
-              label="Usuário"
+              type="date"
+              v-model="childData.birthdate"
+              label="Data de nascimento"
             />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
-            Este usuário não possui dados compartilhados <q-icon name="warning" size="sm" color="yellow-8"/>
+            Este usuário não possui dados compartilhados
+            <q-icon name="warning" size="sm" color="yellow-8"/>
           </div>
         </div>
         <q-separator vertical />
         <div class="col-6 q-pa-md q-gutter-md">
-          <div class="text-grey-8 text-h6 q-px-xs">Permissões:</div>
-          <div  v-if="allPermissions && allPermissions.length">
-            <div class="visions-field q-mt-none row">
-              <div
-                v-for="permission in allPermissions"
-                :key="permission"
-                class="col-12 q-my-xs"
-              >
-                <q-checkbox
-                  @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
-                  :label="permission.label"
-                  v-model="permission.checked"
-                />
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-grey-8">
-            Este usuário não possui permissões <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6 q-px-md">
-          <div class="text-grey-8 text-h6 q-px-xs">Crianças vinculadas:
+          <div class="text-grey-8 text-h6 q-px-xs">Responsáveis:
             <q-btn
               flat
               no-caps
               rounded
               icon="add"
               color="primary"
-              @click="dialogInsertChild = true"
+              @click="dialogInsertLegalResponsable = true"
               label="Inserir"
             />
           </div>
-          <div v-if="childrenData && childrenData.length">
+          <div v-if="responsibleData && responsibleData.length">
             <q-item
-              v-for="child in childrenData"
-              :key="child"
+              v-for="resp in responsibleData"
+              :key="resp"
               style="border-radius: 1rem;"
               class="bg-grey-3 q-ma-xs"
             >
@@ -94,12 +64,12 @@
                 <q-icon name="account_circle" size="58px" color="grey"/>
               </q-item-section>
               <q-item-section class="text-capitalize">
-                <q-item-label>{{ child.childName }}</q-item-label>
+                <q-item-label>{{ resp.responsibleName }}</q-item-label>
               </q-item-section>
               <q-item-section side >
                 <div class="text-grey-8 q-gutter-xs">
                   <q-btn
-                    @click="clkOpenDialogDeleteChildren(child)"
+                    @click="clkOpenDialogDeleteResponsable(resp)"
                     class="gt-xs"
                     size="12px"
                     color="red-8"
@@ -115,11 +85,12 @@
             </q-item>
           </div>
           <div v-else class="text-grey-8 q-px-sm">
-            Nenhum filho vinculado até o momento <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
+            Esta criança ainda não possui responsáveis vinculados
+            <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
           </div>
         </div>
       </div>
-      <q-dialog v-model="dialogInsertChild">
+      <q-dialog v-model="dialogInsertLegalResponsable" @hide="userSelected = ''">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
@@ -130,11 +101,11 @@
                 v-model="userSelected"
                 outlined
                 use-input
-                label="Buscar criança"
+                label="Buscar responsável"
                 autofocus
                 option-label="name"
-                :options="childrenList"
-                @filter="getChildren"
+                :options="parentList"
+                @filter="getUsers"
                 :option-value="(item) => item"
               >
                 <template v-slot:no-option>
@@ -157,7 +128,7 @@
             <q-card-actions align="center">
               <q-btn
                 label="Sair"
-                @click="openDialogCreateChild = false"
+                @click="dialogInsertLegalResponsable = false"
                 rounded
                 color="primary"
                 no-caps
@@ -175,16 +146,16 @@
           </div>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="dialogDeleteChildren.open" @hide="dialogDeleteChildren.data = {}">
+      <q-dialog v-model="dialogDeleteResponsable.open" @hide="dialogDeleteResponsable.data = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
-              Tem certeza que deseja remover {{ dialogDeleteChildren.data.childName }}?
+              Tem certeza que deseja remover {{ dialogDeleteResponsable.data.responsibleName }}?
             </div>
             <q-card-actions align="center">
               <q-btn
                 label="Sair"
-                @click="dialogDeleteChildren.open = false"
+                @click="dialogDeleteResponsable.open = false"
                 rounded
                 color="primary"
                 no-caps
@@ -209,51 +180,39 @@
 import { defineComponent } from 'vue'
 import useFetch from '../../boot/useFetch'
 export default defineComponent({
-  name: 'UserDetail',
+  name: 'ChildDetail',
   data() {
     return {
       userData: {},
-      permissions:[],
-      allPermissions: [],
-      childrenData: [],
-      checkedPermissionsList: [],
-      childrenList: [],
+      responsibleData:[],
       userIdSQL: '',
       isActive: 0,
       userSelected: '',
-      dialogInsertChild: false,
-      dialogDeleteChildren: {
-        open: false,
-        data: {}
-      },
+      dialogInsertLegalResponsable: false,
       childData: {
         name: '',
         document: '',
         birthdate: '',
       },
-      image: {
-        url: null,
-        blob: null,
-        name: null
+      dialogDeleteResponsable: {
+        data: {},
+        open: false
       },
     }
   },
-  mounted() {
-    this.$q.loading.hide()
-  },
   beforeMount() {
-    this.getUserDetailById()
+    this.getChildDetailById()
   },
   methods: {
-    clkOpenDialogDeleteChildren(child){
-      this.dialogDeleteChildren.data = child
-      this.dialogDeleteChildren.open = true
+    clkOpenDialogDeleteResponsable(resp){
+      this.dialogDeleteResponsable.data = resp
+      this.dialogDeleteResponsable.open = true
     },
     removeRelation(){
       const opt = {
         route: '/desktop/users/removeRelation',
         body: {
-          childId: this.dialogDeleteChildren.data._id
+          responsibleId: this.dialogDeleteResponsable.data._id
         },
       }
       this.$q.loading.show()
@@ -263,121 +222,74 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro. Tente novamente.')
           return
         }
-        this.$q.notify('Filho deletado com sucesso.')
-        this.dialogDeleteChildren.open = false
-        this.getUserDetailById()
+        this.$q.notify('Responsável deletado com sucesso.')
+        this.dialogDeleteResponsable.open = false
+        this.getChildDetailById()
       })
     },
-    getChildren(val, update, abort) {
+    createRelation() {
+      if (this.userSelected === '')
+      {
+        this.$q.notify('Selecione o responsável')
+        return
+      }
+      const opt = {
+        route: '/desktop/users/createRelation',
+        body: {
+          responsibleId: this.userSelected._id,
+          childId: this.$route.query.userId
+        },
+      }
+      useFetch(opt).then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro. Tente novamente.')
+          return
+        }
+        this.$q.notify('Responsável adicionado com sucesso.')
+        this.dialogInsertLegalResponsable = false
+        this.userSelected = ''
+        this.getChildDetailById()
+      })
+    },
+    getUsers(val, update, abort) {
       if(val.length < 3) {
         this.$q.notify('Digite no mínimo 3 caracteres')
         abort()
         return
       }
       const opt = {
-        route: "/desktop/users/getChildren",
+        route: "/desktop/users/getUsers",
         body: {
           searchString: val,
         },
       };
-      if (this.selectFilter === "Ativos") {
-        opt.body.isActive = 1;
-      } else if (this.selectFilter === "Inativos") {
-        opt.body.isActive = 0;
-      }
-      this.$q.loading.show()
+      this.$q.loading.show();
       useFetch(opt).then((r) => {
-        this.$q.loading.hide()
+        this.$q.loading.hide();
         update(() => {
-          this.childrenList = r.data;
+          this.parentList = r.data;
         })
       });
     },
-    createRelation() {
-      if (this.userSelected === '')
-      {
-        this.$q.notify('Selecione a criança')
-        return
-      }
+    getChildDetailById() {
       const opt = {
-        route: '/desktop/users/createRelation',
-        body: {
-          responsibleId: this.$route.query.userId,
-          childId: this.userSelected._id
-        },
-      }
-      useFetch(opt).then((r) => {
-        if (r.error) {
-          this.$q.notify('Ocorreu um erro. Tente novamente.')
-          return
-        }
-        this.$q.notify('Filho adicionado com sucesso.')
-        this.dialogInsertChild = false
-        this.userSelected = ''
-        this.getUserDetailById()
-      })
-    },
-    updateUserPermissions(value, evt, permission) {
-      console.log('permission', permission)
-      console.log('value', value)
-      console.log('evt', evt)
-      const isActive = value ? true : false
-      const opt = {
-        route: "/desktop/users/updateUserPermissions",
-        body: {
-          userId: this.userIdSQL,
-          permissionId: permission.id,
-          isActive
-        }
-      };
-      this.$q.loading.show()
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if (r.error) {
-          this.$q.notify("Ocorreu um erro, tente novamente por favor");
-        } else {
-          this.getUserDetailById()
-        }
-      });
-    },
-    getUserDetailById() {
-      const opt = {
-        route: "/desktop/users/getUserDetailById",
+        route: "/desktop/users/getChildDetailById",
         body: {
           userId: this.$route.query.userId
         }
       };
+      this.$q.loading.show()
       useFetch(opt).then((r) => {
+        this.$q.loading.hide()
         if (r.error) {
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
-          this.userData = r.data.userData
-          this.childrenData = r.data.childrenData
-          r.data.allPermissions ? this.allPermissions = r.data.allPermissions :
-          this.allPermissions = [],
-          this.userIdSQL = r.data.userId
-          this.checkedPermissionsList = r.data.permissions
-          this.allPermissions.forEach((all, i) => {this.allPermissions[i].checked = false;})
-          this.allPermissions.forEach((all, i) => {
-            this.checkedPermissionsList.forEach((checked) => {
-              if (all.id === checked.id) {
-                this.allPermissions[i].checked = true;
-              }
-            });
-          });
+          this.childData = r.data.userData
+          this.responsibleData = r.data.responsibleData
         }
       });
     },
   }
 })
 </script>
-<style scoped>
-.visions-field {
-  border: 1px solid #c2c2c2;
-  padding: 7px;
-  border-radius: 0.2rem;
-  max-height: 300px;
-  overflow-y: auto;
-}
-</style>
 
