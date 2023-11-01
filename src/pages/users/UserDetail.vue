@@ -1,7 +1,17 @@
 <template>
   <q-page-container class="no-padding">
     <q-page >
-      <div class="q-pa-md q-ml-sm row justify-between">
+      <div class="q-pa-md row justify-between">
+        <q-btn
+          icon="arrow_back_ios"
+          flat
+          dense
+          @click="$router.back()"
+        >
+          <q-tooltip>
+            Voltar
+          </q-tooltip>
+        </q-btn>
         <div class="col-6 text-h5 text-capitalize">
           {{ userData.name }}
           <div class="text-caption">Dados de usuário</div>

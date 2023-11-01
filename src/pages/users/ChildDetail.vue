@@ -1,7 +1,17 @@
 <template>
   <q-page-container class="no-padding">
     <q-page >
-      <div class="q-pa-md q-ml-sm row justify-between">
+      <div class="q-pa-md row">
+        <q-btn
+          icon="arrow_back_ios"
+          flat
+          dense
+          @click="$router.back()"
+        >
+          <q-tooltip>
+            Voltar
+          </q-tooltip>
+        </q-btn>
         <div class="col-6 text-h5 text-capitalize">
           {{ childData.name }}
           <div class="text-caption">Dados da criança</div>
@@ -49,7 +59,7 @@
               rounded
               icon="add"
               color="primary"
-              @click="dialogInsertLegalResponsable = true"
+              @click="dialogInsertResponsable = true"
               label="Inserir"
             />
           </div>
@@ -90,63 +100,71 @@
           </div>
         </div>
       </div>
-      <q-dialog v-model="dialogInsertLegalResponsable" @hide="userSelected = ''">
+      <q-dialog v-model="dialogInsertResponsable" @hide="clearInsertResponsableDialog()" @before-show="getUserRelationType()">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
-          <div >
-            <div class="text-h6 text-center">
-              Adicionar
-            </div>
-            <q-card-section class="q-gutter-md">
-              <q-select
-                v-model="userSelected"
-                outlined
-                use-input
-                label="Buscar responsável"
-                autofocus
-                option-label="name"
-                :options="parentList"
-                @filter="getUsers"
-                :option-value="(item) => item"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      Nenhum resultado
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template v-slot:option="scope">
-                  <q-item v-bind="scope.itemProps">
-                    <q-item-section>
-                      <q-item-label>{{ scope.opt.name }}</q-item-label>
-                      <q-item-label caption>{{ scope.opt.document }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </q-card-section>
-            <q-card-actions align="center">
-              <q-btn
-                label="Sair"
-                @click="dialogInsertLegalResponsable = false"
-                rounded
-                color="primary"
-                no-caps
-                flat
-              />
-              <q-btn
-                label="Concluir"
-                @click="createRelation"
-                rounded
-                color="primary"
-                no-caps
-                unelevated
-              />
-            </q-card-actions>
+          <div class="text-h6 text-center">
+            Adicionar
           </div>
+          <q-card-section class="q-gutter-md">
+            <q-select
+              v-model="userSelected"
+              outlined
+              use-input
+              label="Buscar responsável"
+              autofocus
+              option-label="name"
+              :options="parentList"
+              @filter="getUsers"
+              :option-value="(item) => item"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    Nenhum resultado
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    <q-item-label caption>{{ scope.opt.document }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              v-model="relationTypeSelected"
+              outlined
+              label="Tipo de responsável"
+              autofocus
+              option-label="label"
+              :options="relationTypeList"
+              :option-value="(item) => item"
+              hint="Informe o vínculo parental com a criança"
+            />
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn
+              label="Sair"
+              @click="dialogInsertResponsable = false"
+              rounded
+              color="primary"
+              no-caps
+              flat
+            />
+            <q-btn
+              label="Concluir"
+              @click="createRelation"
+              rounded
+              color="primary"
+              no-caps
+              unelevated
+            />
+          </q-card-actions>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="dialogDeleteResponsable.open" @hide="dialogDeleteResponsable.data = {}">
+      <q-dialog v-model="dialogDeleteResponsable.open" @hide="dialogDeleteResponsable.data = {}" >
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
@@ -185,10 +203,13 @@ export default defineComponent({
     return {
       userData: {},
       responsibleData:[],
+      parentList:[],
+      relationTypeSelected: '',
+      relationTypeList: [],
       userIdSQL: '',
       isActive: 0,
       userSelected: '',
-      dialogInsertLegalResponsable: false,
+      dialogInsertResponsable: false,
       childData: {
         name: '',
         document: '',
@@ -207,6 +228,23 @@ export default defineComponent({
     clkOpenDialogDeleteResponsable(resp){
       this.dialogDeleteResponsable.data = resp
       this.dialogDeleteResponsable.open = true
+    },
+    clearInsertResponsableDialog(){
+      this.userSelected = ''
+      this.relationTypeSelected = ''
+      this.dialogInsertResponsable = false
+    },
+    getUserRelationType(){
+      const opt = {
+        route: "/desktop/users/getUserRelationType",
+      };
+      useFetch(opt).then((r) => {
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente por favor')
+          return
+        }
+        this.relationTypeList = r.data
+      })
     },
     removeRelation(){
       const opt = {
@@ -228,14 +266,15 @@ export default defineComponent({
       })
     },
     createRelation() {
-      if (this.userSelected === '')
+      if (this.userSelected === '' || this.relationTypeSelected === '')
       {
-        this.$q.notify('Selecione o responsável')
+        this.$q.notify('Selecione o responsável e o tipo')
         return
       }
       const opt = {
         route: '/desktop/users/createRelation',
         body: {
+          responsibleTypeId: this.relationTypeSelected._id,
           responsibleId: this.userSelected._id,
           childId: this.$route.query.userId
         },
@@ -246,8 +285,7 @@ export default defineComponent({
           return
         }
         this.$q.notify('Responsável adicionado com sucesso.')
-        this.dialogInsertLegalResponsable = false
-        this.userSelected = ''
+        this.clearInsertResponsableDialog()
         this.getChildDetailById()
       })
     },

@@ -17,18 +17,7 @@
         v-model:pagination="pagination"
         @request="nextPage">
         <template #top-right>
-          <div class="row q-gutter-sm items-center text-right">
-            <div class="col">
-              <q-select
-                outlined
-                dense
-                debounce="300"
-                stack-label
-                v-model="selectFilter"
-                :options="selectStatus"
-                @update:model-value="getChildrenList"
-              />
-            </div>
+          <div class="row items-center text-right">
             <div class="col">
               <q-input
                 @keyup="getChildrenList"
@@ -65,36 +54,8 @@
             </div>
           </q-td>
         </template>
-        <template #body-cell-status="props">
-          <q-td :props="props">
-            <q-chip
-              outline
-              v-if="props.row.status && props.row.status.status === 'active'"
-              color="green-8"
-              size="14px"
-            >
-              Ativo
-            </q-chip>
-            <q-chip
-              outline
-              v-if="props.row.status && props.row.status.status === 'waitingApproval'"
-              color="yellow-8"
-              size="14px"
-            >
-              Aguardando aprovação
-            </q-chip>
-            <q-chip
-              outline
-              v-else-if="props.row.status && props.row.status.status === 'refused'"
-              color="red-8"
-              size="14px"
-            >
-              Recusado
-            </q-chip>
-          </q-td>
-        </template>
       </q-table>
-      <q-dialog v-model="openDialogCreateChild" persistent>
+      <q-dialog v-model="openDialogCreateChild" @hide="childData = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
@@ -165,7 +126,7 @@ export default defineComponent({
   name: "ChildrenList",
   data() {
     return {
-      columnsData: useTableColumns().usersList,
+      columnsData: useTableColumns().childrenList,
       childrenList: [],
       selectStatus: ["Ativos", "Inativos"],
       filter: "",

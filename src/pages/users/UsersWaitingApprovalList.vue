@@ -73,7 +73,7 @@
           </q-td>
         </template>
       </q-table>
-      <div class="q-gutter-md q-pa-sm">
+      <!-- <div class="q-gutter-md q-pa-sm">
         <q-chip
           v-for="button in filterBtns"
           :key="button"
@@ -87,47 +87,128 @@
         >
           <q-icon name="check" size="20px" v-if="selectedFilters[button.callback]"/>
         </q-chip>
-      </div>
-      <q-dialog v-model="dialogOpenSolicitation.open" @before-hide="clearDialogSolicitation() || getUsersList()">
-        <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
-          <div class="text-center" v-if="hideDiv">
-            <img :src="gif" />
-          </div>
-          <div class="fade" v-if="!hideDiv">
-            <div class="text-h6 text-center">
-              Como deseja proceder com essa solicitação?
-            </div>
-            <q-card-actions align="center">
-              <div class="row justify-center full-width">
-                <div class="col-10" v-if="dialogOpenSolicitation.data.type === 'user'">
-                  <q-btn
-                    v-for="btn in buttonsUser"
-                    :key="btn"
-                    :label="btn.label"
-                    class="full-width q-ma-sm text-subtitle1"
-                    :color="btn.color"
-                    @click="changeStatus(btn)"
-                    outline
-                    no-caps
-                    unelevated
-                  />
-                </div>
-                <div class="col-10 " v-else-if="dialogOpenSolicitation.data.type === 'child'">
-                  <q-btn
-                    v-for="btn in buttonsChild"
-                    :key="btn"
-                    :label="btn.label"
-                    class="full-width q-ma-sm text-subtitle1"
-                    :color="btn.color"
-                    @click="changeStatus(btn)"
-                    outline
-                    no-caps
-                    unelevated
-                  />
-                </div>
+      </div> -->
+      <q-dialog v-model="dialogOpenSolicitation.open" @before-hide="clearDialogSolicitation() || getUsersList()" @show="getUserRelationType()">
+        <q-card
+          style="border-radius: 1rem; width: 480px; padding: 10px;"
+        >
+          <q-carousel
+            v-model="userApprovalStep"
+            transition-prev="slide-right"
+            transition-next="slide-left"
+            animated
+            :height="`${userApprovalStep === 'approval' ? '480px' : '640px'}`"
+          >
+            <q-carousel-slide name="approval" >
+              <div class="text-center text-subtitle1">
+                Passo 1 de 2
               </div>
-            </q-card-actions>
-          </div>
+              <div class="text-h6 text-center q-pt-md">
+                Como deseja proceder com essa solicitação?
+              </div>
+              <q-card-actions align="center" class="q-pt-lg">
+                <div class="row justify-center">
+                  <div class="col-10" v-if="dialogOpenSolicitation.data.type === 'user'">
+                    <q-btn
+                      v-for="btn in buttonsUser"
+                      :key="btn"
+                      :label="btn.label"
+                      class="full-width q-ma-sm text-subtitle1"
+                      :color="btn.color"
+                      @click="changeStatus(btn)"
+                      outline
+                      no-caps
+                      unelevated
+                    />
+                  </div>
+                </div>
+              </q-card-actions>
+            </q-carousel-slide>
+            <q-carousel-slide name="askInsertChild"  class="no-padding ">
+              <div class="text-center q-pa-md text-subtitle1">
+                Passo 2 de 2
+              </div>
+              <div class="text-h6 text-center q-px-md">
+                Gostaria de vincular uma criança no familiar {{ dialogOpenSolicitation.data.name }}?
+              </div>
+              <q-card-section class="q-gutter-md q-mx-md">
+                <q-select
+                  v-model="relationTypeSelected"
+                  outlined
+                  label="Tipo de responsável"
+                  autofocus
+                  option-label="label"
+                  :options="relationTypeList"
+                  :option-value="(item) => item"
+                  hint="Informe o vínculo parental com a criança"
+                />
+                <q-input
+                  label="Preencha o CPF"
+                  outlined
+                  mask="###.###.###-##"
+                  hint="Informe o CPF da criança"
+                  v-model="childData.document"
+                >
+                  <template v-slot:append>
+                    <q-btn
+                      flat
+                      @click="verifyIfChildExist"
+                      color="orange-8"
+                      rounded
+                      icon="published_with_changes">
+                      <q-tooltip>
+                        Verificar se a criança já existe
+                      </q-tooltip>
+                    </q-btn>
+                  </template>
+                </q-input>
+                <q-input
+                  label="Preencha o nome"
+                  hint="Nome completo da criança"
+                  outlined
+                  v-model="childData.name"
+                />
+                <q-input
+                  label="Preencha a data de nascimento"
+                  outlined
+                  type="date"
+                  v-model="childData.birthdate"
+                />
+                <q-file
+                  v-model="image.blob"
+                  label="Clique para inserir foto"
+                  outlined
+                  clearable
+                  accept=".png, .jpg, image/*"
+                  max-files="1"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="photo_camera" />
+                  </template>
+                </q-file>
+              </q-card-section>
+              <q-card-actions align="center">
+                <div class="q-gutter-x-lg">
+                  <q-btn
+                    label="Depois"
+                    @click="openDialogCreateChild = false"
+                    rounded
+                    color="primary"
+                    no-caps
+                    flat
+                  />
+                  <q-btn
+                    label="Concluir"
+                    @click="createRelation"
+                    rounded
+                    color="primary"
+                    no-caps
+                    unelevated
+                  />
+                </div>
+              </q-card-actions>
+            </q-carousel-slide>
+          </q-carousel>
         </q-card>
       </q-dialog>
     </q-page>
@@ -136,20 +217,20 @@
 <script>
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
-import gif from 'assets/gif.gif'
 import { useTableColumns } from "stores/tableColumns";
-
 export default defineComponent({
   name: "UsersWaitingApprovalList",
   data() {
     return {
-      gif,
       columnsData: useTableColumns().usersList,
       usersList: [],
       organismsConfigsNamesList: [],
       hideDiv: false,
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
+      userApprovalStep: 'approval',
+      relationTypeSelected: '',
+      relationTypeList:[],
       filterRow: [],
       buttonsUser: [
         {label: 'Aprovar como pai', color: 'primary', type: 'user', callback: 'parentAproval'},
@@ -157,10 +238,10 @@ export default defineComponent({
         {label: 'Aprovar como ambos', color: 'primary', type: 'user', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', type: 'user', callback: 'refused'},
       ],
-      buttonsChild: [
-        {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
-        {label: 'Recusar', color: 'red-8', type: 'child', callback: 'refused'},
-      ],
+      // buttonsChild: [
+      //   {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
+      //   {label: 'Recusar', color: 'red-8', type: 'child', callback: 'refused'},
+      // ],
       filterBtns: [
         {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
         {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
@@ -180,6 +261,17 @@ export default defineComponent({
         parent: false,
         child: false,
       },
+      childData: {
+        name: '',
+        document: '',
+        birthdate: '',
+        childId: null,
+      },
+      image: {
+        url: null,
+        blob: null,
+        name: null
+      },
       userPermissionsOptions: [],
     };
   },
@@ -191,10 +283,24 @@ export default defineComponent({
     this.getUserPermissionsOptions()
   },
   methods: {
+    getUserRelationType(){
+      const opt = {
+        route: "/desktop/users/getUserRelationType",
+      };
+      useFetch(opt).then((r) => {
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente por favor')
+          return
+        }
+        this.relationTypeList = r.data
+      })
+    },
     clearDialogSolicitation(){
       this.dialogOpenSolicitation.open = false
       this.dialogOpenSolicitation.data = {}
+      this.childData = {}
       this.hideDiv = false
+      this.userApprovalStep = 'approval'
     },
     clkOpenSolicitation(e, r){
       switch(!r.status || r.status.status){
@@ -215,6 +321,69 @@ export default defineComponent({
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersList();
+    },
+    verifyIfChildExist(){
+      if(this.childData.document === ''){
+        this.$q.notify('Preencha o CPF')
+        return
+      }if(this.childData.document.length < 12){
+        this.$q.notify('Preencha todos os dígitos do CPF')
+        return
+      }else{
+        const opt = {
+          route: "/desktop/users/verifyIfChildExist",
+          body: {
+            document: this.childData.document
+          }
+        };
+        useFetch(opt).then((r) => {
+          if(r.error){
+            this.$q.notify('Ocorreu um erro, tente novamente por favor')
+            return
+          }
+          else{
+            !r.data ?
+            this.$q.notify({
+              message: 'Nenhuma criança encontrada',
+              color: 'red-8'
+            }) :
+              this.childData.name = r.data.name
+              this.childData.birthdate = r.data.birthdate
+              this.childData.childId = r.data._id
+              this.$q.notify({
+                message: 'Criança encontrada!',
+                color: 'green-8'
+            })
+          }
+        })
+      }
+    },
+    createRelation(){
+      if(
+        this.relationTypeSelected === '' ||
+        this.childData.document === '' ||
+        this.childData.name === '' ||
+        this.childData.birthdate === ''
+      ){
+        this.$q.notify('Preencha todos os dados')
+        return
+      }
+      const opt = {
+        route: '/desktop/users/createRelation',
+        body: {
+          responsibleTypeId: this.relationTypeSelected._id,
+          responsibleId: this.dialogOpenSolicitation.data._id,
+          childId: this.childData.childId
+        },
+      }
+      useFetch(opt).then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro. Tente novamente.')
+          return
+        }
+        this.$q.notify('Criança vinculada com sucesso.')
+        this.clearDialogSolicitation()
+      })
     },
     changeStatus(btn){
       const opt = {
@@ -261,11 +430,17 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente por favor')
           return
-        }
-        this.hideDiv = true;
-        setTimeout(() => {
+        }if(btn.callback === 'internalApproval'){
           this.clearDialogSolicitation()
-        }, 3800);
+          this.$q.notify('Usuário aprovado!!')
+          return
+        }if(btn.callback === 'refused'){
+          this.clearDialogSolicitation()
+          this.$q.notify('Usuário reprovado!!')
+          return
+        }
+        this.$q.notify('Responsável vinculado!')
+        this.userApprovalStep = 'askInsertChild'
       })
     },
     getUserPermissionsOptions(){
