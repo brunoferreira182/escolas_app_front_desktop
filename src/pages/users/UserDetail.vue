@@ -129,7 +129,7 @@
           </div>
         </div>
       </div>
-      <q-dialog v-model="dialogInsertChild">
+      <q-dialog v-model="dialogInsertChild" @before-show="getUserRelationType()">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
@@ -163,6 +163,16 @@
                   </q-item>
                 </template>
               </q-select>
+              <q-select
+                v-model="relationTypeSelected"
+                outlined
+                label="Tipo de responsável"
+                autofocus
+                option-label="label"
+                :options="relationTypeList"
+                :option-value="(item) => item"
+                hint="Informe o vínculo parental com a criança"
+              />
             </q-card-section>
             <q-card-actions align="center">
               <q-btn
@@ -246,6 +256,8 @@ export default defineComponent({
         blob: null,
         name: null
       },
+      relationTypeList: [],
+      relationTypeSelected: '' ,
     }
   },
   mounted() {
@@ -255,6 +267,18 @@ export default defineComponent({
     this.getUserDetailById()
   },
   methods: {
+    getUserRelationType(){
+      const opt = {
+        route: "/desktop/users/getUserRelationType",
+      };
+      useFetch(opt).then((r) => {
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente por favor')
+          return
+        }
+        this.relationTypeList = r.data
+      })
+    },
     clkOpenDialogDeleteChildren(child){
       this.dialogDeleteChildren.data = child
       this.dialogDeleteChildren.open = true
@@ -304,16 +328,17 @@ export default defineComponent({
       });
     },
     createRelation() {
-      if (this.userSelected === '')
+      if (this.userSelected === '' || this.relationTypeSelected === '')
       {
-        this.$q.notify('Selecione a criança')
+        this.$q.notify('Selecione a criança e o tipo de responsável')
         return
       }
       const opt = {
         route: '/desktop/users/createRelation',
         body: {
           responsibleId: this.$route.query.userId,
-          childId: this.userSelected._id
+          childId: this.userSelected._id,
+          responsibleTypeId: this.relationTypeSelected._id
         },
       }
       useFetch(opt).then((r) => {
@@ -324,6 +349,7 @@ export default defineComponent({
         this.$q.notify('Filho adicionado com sucesso.')
         this.dialogInsertChild = false
         this.userSelected = ''
+        this.relationTypeSelected = ''
         this.getUserDetailById()
       })
     },
