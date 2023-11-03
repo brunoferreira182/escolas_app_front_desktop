@@ -233,7 +233,7 @@ export default defineComponent({
       relationTypeList:[],
       filterRow: [],
       buttonsUser: [
-        {label: 'Aprovar como pai', color: 'primary', type: 'user', callback: 'parentAproval'},
+        {label: 'Aprovar como familiar', color: 'primary', type: 'user', callback: 'parentAproval'},
         {label: 'Aprovar como interno', color: 'primary', type: 'user', callback: 'internalApproval'},
         {label: 'Aprovar como ambos', color: 'primary', type: 'user', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', type: 'user', callback: 'refused'},
@@ -242,10 +242,10 @@ export default defineComponent({
       //   {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
       //   {label: 'Recusar', color: 'red-8', type: 'child', callback: 'refused'},
       // ],
-      filterBtns: [
-        {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
-        {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
-      ],
+      // filterBtns: [
+      //   {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
+      //   {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
+      // ],
       selectFilter: null,
       dialogOpenSolicitation: {
         open: false,
