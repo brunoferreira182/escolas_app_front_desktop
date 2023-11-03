@@ -37,20 +37,14 @@
             <q-input
               outlined
               readonly
-              v-model="userData.email"
-              label="E-mail"
+              v-model="userData.document"
+              label="CPF"
             />
             <q-input
               outlined
               readonly
               v-model="userData.phone"
               label="Telefone"
-            />
-            <q-input
-              outlined
-              readonly
-              v-model="userData.user"
-              label="Usuário"
             />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
@@ -105,6 +99,7 @@
               </q-item-section>
               <q-item-section class="text-capitalize">
                 <q-item-label>{{ child.childName }}</q-item-label>
+                <q-item-label caption>{{ child.responsibleLabel }}</q-item-label>
               </q-item-section>
               <q-item-section side >
                 <div class="text-grey-8 q-gutter-xs">
@@ -354,9 +349,6 @@ export default defineComponent({
       })
     },
     updateUserPermissions(value, evt, permission) {
-      console.log('permission', permission)
-      console.log('value', value)
-      console.log('evt', evt)
       const isActive = value ? true : false
       const opt = {
         route: "/desktop/users/updateUserPermissions",
@@ -388,7 +380,7 @@ export default defineComponent({
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
           this.userData = r.data.userData
-          this.childrenData = r.data.childrenData
+          this.childrenData = r.data.childData
           r.data.allPermissions ? this.allPermissions = r.data.allPermissions :
           this.allPermissions = [],
           this.userIdSQL = r.data.userId

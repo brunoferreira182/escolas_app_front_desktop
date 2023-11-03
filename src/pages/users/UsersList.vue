@@ -140,7 +140,7 @@ export default defineComponent({
         {label: 'Aprovar como ambos', color: 'primary', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', callback: 'refuse'},
       ],
-      selectFilter: null,
+      selectFilter: 'Ativos',
       dialogOpenSolicitation: {
         open: false,
         data: {},

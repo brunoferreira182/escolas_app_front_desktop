@@ -75,6 +75,8 @@
               </q-item-section>
               <q-item-section class="text-capitalize">
                 <q-item-label>{{ resp.responsibleName }}</q-item-label>
+                <q-item-label>{{ resp.responsiblePhone }}</q-item-label>
+                <q-item-label caption class="text-grey-8">{{ resp.responsibleLabel }}</q-item-label>
               </q-item-section>
               <q-item-section side >
                 <div class="text-grey-8 q-gutter-xs">
