@@ -408,12 +408,12 @@
                   v-model="familiarSelected"
                   outlined
                   label="Nome do familiar"
-                  option-label="parentName"
+                  option-label="responsibleName"
                   hint="Selecione o familiar que será representante de classe"
                   map-options
                   emit-value
                   :options="childFamilyOptions"
-                  :option-value="(item) => item.parentId"
+                  :option-value="(item) => item.responsibleId"
                 >
                   <template v-slot:no-option>
                     <q-item>
@@ -425,8 +425,8 @@
                   <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
-                        <q-item-label>{{ scope.opt.parentName }}</q-item-label>
-                        <q-item-label caption>{{ scope.opt.parentPhone }}</q-item-label>
+                        <q-item-label>{{ scope.opt.responsibleName }}</q-item-label>
+                        <q-item-label caption>{{ scope.opt.responsibleLabel }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -602,7 +602,7 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro ao tentar exibir os familiares, tente novamente mais tarde.')
           return
         }else{
-          this.childFamilyOptions = r.data.list
+          this.childFamilyOptions = r.data.parents
         }
       });
     },
