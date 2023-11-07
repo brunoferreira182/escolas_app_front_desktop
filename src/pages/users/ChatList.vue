@@ -5,28 +5,16 @@
         <div class="col-4">
           <div>
             <div class="text-h6 q-ma-sm q-pb-xs" style="margin-right: auto;">Conversas</div>
-            <q-input
-              v-model="search"
-              @keyup="getClientsList()"
-              outlined
-              dense
-              type="search"
-              class="q-mx-sm"
-              placeholder="Buscar usuários"
-            >
+            <q-input v-model="search" @keyup="getUsersList()" outlined dense type="search" class="q-mx-sm"
+              placeholder="Buscar usuários">
               <template v-slot:append>
-                <q-icon name="search" />
+                <q-icon name="search" @click="getUsersList()"/>
               </template>
             </q-input>
             <q-list class="q-mt-sm" v-if="resumeMessagesList.length > 0 && search.length === 0">
               <q-scroll-area style="height: 84.85vh;">
-                <q-item
-                  class="q-px-none q-py-sm"
-                  v-for="(item,i) in resumeMessagesList"
-                  :key="i"
-                  @click="clkContact(item.userId, i, 'fromList')"
-                  clickable
-                >
+                <q-item class="q-px-none q-py-sm" v-for="(item, i) in resumeMessagesList" :key="i"
+                  @click="clkContact(item.userId, i, 'fromList')" clickable>
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>
                       <q-img src="../../assets/default-avatar.svg"></q-img>
@@ -41,28 +29,23 @@
                         {{ item.lastMessage.text }}
                       </div>
                       <div v-else>
-                        <div  v-if="item.lastMessage.file">
-                          <i>{{ item.lastMessage.file.includes('image') ? 'Enviou uma imagem' : 'Enviou um arquivo.'}}</i>
+                        <div v-if="item.lastMessage.file">
+                          <i>{{ item.lastMessage.file.includes('image') ? 'Enviou uma imagem' : 'Enviou um arquivo.' }}</i>
 
                         </div>
                       </div>
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side class="q-mr-md">
-                    <q-badge v-if="item.lastMessage.internalRead === 0" color="blue-4">{{item.count}}</q-badge>
+                    <q-badge v-if="item.lastMessage.internalRead === 0" color="blue-4">{{ item.count }}</q-badge>
                   </q-item-section>
                 </q-item>
               </q-scroll-area>
             </q-list>
             <q-list v-if="clientsList.length > 0 && search.length > 0" class="q-mt-sm">
               <q-scroll-area style="height: 84.85vh;">
-                <q-item
-                  class="q-px-none q-mr-sm"
-                  v-for="(client,i) in clientsList"
-                  :key="i"
-                  @click="clkContact(client.userId)"
-                  clickable
-                >
+                <q-item class="q-px-none q-mr-sm" v-for="(client, i) in clientsList" :key="i"
+                  @click="clkContact(client.userId)" clickable>
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>
                       <q-img src="../../assets/default-avatar.svg"></q-img>
@@ -74,91 +57,54 @@
                 </q-item>
               </q-scroll-area>
             </q-list>
-            <div
-              v-if="clientsList.length === 0 && search.length > 0"
-              class="text-center q-mt-xl text-subtitle1 q-mx-md text-grey-8"
-            >
+            <div v-if="clientsList.length === 0 && search.length > 0"
+              class="text-center q-mt-xl text-subtitle1 q-mx-md text-grey-8">
               Não foram encontrados clientes.
             </div>
 
           </div>
         </div>
         <div class="col-8" style="height: 95.3vh;">
-          <div
-            @click="clkUserProfile(selectedClient.userId)"
-            style="height:6%;display:flex;align-items: center;padding-left: 20px; gap: 15px;border-bottom: 1px ridge #e1e1e1;"
-          >
+          <div @click="clkUserProfile(selectedClient.userId)"
+            style="height:6%;display:flex;align-items: center;padding-left: 20px; gap: 15px;border-bottom: 1px ridge #e1e1e1;">
             <q-avatar v-if="selectedClient">
               <q-img src="../../assets/default-avatar.svg"></q-img>
             </q-avatar>
-            <div v-if="selectedClient" class="text-h6" >
+            <div v-if="selectedClient" class="text-h6">
               {{ selectedClient.name }}
             </div>
           </div>
-          <div style="background-color: #f9f9f9; height: 94%;position: relative;width: 100%;border-left: 1px ridge #e1e1e1;">
-            <div v-if="!selectedClient" style="position: absolute;top: 42%;" class="full-width text-center text-h6 text-grey-8">
+          <div
+            style="background-color: #f9f9f9; height: 94%;position: relative;width: 100%;border-left: 1px ridge #e1e1e1;">
+            <div v-if="!selectedClient" style="position: absolute;top: 42%;"
+              class="full-width text-center text-h6 text-grey-8">
               Selecione um usuário para começar a conversar
             </div>
-            <q-scroll-area v-if="messagesLoaded"  ref="chatscrollarea" style="height: 100%;padding-bottom: 75px;">
+            <q-scroll-area v-if="messagesLoaded" ref="chatscrollarea" style="height: 100%;padding-bottom: 75px;">
               <div style="display: flex;flex-direction: column;width: 100%;padding-inline: 10px;" class="q-mt-sm">
-                <q-chat-message
-                  v-for="message in messagesList"
-                  :key="message._id"
-                  :name="message.createdBy.name"
-                  avatar="../../assets/default-avatar.svg"
-                  :sent="message.sender !== 'client' ? true : false"
-                  :stamp="message.createdAt.createdAtLocale.split(' ')[1].slice(0,5)"
-                  @click="clkMessage(message)"
-                >
+                <q-chat-message v-for="message in messagesList" :key="message._id" :name="message.createdBy.name"
+                  avatar="../../assets/default-avatar.svg" :sent="message.sender !== 'client' ? true : false"
+                  :stamp="message.createdAt.createdAtLocale.split(' ')[1].slice(0, 5)" @click="clkMessage(message)">
                   <div v-if="!message.messageData.file">{{ message.messageData.text }}</div>
                   <div v-else>
-                    <img :src="`${$attachmentsAddress()}${message.messageData.file.filename}`"/>
+                    <img :src="`${$attachmentsAddress()}${message.messageData.file.filename}`" />
                   </div>
                 </q-chat-message>
               </div>
             </q-scroll-area>
-            <div style="position: absolute;bottom: 0;width: 100%; background-color: #d2dbe1; display: flex;align-items: center; gap: 12px; padding-inline:12px;">
-              <q-input
-                v-if="inputStatus === 'message'"
-                style="width: 100%; margin: 10px;"
-                @keyup.enter="newBkoMessage"
-                v-model="currentMessage"
-                bg-color="white"
-                class="q-ma-sm full-width"
-                outlined
-                :readonly="!selectedClient"
-              />
-              <q-file
-                v-if="inputStatus === 'file'"
-                style="width: 100%; margin: 10px;"
-                ref="filepicker"
-                outlined
-                bg-color="white"
-                v-model="currentFile"
-                label="Clique aqui para escolher um arquivo"
-              />
-              <q-btn
-                v-if="currentMessage.length === 0 && inputStatus === 'message'"
-                @click="clkAttach"
-                round
-                color="primary"
-                icon="attach_file"
-                :disabled="!selectedClient"
-              />
-              <q-btn
-                v-if="inputStatus === 'file'"
-                @click="inputStatus = 'message';currentFile = null"
-                round
-                color="primary"
-                icon="close"
-              />
-              <q-btn
-                v-if="currentMessage.length > 0 || currentFile !== null"
-                @click="newBkoMessage"
-                round
-                color="primary"
-                icon="send"
-              />
+            <div
+              style="position: absolute;bottom: 0;width: 100%; background-color: #d2dbe1; display: flex;align-items: center; gap: 12px; padding-inline:12px;">
+              <q-input v-if="inputStatus === 'message'" style="width: 100%; margin: 10px;" @keyup.enter="newBkoMessage"
+                v-model="currentMessage" bg-color="white" class="q-ma-sm full-width" outlined
+                :readonly="!selectedClient" />
+              <q-file v-if="inputStatus === 'file'" style="width: 100%; margin: 10px;" ref="filepicker" outlined
+                bg-color="white" v-model="currentFile" label="Clique aqui para escolher um arquivo" />
+              <q-btn v-if="currentMessage.length === 0 && inputStatus === 'message'" @click="clkAttach" round
+                color="primary" icon="attach_file" :disabled="!selectedClient" />
+              <q-btn v-if="inputStatus === 'file'" @click="inputStatus = 'message'; currentFile = null" round
+                color="primary" icon="close" />
+              <q-btn v-if="currentMessage.length > 0 || currentFile !== null" @click="newBkoMessage" round color="primary"
+                icon="send" />
             </div>
           </div>
         </div>
@@ -170,19 +116,16 @@
           </q-card-section>
           <q-card-section v-if="dialogDetailMessage.messageData">
             <div v-if="!dialogDetailMessage.messageData.messageData.file">
-              <div class="text-subtitle1">Mensagem de texto: <br/> {{ dialogDetailMessage.messageData.messageData.text }}</div>
+              <div class="text-subtitle1">Mensagem de texto: <br /> {{ dialogDetailMessage.messageData.messageData.text }}
+              </div>
             </div>
             <div v-else>
-              <q-img v-if="dialogDetailMessage.messageData.messageData.file.mimetype.includes('image')" :src="`${$attachmentsAddress()}${dialogDetailMessage.messageData.messageData.file.filename}`"/>
+              <q-img v-if="dialogDetailMessage.messageData.messageData.file.mimetype.includes('image')"
+                :src="`${$attachmentsAddress()}${dialogDetailMessage.messageData.messageData.file.filename}`" />
               <div style="text-decoration: underline;" v-else>Arquivo ou PDF enviado</div>
               <q-btn
                 @click="downloadFile(`${$attachmentsAddress()}${dialogDetailMessage.messageData.messageData.file.filename}`)"
-                class="q-mt-md "
-                color="primary"
-                outline
-                no-caps
-                size="large"
-              >
+                class="q-mt-md " color="primary" outline no-caps size="large">
                 Abrir arquivo
               </q-btn>
             </div>
@@ -193,7 +136,8 @@
           <q-card-section>
             <div style="display: flex;justify-content: center;gap: 40px;">
               <q-btn @click="dialogDetailMessage.open = false" color="primary" flat>Fechar</q-btn>
-              <q-btn v-if="userInfo.userId === dialogDetailMessage.messageData.createdBy.userId" @click="deleteMessage(dialogDetailMessage.messageData)" color="red" flat>Apagar</q-btn>
+              <q-btn v-if="userInfo.userId === dialogDetailMessage.messageData.createdBy.userId"
+                @click="deleteMessage(dialogDetailMessage.messageData)" color="red" flat>Apagar</q-btn>
             </div>
           </q-card-section>
         </q-card>
@@ -202,7 +146,7 @@
   </q-page-container>
 </template>
 <script>
-import { date, openURL  } from 'quasar'
+import { date, openURL } from 'quasar'
 import { io } from "socket.io-client";
 import utils from "../../boot/utils"
 import useFetch from '../../boot/useFetch'
@@ -243,7 +187,7 @@ export default {
     // this.getResumeMessages()
     // this.startSocketResume()
   },
-  beforeRouteLeave () {
+  beforeRouteLeave() {
     if (this.socket.messages) this.socket.messages.disconnect()
     if (this.socket.resume) this.socket.resume.disconnect()
   },
@@ -267,23 +211,26 @@ export default {
       })
       this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
     },
-    pushMessage (msg, type) {
+    pushMessage(msg, type) {
       if (msg.createdBy.userId === this.userInfo.userId) return
       this.messagesList.push(msg)
       this.scrollToBottom()
     },
-    getClientsList () {
+    getUsersList() {
       const opt = {
-        route: '/desktop/messenger/getClientsList',
+        route: '/desktop/messenger/getUsersList',
         body: {
-          filterValue: this.search
+          page,
+          rowsPerPage,
+          searchString: this.search
         }
       }
       useFetch(opt).then(r => {
         this.clientsList = r.data
       })
+      console.log('AIAIAAIIAIAIIII')
     },
-    getMessages (id) {
+    getMessages(id) {
       this.messagesLoaded = null
       const opt = {
         route: '/desktop/messenger/getMessages',
@@ -297,12 +244,12 @@ export default {
         this.scrollToBottom()
       })
     },
-    scrollToBottom () {
+    scrollToBottom() {
       this.$nextTick(() => {
-        this.$refs.chatscrollarea.setScrollPercentage('vertical',2)
+        this.$refs.chatscrollarea.setScrollPercentage('vertical', 2)
       })
     },
-    getResumeMessages () {
+    getResumeMessages() {
       const opt = {
         route: '/desktop/messenger/getResumeMessages',
       }
@@ -310,7 +257,7 @@ export default {
         this.resumeMessagesList = r.data
       })
     },
-    newBkoMessage () {
+    newBkoMessage() {
       console.log('qualquer coisa')
       if (this.currentMessage !== '' || this.currentFile) {
         const opt = {
@@ -320,7 +267,7 @@ export default {
             text: this.currentMessage
           },
         }
-        if(this.currentFile)opt.file = [ { file: this.currentFile }, { name: 'arquivo' } ]
+        if (this.currentFile) opt.file = [{ file: this.currentFile }, { name: 'arquivo' }]
         const id = this.selectedClient.userId
         useFetch(opt).then(r => {
           this.currentMessage = ''
@@ -331,7 +278,7 @@ export default {
         })
       }
     },
-    getClientInfoById(id){
+    getClientInfoById(id) {
       console.log(id)
       const opt = {
         method: 'POST',
@@ -376,7 +323,7 @@ export default {
         this.dialogDetailMessage.messageData = null
       })
     },
-    clkAttach () {
+    clkAttach() {
       this.currentMessage = ''
       this.inputStatus = 'file'
       this.$nextTick(() => {
@@ -384,11 +331,11 @@ export default {
       });
       // fp.pickFiles()
     },
-    downloadFile (address) {
+    downloadFile(address) {
       openURL(address)
     },
-    clkUserProfile (userId) {
-      this.$router.push('/admin/userDetail?_userId=' + userId )
+    clkUserProfile(userId) {
+      this.$router.push('/admin/userDetail?_userId=' + userId)
     }
 
   }
