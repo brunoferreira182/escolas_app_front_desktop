@@ -191,7 +191,7 @@
                 <div class="q-gutter-x-lg">
                   <q-btn
                     label="Depois"
-                    @click="openDialogCreateChild = false"
+                    @click="dialogOpenSolicitation.open = false"
                     rounded
                     color="primary"
                     no-caps
@@ -238,14 +238,6 @@ export default defineComponent({
         {label: 'Aprovar como ambos', color: 'primary', type: 'user', callback: 'bothApproval'},
         {label: 'Recusar', color: 'red-8', type: 'user', callback: 'refused'},
       ],
-      // buttonsChild: [
-      //   {label: 'Aprovar como criança', color: 'primary', type:'child', callback: 'childApproval'},
-      //   {label: 'Recusar', color: 'red-8', type: 'child', callback: 'refused'},
-      // ],
-      // filterBtns: [
-      //   {label: 'Filtrar por pais', color: 'cyan-8', callback: 'parent'},
-      //   {label: 'Filtrar por crianças', color: 'pink-8', callback: 'child'},
-      // ],
       selectFilter: null,
       dialogOpenSolicitation: {
         open: false,

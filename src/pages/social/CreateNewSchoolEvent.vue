@@ -70,6 +70,19 @@
             :options="exibitionEventType"
             hint="Informe o tipo de exibição deste evento, se será postado no feed ou em forma de story"
           />
+          <q-select
+            v-if="requiresClassLink"
+            outlined
+            label="Vincular turma"
+            option-label="className"
+            emit-value
+            use-input
+            map-options
+            :option-value="(item) => item._id"
+            v-model="eventClassSelected"
+            @filter="getClassesListWithSearchString"
+            :options="classesList"
+          />
           <q-file
             label="Foto para evento - Clique aqui para escolher uma imagem"
             outlined
@@ -78,6 +91,10 @@
           <q-checkbox
             label="Requer autorização dos pais?"
             v-model="requireParentsPermission"
+          />
+          <q-checkbox
+            label="O evento está vinculado em alguma turma?"
+            v-model="requiresClassLink"
           />
         </div>
       </div>
@@ -94,11 +111,14 @@ export default defineComponent({
       eventName: '',
       eventDescription: '',
       requireParentsPermission: false,
+      requiresClassLink: false,
       eventDate: '',
       paymentValue: '',
       deadlinePayment: '',
       eventImg: null,
       eventTypeSelected: '',
+      classesList:[],
+      eventClassSelected: '',
       exibitionEventType: [
         {label: 'Feed', type:'feed'},
         {label: 'Story', type:'story'},
@@ -108,7 +128,54 @@ export default defineComponent({
   mounted() {
     this.$q.loading.hide();
   },
+  beforeMount(){
+    this.getClassesList()
+  },
   methods: {
+    getClassesListWithSearchString(val, update, abort) {
+      if(val.length < 3) {
+        this.$q.notify('Digite no mínimo 3 caracteres')
+        abort()
+        return
+      }
+      const opt = {
+        route: "/desktop/classes/getClassesList",
+        body: {
+          page: 1,
+          rowsPerPage: 10,
+          searchString: val,
+        }
+      };
+      this.$q.loading.show();
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }
+        update(() => {
+          this.classesList = r.data.list
+        })
+      });
+    },
+    getClassesList() {
+      const opt = {
+        route: "/desktop/classes/getClassesList",
+        body: {
+          page: 1,
+          rowsPerPage: 10,
+        }
+      };
+      this.$q.loading.show();
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }
+        this.classesList = r.data.list
+      });
+    },
     createNewSchoolEvent() {
       const files = [{file:this.eventImg,name:'eventImg'}]
       if(
@@ -131,10 +198,13 @@ export default defineComponent({
           eventDate: this.eventDate,
           paymentValue: this.paymentValue,
           deadlinePayment: this.deadlinePayment,
-          type: this.eventTypeSelected
+          type: this.eventTypeSelected,
         },
         file: null
       };
+      if(this.requiresClassLink === true){
+        opt.body.classId = this.eventClassSelected
+      }
       if(this.eventImg !== null){
         opt.file = files
       }
