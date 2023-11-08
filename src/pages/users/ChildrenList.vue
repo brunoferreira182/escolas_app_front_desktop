@@ -173,7 +173,7 @@ export default defineComponent({
         return
       }
       const opt = {
-        route: '/desktop/adm/createChild',
+        route: '/desktop/users/createChild',
         body: {
           childData: this.childData
         },
