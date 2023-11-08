@@ -120,7 +120,7 @@
             </q-item>
           </div>
           <div v-else class="text-grey-8 q-px-sm">
-            Nenhum filho vinculado até o momento <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
+            Nenhuma criança vinculada até o momento <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@ export default defineComponent({
       const opt = {
         route: '/desktop/users/removeRelation',
         body: {
-          childId: this.dialogDeleteChildren.data._id
+          childId: this.dialogDeleteChildren.data.childId
         },
       }
       this.$q.loading.show()
