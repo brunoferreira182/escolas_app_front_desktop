@@ -199,7 +199,7 @@
                   />
                   <q-btn
                     label="Concluir"
-                    @click="createRelation"
+                    @click="createChildAndRelation"
                     rounded
                     color="primary"
                     no-caps
@@ -350,6 +350,45 @@ export default defineComponent({
         })
       }
     },
+    createChildAndRelation() {
+      this.createChild().then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro ao adicionar a criança. Tente novamente.')
+          return
+        }
+        this.childData.childId = r.data
+        this.openDialogCreateChild = false
+        this.createRelation()
+        this.$q.notify('Criança vinculada com sucesso.')
+        this.clearDialogSolicitation()
+      })
+    },
+    createChild() {
+      if (this.childData.name === ''
+        || this.childData.document === ''
+        || this.childData.birthDayDate === ''
+        || !this.image.blob)
+      {
+        this.$q.notify('Preencha todos os dados e insira uma foto')
+        return
+      }
+      const opt = {
+        route: '/desktop/users/createChild',
+        body: {
+          childData: this.childData
+        },
+        file: [{ file: this.image.blob, name: 'userPhoto' }]
+      }
+      return useFetch(opt)
+      useFetch(opt).then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro. Tente novamente.')
+          return
+        }
+        this.$q.notify('Filho adicionado com sucesso.')
+        this.openDialogCreateChild = false
+      })
+    },
     createRelation(){
       if(
         this.relationTypeSelected === '' ||
@@ -360,6 +399,7 @@ export default defineComponent({
         this.$q.notify('Preencha todos os dados')
         return
       }
+      console.log(this.childData.childId, 'this.childData.childId')
       const opt = {
         route: '/desktop/users/createRelation',
         body: {
@@ -368,6 +408,7 @@ export default defineComponent({
           childId: this.childData.childId
         },
       }
+      return useFetch(opt)
       useFetch(opt).then((r) => {
         if (r.error) {
           this.$q.notify('Ocorreu um erro. Tente novamente.')

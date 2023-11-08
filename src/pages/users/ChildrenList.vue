@@ -103,7 +103,7 @@
               />
               <q-btn
                 label="Concluir"
-                @click="addChild"
+                @click="createChild"
                 rounded
                 color="primary"
                 no-caps
@@ -163,7 +163,7 @@ export default defineComponent({
       const userId = r._id
       this.$router.push('/users/childDetail?userId=' + userId)
     },
-    addChild() {
+    createChild() {
       if (this.childData.name === ''
         || this.childData.document === ''
         || this.childData.birthDayDate === ''
