@@ -40,8 +40,12 @@
             v-model="functionDescription"
           />
           <q-checkbox
-            label="Este usuário é administrador ?"
+            label="Este usuário é administrador?"
             v-model="isAdm"
+          />
+          <q-checkbox
+            label="Pode enviar mensagens no chat da turma"
+            v-model="canSendMessagesInClassChat"
           />
         </div>
       </div>
@@ -57,7 +61,8 @@ export default defineComponent({
     return {
       functionName: '',
       functionDescription: '',
-      isAdm: false
+      isAdm: false,
+      canSendMessagesInClassChat: false
     };
   },
   mounted() {
@@ -74,7 +79,8 @@ export default defineComponent({
         body: {
           functionName: this.functionName,
           functionDescription: this.functionDescription,
-          isAdm: this.isAdm
+          isAdm: this.isAdm,
+          canSendMessagesInClassChat: this.canSendMessagesInClassChat
         },
       };
       this.$q.loading.show();
