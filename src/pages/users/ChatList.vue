@@ -42,7 +42,7 @@
                 </q-item>
               </q-scroll-area>
             </q-list>
-            <q-list v-if="clientsList.length > 0 && search.length > 0" class="q-mt-sm">
+            <q-list v-if="clientsList.length" class="q-mt-sm">
               <q-scroll-area style="height: 84.85vh;">
                 <q-item class="q-px-none q-mr-sm" v-for="(client, i) in clientsList" :key="i"
                   @click="clkContact(client.userId)" clickable>
@@ -57,7 +57,7 @@
                 </q-item>
               </q-scroll-area>
             </q-list>
-            <div v-if="clientsList.length === 0 && search.length > 0"
+            <div v-else
               class="text-center q-mt-xl text-subtitle1 q-mx-md text-grey-8">
               Não foram encontrados clientes.
             </div>
@@ -94,7 +94,7 @@
             </q-scroll-area>
             <div
               style="position: absolute;bottom: 0;width: 100%; background-color: #d2dbe1; display: flex;align-items: center; gap: 12px; padding-inline:12px;">
-              <q-input v-if="inputStatus === 'message'" style="width: 100%; margin: 10px;" @keyup.enter="newBkoMessage"
+              <q-input v-if="inputStatus === 'message'" style="width: 100%; margin: 10px;" @keyup.enter="insertInternalMessage"
                 v-model="currentMessage" bg-color="white" class="q-ma-sm full-width" outlined
                 :readonly="!selectedClient" />
               <q-file v-if="inputStatus === 'file'" style="width: 100%; margin: 10px;" ref="filepicker" outlined
@@ -103,8 +103,8 @@
                 color="primary" icon="attach_file" :disabled="!selectedClient" />
               <q-btn v-if="inputStatus === 'file'" @click="inputStatus = 'message'; currentFile = null" round
                 color="primary" icon="close" />
-              <q-btn v-if="currentMessage.length > 0 || currentFile !== null" @click="newBkoMessage" round color="primary"
-                icon="send" />
+              <!-- <q-btn v-if="currentMessage.length > 0 || currentFile !== null" @click="insertInternalMessage" round color="primary"
+                icon="send" /> -->
             </div>
           </div>
         </div>
@@ -181,11 +181,11 @@ export default {
     if (this.$route.query.userId) {
       console.log('oi')
       const id = +this.$route.query.userId
-      // this.getMessages(id)
+      this.getMessages(id)
       this.clkContact(id, null, 'fromList')
     }
-    // this.getResumeMessages()
-    // this.startSocketResume()
+    this.getResumeMessages()
+    this.startSocketResume()
   },
   beforeRouteLeave() {
     if (this.socket.messages) this.socket.messages.disconnect()
@@ -218,24 +218,23 @@ export default {
     },
     getUsersList() {
       const opt = {
-        route: '/desktop/messenger/getUsersList',
+        route: '/desktop/users/getUsersList',
         body: {
-          page,
-          rowsPerPage,
+          page: 1,
+          rowsPerPage: 100,
           searchString: this.search
         }
       }
       useFetch(opt).then(r => {
-        this.clientsList = r.data
+        this.clientsList = r.data.list
       })
-      console.log('AIAIAAIIAIAIIII')
     },
     getMessages(id) {
       this.messagesLoaded = null
       const opt = {
         route: '/desktop/messenger/getMessages',
         body: {
-          clientId: id
+          userId: id
         }
       }
       useFetch(opt).then(r => {
@@ -257,14 +256,14 @@ export default {
         this.resumeMessagesList = r.data
       })
     },
-    newBkoMessage() {
+    insertInternalMessage() {
       console.log('qualquer coisa')
       if (this.currentMessage !== '' || this.currentFile) {
         const opt = {
-          route: '/desktop/messenger/newInternalMessage',
+          route: '/desktop/messenger/insertInternalMessage',
           body: {
-            clientId: this.selectedClient.userId,
-            text: this.currentMessage
+            userId: this.selectedClient.userId,
+            message: this.currentMessage
           },
         }
         if (this.currentFile) opt.file = [{ file: this.currentFile }, { name: 'arquivo' }]
@@ -293,6 +292,7 @@ export default {
       })
     },
     clkContact(id, i, type) {
+      console.log(id, i, type)
       // if (i >= 0) {
       //   this.resumeMessagesList[i].lastMessage.internalRead = 1
       // }

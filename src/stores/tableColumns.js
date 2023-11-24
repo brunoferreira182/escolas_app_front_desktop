@@ -34,13 +34,6 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
       {
-        name: "eventDescription",
-        align: "left",
-        label: "Descrição",
-        field: "eventDescription",
-        sortable: true,
-      },
-      {
         name: "status",
         align: "left",
         label: "Status",

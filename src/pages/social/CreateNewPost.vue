@@ -363,21 +363,19 @@ export default defineComponent({
         this.$q.notify('Erro ao criar postagem, verifique se todos os campos estão preenchidos.')
         return
       }
-      const files = [{file:this.postData.resume.img,name:'postImage'}]
+      const file = [{file:this.postData.resume.img,name:'postImage'}]
       this.postData.detail.forEach(item => {
         if(item.type === 'image') {
           if (item.value === null) {
             this.$q.notify('Erro ao criar postagem, insira uma imagem.')
             return
           }
-          files.push({file:item.value,name:'postImage'})
+          file.push({file:item.value,name:'postImage'})
           delete item.value
           delete item.url
         }
         delete this.postData.resume.img
       })
-      console.log(this.postData.detail)
-      console.log('array de imagens',files)
       const opt = {
         route: '/desktop/social/addNewPost',
         body: {
@@ -386,8 +384,11 @@ export default defineComponent({
           resume: this.postData.resume,
           detail: this.postData.detail
         },
-        file: files
       }
+      if(this.postData.resume.img !== null){
+        opt.file = file
+      }
+      console.log(opt.file, 'AQUI OPT.FILEE')
       if(this.isPostLite){
         opt.body.postType = 'lite'
       }if(this.isPostStories){

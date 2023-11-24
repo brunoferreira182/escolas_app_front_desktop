@@ -30,7 +30,6 @@ const routes = [
       { path: '/users/childDetail', component: () => import('pages/users/ChildDetail.vue') },
 
 
-
       //social
       { path: '/social', redirect: '/social/PostsList' },
       { path: '/social/postsList', component: () => import('pages/social/PostsList.vue') },

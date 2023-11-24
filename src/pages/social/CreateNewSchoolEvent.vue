@@ -59,22 +59,18 @@
             label="Data final para pagamento"
             v-model="deadlinePayment"
           />
-          <q-select
+
+          <q-file
+            label="Foto para evento - Clique aqui para escolher uma imagem"
             outlined
-            label="Tipo de anúncio"
-            option-label="label"
-            emit-value
-            map-options
-            :option-value="(item) => item.type"
-            v-model="eventTypeSelected"
-            :options="exibitionEventType"
-            hint="Informe o tipo de exibição deste evento, se será postado no feed ou em forma de story"
+            v-model="eventImg"
           />
           <q-select
             v-if="requiresClassLink"
             outlined
             label="Vincular turma"
             option-label="className"
+            hint="Escreva no nome da turma"
             emit-value
             use-input
             map-options
@@ -82,11 +78,6 @@
             v-model="eventClassSelected"
             @filter="getClassesListWithSearchString"
             :options="classesList"
-          />
-          <q-file
-            label="Foto para evento - Clique aqui para escolher uma imagem"
-            outlined
-            v-model="eventImg"
           />
           <q-checkbox
             label="Requer autorização dos pais?"
@@ -116,13 +107,8 @@ export default defineComponent({
       paymentValue: '',
       deadlinePayment: '',
       eventImg: null,
-      eventTypeSelected: '',
       classesList:[],
       eventClassSelected: '',
-      exibitionEventType: [
-        {label: 'Feed', type:'feed'},
-        {label: 'Story', type:'story'},
-      ],
     };
   },
   mounted() {
@@ -177,14 +163,13 @@ export default defineComponent({
       });
     },
     createNewSchoolEvent() {
-      const files = [{file:this.eventImg,name:'eventImg'}]
+      const file = [{file:this.eventImg,name:'eventImg'}]
       if(
         this.eventName === '' ||
         this.eventDescription  === '' ||
         this.eventDate === '' ||
         this.paymentValue === '' ||
-        this.deadlinePayment === '' ||
-        this.eventTypeSelected === ''
+        this.deadlinePayment === ''
       ){
         this.$q.notify('Preencha todos os campos para prosseguir')
         return
@@ -198,15 +183,13 @@ export default defineComponent({
           eventDate: this.eventDate,
           paymentValue: this.paymentValue,
           deadlinePayment: this.deadlinePayment,
-          type: this.eventTypeSelected,
         },
-        file: null
       };
       if(this.requiresClassLink === true){
         opt.body.classId = this.eventClassSelected
       }
       if(this.eventImg !== null){
-        opt.file = files
+        opt.file = file
       }
       this.$q.loading.show();
       useFetch(opt).then((r) => {
