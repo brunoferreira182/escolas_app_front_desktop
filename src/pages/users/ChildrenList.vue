@@ -165,11 +165,10 @@ export default defineComponent({
     },
     createChild() {
       if (this.childData.name === ''
-        || this.childData.document === ''
         || this.childData.birthDayDate === ''
-        || !this.image.blob)
+        )
       {
-        this.$q.notify('Preencha todos os dados e insira uma foto')
+        this.$q.notify('Preencha o nome e data de nascimento')
         return
       }
       const opt = {
@@ -177,8 +176,11 @@ export default defineComponent({
         body: {
           childData: this.childData
         },
-        file: [{ file: this.image.blob, name: 'userPhoto' }]
       }
+      if(this.image.blob !== null){
+        opt.file = [{ file: this.image.blob, name: 'userPhoto' }]
+      }
+      return useFetch(opt)
       useFetch(opt).then((r) => {
         if (r.error) {
           this.$q.notify('Ocorreu um erro. Tente novamente.')
@@ -186,9 +188,34 @@ export default defineComponent({
         }
         this.$q.notify('Filho adicionado com sucesso.')
         this.openDialogCreateChild = false
-        this.getChildrenList()
       })
     },
+    // createChild() {
+    //   if (this.childData.name === ''
+    //     || this.childData.document === ''
+    //     || this.childData.birthDayDate === ''
+    //     || !this.image.blob)
+    //   {
+    //     this.$q.notify('Preencha todos os dados e insira uma foto')
+    //     return
+    //   }
+    //   const opt = {
+    //     route: '/desktop/users/createChild',
+    //     body: {
+    //       childData: this.childData
+    //     },
+    //     file: [{ file: this.image.blob, name: 'userPhoto' }]
+    //   }
+    //   useFetch(opt).then((r) => {
+    //     if (r.error) {
+    //       this.$q.notify('Ocorreu um erro. Tente novamente.')
+    //       return
+    //     }
+    //     this.$q.notify('Filho adicionado com sucesso.')
+    //     this.openDialogCreateChild = false
+    //     this.getChildrenList()
+    //   })
+    // },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;
