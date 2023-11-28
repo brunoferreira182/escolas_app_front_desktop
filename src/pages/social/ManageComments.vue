@@ -1,10 +1,22 @@
 <template>
   <q-page>
     <div class="q-pa-md justify-start">
-      <div class="text-h5 q-mb-md">
-        Gerenciar comentários
+      <div class="row">
+        <q-btn
+          icon="arrow_back_ios"
+          flat
+          dense
+          @click="$router.back()"
+        >
+          <q-tooltip>
+            Voltar
+          </q-tooltip>
+        </q-btn>
+        <div class="col-6 text-h5 text-capitalize q-px-md">
+          Gerenciar comentários
         <span class="text-subtitle1" v-if="$route.query.postId && comments[0]">
           - {{ comments[0].postTitle }}</span>
+        </div>
       </div>
       <div v-if="comments.length > 0">
         <div v-for="(comment,i) in comments" :key="i"  style="margin-block: 5px;">
@@ -49,7 +61,7 @@
           </q-card>
         </div>
       </div>
-      <div v-else class="text-subtitle1">
+      <div v-else class="text-subtitle1 q-px-xl">
         Nenhum comentário registrado <q-icon name="warning" size="sm" color="red-8"/>
       </div>
     </div>
