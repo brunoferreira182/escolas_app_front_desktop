@@ -1,7 +1,7 @@
 <template>
   <q-page-container class="no-padding">
     <q-page >
-      <div class="q-pa-md row">
+      <div class= "row no-wrap q-pa-md">
         <q-btn
           icon="arrow_back_ios"
           flat
@@ -12,38 +12,48 @@
             Voltar
           </q-tooltip>
         </q-btn>
-        <div class="col-6 text-h5 text-capitalize">
-          {{ childData.name }}
-          <div class="text-caption">Dados da criança</div>
-        </div>
+          <div class="col-6 text-h5 text-capitalize">
+            {{ childData.name }}
+            <div class="text-caption">Dados da criança</div>
+          </div>
       </div>
       <q-separator class="q-mx-md"></q-separator>
       <div class="row justify-between items-start">
         <div class="col-6 q-pa-md ">
-          <div class="text-grey-8 text-h6">
+          <div class="row justify-between text-grey-8 text-h6">
             Informações
+            <div class="row text-right">
+            <q-btn
+            @click="updateChildData()">
+              Salvar
+            </q-btn>
+          </div>
           </div>
           <div class="q-gutter-lg q-py-md" v-if="childData && childData !== ''">
             <q-input
-              outlined
-              readonly
-              v-model="childData.document"
-              mask="###.###.###-##"
-              label="CPF"
-            />
-            <q-input
-              outlined
-              readonly
-              v-model="childData.name"
-              label="Nome"
-            />
-            <q-input
-              outlined
-              readonly
-              type="date"
-              v-model="childData.birthdate"
-              label="Data de nascimento"
-            />
+                v-if="childData"
+                outlined
+                v-model="childData.document"
+                mask="###.###.###-##"
+                label="CPF"
+                :readonly="!childData"
+                :value="childData ? childData.document : ''"
+              />
+              <q-input
+                outlined
+                v-model="childData.name"
+                label="Nome"
+                :readonly="!childData"
+                :value="childData ? childData.name : ''"
+              />
+              <q-input
+                outlined
+                type="date"
+                v-model="childData.birthdate"
+                label="Data de nascimento"
+                :readonly="!childData"
+                :value="childData ? childData.birthdate : ''"
+              />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
             Este usuário não possui dados compartilhados
@@ -309,6 +319,24 @@ export default defineComponent({
         update(() => {
           this.parentList = r.data;
         })
+      });
+    },
+    updateChildData() {
+      const opt ={
+        route:"/desktop/users/updateChildData",
+        body:{
+          childId: this.$route.query.userId,
+          name: this.childData.name,
+          document: this.childData.document,
+          birthdate: this.childData.birthdate
+        }
+      }
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if (r.error) {
+          this.$q.notify("Ocorreu um erro, tente novamente por favor");
+          return
+        }
       });
     },
     getChildDetailById() {

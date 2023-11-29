@@ -80,21 +80,6 @@
               <img style="max-height: 100px;" :src="item.url" v-if="item.image">
               <hr style="width: 100%;" v-if="item.type === 'separator'">
             </div>
-            <!-- <div class="col q-ml-md items-center q-gutter-sm">
-              <q-btn icon="colorize" :disabled="item.type !== 'text'" dense flat>
-                <q-menu auto-close anchor="bottom right" self="top right" style="width: 54px;overflow: hidden;">
-                  <q-color
-                  no-footer
-                  v-model="item.color"
-                  no-header
-                  default-view="palette"
-                  :palette="['#c2955d', '#222222','#6e6e6e']"
-
-                  />
-                </q-menu>
-              </q-btn>
-              <q-btn @click="deleteItem(i)" icon="delete" dense flat></q-btn>
-            </div> -->
           </div>
         </Draggable>
       </Container>
@@ -314,7 +299,6 @@ export default defineComponent({
     },
     createUrl (item) {
       if (item.value !== '') {
-        console.log('fooi')
         item.url =  URL.createObjectURL(item.value);
         console.log(item.url)
         console.log(item.value)
@@ -386,7 +370,6 @@ export default defineComponent({
           delete item.value
           delete item.url
         }
-
       })
       console.log('ssjssh',files)
       const opt = {

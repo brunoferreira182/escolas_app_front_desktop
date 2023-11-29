@@ -716,7 +716,7 @@ export default defineComponent({
       });
     },
     addFamiliarIntoClass() {
-      if(this.familiarSelected === '' || this.functionSelected === ''){
+      if(this.familiarSelected === 'user' || this.functionSelected === ''){
         this.$q.notify('Para adicionar um representante na turma, é necessário selecioná-lo primeiro e informar sua função')
         return
       }
@@ -752,7 +752,6 @@ export default defineComponent({
         route: "/desktop/classes/addUserToClass",
         body: {
           classId: this.$route.query.classId,
-
         },
       };
       switch(this.dialogManageUserOrChild.type){
