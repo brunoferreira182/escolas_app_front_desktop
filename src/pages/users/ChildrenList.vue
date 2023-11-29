@@ -180,7 +180,7 @@ export default defineComponent({
       if(this.image.blob !== null){
         opt.file = [{ file: this.image.blob, name: 'userPhoto' }]
       }
-      return useFetch(opt)
+      // return useFetch(opt)
       useFetch(opt).then((r) => {
         if (r.error) {
           this.$q.notify('Ocorreu um erro. Tente novamente.')

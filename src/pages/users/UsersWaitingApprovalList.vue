@@ -392,11 +392,10 @@ export default defineComponent({
     createRelation(){
       if(
         this.relationTypeSelected === '' ||
-        this.childData.document === '' ||
         this.childData.name === '' ||
         this.childData.birthdate === ''
       ){
-        this.$q.notify('Preencha todos os dados')
+        this.$q.notify('Preencha nome e data de nascimento')
         return
       }
       console.log(this.childData.childId, 'this.childData.childId')

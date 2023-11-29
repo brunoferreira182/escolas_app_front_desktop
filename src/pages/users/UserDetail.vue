@@ -83,7 +83,7 @@
               rounded
               icon="add"
               color="primary"
-              @click="dialogInsertChild = true"
+              @click="dialogInsertChild.open = true"
               label="Inserir"
             />
           </div>
@@ -124,11 +124,70 @@
           </div>
         </div>
       </div>
-      <q-dialog v-model="dialogInsertChild" @before-show="getUserRelationType()">
+      <!-- <q-dialog v-model="openDialogCreateChild" @hide="childData = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
-              Adicionar
+              Adicionar criança
+            </div>
+            <q-card-section class="q-gutter-md">
+              <q-input
+                label="Preencha o CPF"
+                outlined
+                mask="###.###.###-##"
+                v-model="childData.document"
+              />
+              <q-input
+                label="Preencha o nome"
+                outlined
+                v-model="childData.name"
+              />
+              <q-input
+                label="Preencha a data de nascimento"
+                outlined
+                type="date"
+                v-model="childData.birthdate"
+              />
+              <q-file
+                v-model="image.blob"
+                label="Clique para inserir foto"
+                outlined
+                clearable
+                accept=".png, .jpg, image/*"
+                max-files="1"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="photo_camera" />
+                </template>
+              </q-file>
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn
+                label="Sair"
+                @click="openDialogCreateChild = false"
+                rounded
+                color="primary"
+                no-caps
+                flat
+              />
+              <q-btn
+                label="Concluir"
+                @click="createChild"
+                rounded
+                color="primary"
+                no-caps
+                unelevated
+
+              />
+            </q-card-actions>
+          </div>
+        </q-card>
+      </q-dialog> -->
+      <q-dialog v-model="dialogInsertChild.open" @before-show="getUserRelationType()" @hide="childData = {}">
+        <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
+          <div >
+            <div class="text-h6 text-center">
+              Adicionar criança
             </div>
             <q-card-section class="q-gutter-md">
               <q-select
@@ -168,6 +227,43 @@
                 :option-value="(item) => item"
                 hint="Informe o vínculo parental com a criança"
               />
+              <q-expansion-item
+                style="border-radius: 1rem;"
+                class="bg-grey-1"
+                label="Não encontrou a criança? Clique aqui para inserir manualmente"
+              >
+                <q-card-section class="q-gutter-md">
+                  <q-input
+                    label="Preencha o CPF"
+                    outlined
+                    mask="###.###.###-##"
+                    v-model="childData.document"
+                  />
+                  <q-input
+                    label="Preencha o nome"
+                    outlined
+                    v-model="childData.name"
+                  />
+                  <q-input
+                    label="Preencha a data de nascimento"
+                    outlined
+                    type="date"
+                    v-model="childData.birthdate"
+                  />
+                  <q-file
+                    v-model="image.blob"
+                    label="Clique para inserir foto"
+                    outlined
+                    clearable
+                    accept=".png, .jpg, image/*"
+                    max-files="1"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="photo_camera" />
+                    </template>
+                  </q-file>
+                </q-card-section>
+              </q-expansion-item>
             </q-card-section>
             <q-card-actions align="center">
               <q-btn
@@ -180,7 +276,7 @@
               />
               <q-btn
                 label="Concluir"
-                @click="createRelation"
+                @click="createChildAndRelation"
                 rounded
                 color="primary"
                 no-caps
@@ -236,7 +332,10 @@ export default defineComponent({
       userIdSQL: '',
       isActive: 0,
       userSelected: '',
-      dialogInsertChild: false,
+      dialogInsertChild: {
+        open: false,
+        data: {},
+      },
       dialogDeleteChildren: {
         open: false,
         data: {}
@@ -262,6 +361,49 @@ export default defineComponent({
     this.getUserDetailById()
   },
   methods: {
+    createChildAndRelation() {
+      this.createChild().then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro ao adicionar a criança. Tente novamente.')
+          return
+        }
+        this.userSelected = r.data
+        this.dialogInsertChild.open = false
+        this.createRelation()
+        this.$q.notify('Criança vinculada com sucesso.')
+        this.userSelected = ''
+        this.relationTypeSelected = ''
+        this.getUserDetailById()
+      })
+    },
+    createChild() {
+      if (this.childData.name === ''
+        || this.childData.birthDayDate === ''
+        )
+      {
+        this.$q.notify('Preencha o nome e data de nascimento')
+        return
+      }
+      const opt = {
+        route: '/desktop/users/createChild',
+        body: {
+          childData: this.childData
+        },
+      }
+      if(this.image.blob !== null){
+        opt.file = [{ file: this.image.blob, name: 'userPhoto' }]
+      }
+      return useFetch(opt)
+      useFetch(opt).then((r) => {
+        if (r.error) {
+          this.$q.notify('Ocorreu um erro. Tente novamente.')
+          return
+        }
+
+        this.$q.notify('Filho adicionado com sucesso.')
+        this.openDialogCreateChild.open = false
+      })
+    },
     getUserRelationType(){
       const opt = {
         route: "/desktop/users/getUserRelationType",
@@ -332,17 +474,18 @@ export default defineComponent({
         route: '/desktop/users/createRelation',
         body: {
           responsibleId: this.$route.query.userId,
-          childId: this.userSelected._id,
+          childId: this.userSelected._id ? this.userSelected._id : this.userSelected,
           responsibleTypeId: this.relationTypeSelected._id
         },
       }
+      return useFetch(opt)
       useFetch(opt).then((r) => {
         if (r.error) {
           this.$q.notify('Ocorreu um erro. Tente novamente.')
           return
         }
         this.$q.notify('Filho adicionado com sucesso.')
-        this.dialogInsertChild = false
+        this.dialogInsertChild.open = false
         this.userSelected = ''
         this.relationTypeSelected = ''
         this.getUserDetailById()
