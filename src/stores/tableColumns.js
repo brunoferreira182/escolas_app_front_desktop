@@ -110,7 +110,6 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
     ],
-
     childrenList: [
       {
         name: "name",
@@ -126,6 +125,29 @@ export const useTableColumns = defineStore("tableColumns", {
         field: "document",
         sortable: true,
       },
+    ],
+    childsList: [
+      {
+        name: "name",
+        align: "left",
+        label: "Nome de usuário",
+        field: "name",
+        sortable: true,
+      },
+      {
+        name: "document",
+        align: "left",
+        label: "CPF",
+        field: "document",
+        sortable: true,
+      },
+      {
+        name: "birthdate",
+        align: "left",
+        label: "Data de nascimento",
+        field: "birthdate",
+        sortable: true,
+      }
     ],
     usersList: [
       {

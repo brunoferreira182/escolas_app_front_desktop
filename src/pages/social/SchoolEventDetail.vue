@@ -1,6 +1,7 @@
 <template>
   <q-page-container class="no-padding">
     <q-page>
+
       <div class="q-pa-md q-ml-sm row justify-between">
         <div class="col-6 text-h5 text-capitalize">
           {{ eventName }}
@@ -48,7 +49,7 @@
       </div>
       <q-separator class="q-mx-md" />
       <div class="row justify-around q-pa-md" >
-        <div class="col-12 q-gutter-md" align="start">
+        <div class="col-12 q-gutter-md">
           <div class="text-h5">
             Dados do evento
           </div>
@@ -108,9 +109,33 @@
             label="O evento está vinculado em alguma turma?"
             v-model="requiresClassLink"
           />
-
         </div>
       </div>
+        <div class="row justify-around q-pa-md" >
+          <div class="col-12 q-gutter-md">
+            <div class="text-h6">
+              Lista de Autorizados
+            </div>
+            <q-list>
+              <q-item
+                v-for="child in childsList.list"
+                :key="child"
+                class="bg-grey-2"
+                style="border-radius: 1rem;"
+              >
+              <q-item-section>
+                {{ child.name }}
+              </q-item-section>
+              <q-item-section>
+                {{ child.document }}
+              </q-item-section>
+              <q-item-section >
+                {{ child.birthdate }}
+              </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+        </div>
       <q-dialog v-model="dialogInactiveEvent" @hide="dialogInactiveEvent = false">
         <q-card style="border-radius: 1rem">
           <q-card-section>
@@ -148,6 +173,7 @@ export default defineComponent({
   name: "SchoolEventDetail",
   data() {
     return {
+      childsList:[],
       eventName: '',
       eventDescription: '',
       requireParentsPermission: false,
@@ -170,9 +196,30 @@ export default defineComponent({
   mounted() {
     this.$q.loading.hide();
     this.getSchoolEventDetail()
+    this.getChildrenByEventId()
     this.getClassesList()
   },
   methods: {
+    getChildrenByEventId (){
+      const opt = {
+        route:"/desktop/social/getChildrenByEventId",
+        body:{
+        page : 1,
+        rowsPerPage : 50,
+        schoolEventId: this.$route.query.schoolEventId
+        },
+      };
+      this.$q.loading.show();
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        } else {
+          this.childsList = r.data
+        }
+      });
+    },
     getClassesList() {
       const opt = {
         route: "/desktop/classes/getClassesList",
