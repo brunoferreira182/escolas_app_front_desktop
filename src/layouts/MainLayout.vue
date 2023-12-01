@@ -148,45 +148,52 @@
           <div class="fit row justify-start" >
             <div class="col-3 gradient text-white text-center">
               <q-list>
-                <q-item
-                  :active="activeRightDrawer === item.id"
-                  active-class="bg-grey-3 text-primary "
-                  class="q-py-md text-center q-px-none"
-                  :style="
-                    i === indexMenu1 + 1
-                      ? 'border-radius: 0 15px 0 0'
-                      : i === indexMenu1 - 1
-                      ? 'border-radius: 0 0 15px 0'
-                      : ''
-                  "
-                  @click="clkItem(item, i)"
+                <div
                   v-for="(item, i) in permissions"
                   :key="item.id"
-                  clickable
-                  v-ripple
                 >
-                  <q-item-section class="">
-                    <q-item-label>
-                      <q-icon
-                        size="2rem"
-                        :name="item.icon"
-                        :color="
-                          activeRightDrawer === item.id
-                            ? 'primary'
-                            : 'bg-accent'
-                        "
-                      >
-                        <q-tooltip>
-                          {{ item.label }}
-                        </q-tooltip>
-                      </q-icon>
-                    </q-item-label>
+                  <q-item
+                    :active="activeRightDrawer === item.id"
+                    v-if="item.role !== 'IS_PARENT' && item.role !== 'IS_WORKER'"
+                    active-class="bg-grey-3 text-primary "
+                    class="q-py-md text-center q-px-none"
+                    :style="
+                      i === indexMenu1 + 1
+                        ? 'border-radius: 0 15px 0 0'
+                        : i === indexMenu1 - 1
+                        ? 'border-radius: 0 0 15px 0'
+                        : ''
+                    "
+                    @click="clkItem(item, i)"
 
-                    <q-item-label class="text-caption">{{
-                      item.nick
-                    }}</q-item-label>
-                  </q-item-section>
-                </q-item>
+                    clickable
+                    v-ripple
+                  >
+                    <q-item-section class="">
+                      <q-item-label>
+                        <q-icon
+                          size="2rem"
+                          :name="item.icon"
+                          :color="
+                            activeRightDrawer === item.id
+                              ? 'primary'
+                              : 'bg-accent'
+                          "
+                        >
+                          <q-tooltip >
+                            {{ item.label }}
+                          </q-tooltip>
+                        </q-icon>
+                      </q-item-label>
+
+                      <q-item-label class="text-caption">
+                        {{
+                          item.nick
+                        }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
               </q-list>
               <q-list>
                 <q-item

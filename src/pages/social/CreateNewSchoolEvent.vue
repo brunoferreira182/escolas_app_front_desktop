@@ -46,7 +46,7 @@
           />
           <q-input
             outlined
-            mask="#.##"
+            mask="#,##"
             prefix="R$"
             fill-mask="0"
             reverse-fill-mask
