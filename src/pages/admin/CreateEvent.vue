@@ -28,6 +28,7 @@
           <div class="text-h5">
             Preencha os dados
           </div>
+          <div class="no-margin q-px-md text-caption"> Atividade realizada por aluno</div>
           <q-input
             outlined
             label="Nome da atividade"
@@ -37,6 +38,7 @@
           <q-input
             outlined
             label="Descrição"
+            hint="Ex: Brincou com os colegas, Tirou soneca, Comeu todo o Almoço..."
             v-model="eventDescription"
           />
         </div>

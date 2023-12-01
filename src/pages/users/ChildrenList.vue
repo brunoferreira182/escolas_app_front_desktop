@@ -55,7 +55,7 @@
           </q-td>
         </template>
       </q-table>
-      <q-dialog v-model="openDialogCreateChild" @hide="childData = {}">
+      <q-dialog v-model="openDialogCreateChild" @hide="clearDialogSolicitation()">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
             <div class="text-h6 text-center">
@@ -188,6 +188,7 @@ export default defineComponent({
         }
         this.$q.notify('Filho adicionado com sucesso.')
         this.openDialogCreateChild = false
+        this.getChildrenList()
       })
     },
     // createChild() {
@@ -249,8 +250,13 @@ export default defineComponent({
       });
     },
     clearDialogSolicitation(){
-      this.dialogOpenSolicitation.open = false
-      this.hideDiv = false
+      this.openDialogCreateChild = false
+      this.childData.name = ''
+      this.childData.document = ''
+      this.childData.birthdate = ''
+      this.image.blob = null
+      this.image.url = null
+      this.image.name = null
     },
   },
 });
