@@ -319,6 +319,7 @@
 <script>
 import { defineComponent } from 'vue'
 import useFetch from '../../boot/useFetch'
+import utils from "../../boot/utils";
 export default defineComponent({
   name: 'UserDetail',
   data() {
@@ -492,7 +493,9 @@ export default defineComponent({
       })
     },
     updateUserPermissions(value, evt, permission) {
-      const isActive = value ? true : false
+      console.log(permission.id, 'permissio ind')
+      const isActive = value ? 1 : 0
+      console.log(isActive)
       const opt = {
         route: "/desktop/users/updateUserPermissions",
         body: {
@@ -508,6 +511,7 @@ export default defineComponent({
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
           this.getUserDetailById()
+          utils.getPermissions()
         }
       });
     },
