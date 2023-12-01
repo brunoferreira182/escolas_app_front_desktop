@@ -16,7 +16,15 @@
           {{ userData.name }}
           <div class="text-caption">Dados de usuário</div>
         </div>
-        <div class="col q-gutter-sm text-right">
+        <div class="col q-pt-sm q-gutter-sm text-right">
+            <q-btn
+            rounded
+            no-caps
+            unelevated
+            color="primary"
+            @click="updateUserData()">
+              Salvar
+            </q-btn>
           <q-chip
             v-if="userData.status"
             color="green-8"
@@ -36,15 +44,25 @@
           <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
             <q-input
               outlined
-              readonly
-              v-model="userData.document"
-              label="CPF"
+              v-model="userData.name"
+              label="Nome"
+              :readonly="!userData"
+              :value="userData ? userData.name : ''"
             />
             <q-input
               outlined
-              readonly
+              v-model="userData.document"
+              label="CPF"
+              mask="###.###.###-##"
+              :readonly="!userData"
+              :value="userData ? userData.document : ''"
+            />
+            <q-input
+              outlined
               v-model="userData.phone"
               label="Telefone"
+              :readonly="!userData"
+              :value="userData ? userData.phone : ''"
             />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
@@ -124,65 +142,6 @@
           </div>
         </div>
       </div>
-      <!-- <q-dialog v-model="openDialogCreateChild" @hide="childData = {}">
-        <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
-          <div >
-            <div class="text-h6 text-center">
-              Adicionar criança
-            </div>
-            <q-card-section class="q-gutter-md">
-              <q-input
-                label="Preencha o CPF"
-                outlined
-                mask="###.###.###-##"
-                v-model="childData.document"
-              />
-              <q-input
-                label="Preencha o nome"
-                outlined
-                v-model="childData.name"
-              />
-              <q-input
-                label="Preencha a data de nascimento"
-                outlined
-                type="date"
-                v-model="childData.birthdate"
-              />
-              <q-file
-                v-model="image.blob"
-                label="Clique para inserir foto"
-                outlined
-                clearable
-                accept=".png, .jpg, image/*"
-                max-files="1"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="photo_camera" />
-                </template>
-              </q-file>
-            </q-card-section>
-            <q-card-actions align="center">
-              <q-btn
-                label="Sair"
-                @click="openDialogCreateChild = false"
-                rounded
-                color="primary"
-                no-caps
-                flat
-              />
-              <q-btn
-                label="Concluir"
-                @click="createChild"
-                rounded
-                color="primary"
-                no-caps
-                unelevated
-
-              />
-            </q-card-actions>
-          </div>
-        </q-card>
-      </q-dialog> -->
       <q-dialog v-model="dialogInsertChild.open" @before-show="getUserRelationType()" @hide="childData = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
@@ -324,7 +283,11 @@ export default defineComponent({
   name: 'UserDetail',
   data() {
     return {
-      userData: {},
+      userData: {
+        name:'',
+        phone:'',
+        document:''
+      },
       permissions:[],
       allPermissions: [],
       childrenData: [],
@@ -362,6 +325,25 @@ export default defineComponent({
     this.getUserDetailById()
   },
   methods: {
+    updateUserData() {
+      const opt = {
+        route: "/desktop/adm/updateUserData",
+        body: {
+          userId: this.$route.query.userId,
+          name: this.userData.name,
+          document: this.userData.document,
+          phone: this.childData.phone
+        }
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if (r.error) {
+          this.$q.notify("Ocorreu um erro, tente novamente por favor");
+        }
+        this.$q.notify('Seus dados foram salvos')
+      });
+    },
     createChildAndRelation() {
       this.createChild().then((r) => {
         if (r.error) {
