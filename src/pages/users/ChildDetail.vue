@@ -16,18 +16,28 @@
             {{ childData.name }}
             <div class="text-caption">Dados da criança</div>
           </div>
+          <div class="col q-pt-sm q-gutter-sm text-right">
+          <q-btn
+          rounded
+          no-caps unelevated color="primary"
+          @click="updateChildData()">
+            Salvar
+          </q-btn>
+          </div>
       </div>
       <q-separator class="q-mx-md"></q-separator>
       <div class="row justify-between items-start">
         <div class="col-6 q-pa-md ">
           <div class="row justify-between text-grey-8 text-h6">
             Informações
-            <div class="row text-right">
+            <!-- <div class="row text-right">
             <q-btn
+            rounded
+            no-caps unelevated color="primary"
             @click="updateChildData()">
               Salvar
             </q-btn>
-          </div>
+          </div> -->
           </div>
           <div class="q-gutter-lg q-py-md" v-if="childData && childData !== ''">
             <q-input

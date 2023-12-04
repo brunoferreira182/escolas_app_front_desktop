@@ -71,6 +71,13 @@
         <q-tab-panel name="infos">
           <div class="row justify-around q-pa-md" >
             <div class="col-12 q-gutter-md" align="start">
+              <q-input
+                v-if="typeSelected === 'semesterly' || typeSelected === 'yearly'"
+                outlined
+                label="Turma"
+                hint="Nome da turma"
+                v-model="classData.name"
+              />
               <q-select
                 outlined
                 label="Tipo"
