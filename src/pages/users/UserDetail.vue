@@ -236,7 +236,7 @@
               />
               <q-btn
                 label="Concluir"
-                @click="createChildAndRelation"
+                @click="createRelation"
                 rounded
                 color="primary"
                 no-caps
@@ -462,7 +462,6 @@ export default defineComponent({
           responsibleTypeId: this.relationTypeSelected._id
         },
       }
-      return useFetch(opt)
       useFetch(opt).then((r) => {
         if (r.error) {
           this.$q.notify('Ocorreu um erro. Tente novamente.')
