@@ -21,7 +21,7 @@
           </q-btn>
           <q-btn
             v-if="isActive === 0"
-            @click="dialogInactiveEvent = true"
+            @click="dialogInactiveEvent = false"
             rounded
             outline
             color="green-8"

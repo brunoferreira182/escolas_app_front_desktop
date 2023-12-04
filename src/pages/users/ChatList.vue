@@ -11,9 +11,9 @@
                 <q-icon name="search" @click="getUsersList()"/>
               </template>
             </q-input>
-            <q-list class="q-mt-sm" v-if="resumeMessagesList.length > 0 && search.length === 0">
+            <q-list class="q-mt-sm" v-if="clientsList.length > 0 && search.length === 0">
               <q-scroll-area style="height: 84.85vh;">
-                <q-item class="q-px-none q-py-sm" v-for="(item, i) in resumeMessagesList" :key="i"
+                <q-item class="q-px-none q-py-sm" v-for="(item, i) in clientsList" :key="i"
                   @click="clkContact(item.userId, i, 'fromList')" clickable>
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>

@@ -61,6 +61,7 @@
               outlined
               v-model="userData.phone"
               label="Telefone"
+              mask="## #####-####"
               :readonly="!userData"
               :value="userData ? userData.phone : ''"
             />
