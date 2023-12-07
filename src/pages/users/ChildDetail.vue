@@ -30,40 +30,33 @@
         <div class="col-6 q-pa-md ">
           <div class="row justify-between text-grey-8 text-h6">
             Informações
-            <!-- <div class="row text-right">
-            <q-btn
-            rounded
-            no-caps unelevated color="primary"
-            @click="updateChildData()">
-              Salvar
-            </q-btn>
-          </div> -->
           </div>
           <div class="q-gutter-lg q-py-md" v-if="childData && childData !== ''">
+            <q-avatar
+              class="cursor-pointer"
+              size="150px"
+              @click="clkProfileImage"
+            >
+              <img :src="utils.makeFileUrl(childData.image)"/>
+            </q-avatar>
+            <input type="file" id="profile-image-upload" hidden  accept="image/png, image/jpeg"/>
             <q-input
-                v-if="childData"
-                outlined
-                v-model="childData.document"
-                mask="###.###.###-##"
-                label="CPF"
-                :readonly="!childData"
-                :value="childData ? childData.document : ''"
-              />
-              <q-input
-                outlined
-                v-model="childData.name"
-                label="Nome"
-                :readonly="!childData"
-                :value="childData ? childData.name : ''"
-              />
-              <q-input
-                outlined
-                type="date"
-                v-model="childData.birthdate"
-                label="Data de nascimento"
-                :readonly="!childData"
-                :value="childData ? childData.birthdate : ''"
-              />
+              outlined
+              v-model="childData.name"
+              label="Nome"
+            />
+            <q-input
+              outlined
+              v-model="childData.document"
+              mask="###.###.###-##"
+              label="CPF"
+            />
+            <q-input
+              outlined
+              type="date"
+              v-model="childData.birthdate"
+              label="Data de nascimento"
+            />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
             Este usuário não possui dados compartilhados
@@ -91,11 +84,18 @@
               class="bg-grey-3 q-ma-xs"
             >
               <q-item-section avatar>
-                <q-icon name="account_circle" size="58px" color="grey"/>
+                <q-icon
+                  name="account_circle"
+                  size="58px"
+                  color="grey"
+                  v-if="!resp.responsibleImage || resp.responsibleImage === ''"
+                />
+                <q-avatar  v-else>
+                  <img :src="utils.makeFileUrl(resp.responsibleImage)"/>
+                </q-avatar>
               </q-item-section>
-              <q-item-section class="text-capitalize">
+              <q-item-section class="text-capitalize cursor-pointer" @click="clkResponsible(resp)">
                 <q-item-label>{{ resp.responsibleName }}</q-item-label>
-                <q-item-label>{{ resp.responsiblePhone }}</q-item-label>
                 <q-item-label caption class="text-grey-8">{{ resp.responsibleLabel }}</q-item-label>
               </q-item-section>
               <q-item-section side >
@@ -216,6 +216,11 @@
     </q-page>
   </q-page-container>
 </template>
+
+<script setup>
+import utils from '../../boot/utils'
+</script>
+
 <script>
 import { defineComponent } from 'vue'
 import useFetch from '../../boot/useFetch'
@@ -245,8 +250,35 @@ export default defineComponent({
   },
   beforeMount() {
     this.getChildDetailById()
+    
+  },
+  mounted () {
+    const profileImage = document.getElementById('profile-image-upload')
+    profileImage.onchange = () => {
+      const selectedFile = profileImage.files[0];
+      this.uploadProfileImage(selectedFile)
+    }
   },
   methods: {
+    uploadProfileImage (image) {
+      const opt = {
+        route: '/desktop/users/updateProfileImage',
+        body: {
+          userId: this.$route.query.userId
+        },
+        file: [ { file: image, name: image.name } ]
+      }
+      useFetch(opt).then(r => {
+        this.childData.image = r.data.image
+      })
+    },
+    clkProfileImage () {
+      const profileImage = document.getElementById('profile-image-upload')
+      profileImage.click()
+    },
+    clkResponsible(resp) {
+      this.$router.push('/users/userDetail?userId=' + resp.responsibleId)
+    },
     clkOpenDialogDeleteResponsable(resp){
       this.dialogDeleteResponsable.data = resp
       this.dialogDeleteResponsable.open = true

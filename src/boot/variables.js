@@ -1,6 +1,8 @@
 //////////// VARIAVEIS DA APLICACAO //////
 const MODE_MASTER_SERVER = "local";
 const COMPANY_ID = 2;
+const VERSION = 1.1
+const BUILD = 2
 // NAO ALTERAR //
 const MODE_IFRAME = MODE_MASTER_SERVER;
 const MODE_AUTH_SERVER = "local";
@@ -19,4 +21,6 @@ export {
   DEFAULT_SERVER_NAME,
   SYSTEM_COMPLETE,
   MODE_SERVER,
+  VERSION,
+  BUILD
 };

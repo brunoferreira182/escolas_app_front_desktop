@@ -7,6 +7,7 @@
           flat
           dense
           @click="$router.back()"
+          round
         >
           <q-tooltip>
             Voltar
@@ -42,28 +43,35 @@
             Informações
           </div>
           <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
+            <q-avatar
+              class="cursor-pointer"
+              size="150px"
+              @click="clkProfileImage"
+            >
+              <img :src="utils.makeFileUrl(userData.image)" />
+            </q-avatar>
+            <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/>
             <q-input
               outlined
               v-model="userData.name"
               label="Nome"
-              :readonly="!userData"
-              :value="userData ? userData.name : ''"
             />
             <q-input
               outlined
               v-model="userData.document"
               label="CPF"
               mask="###.###.###-##"
-              :readonly="!userData"
-              :value="userData ? userData.document : ''"
             />
             <q-input
               outlined
               v-model="userData.phone"
               label="Telefone"
               mask="## #####-####"
-              :readonly="!userData"
-              :value="userData ? userData.phone : ''"
+            />
+            <q-input
+              outlined
+              v-model="userData.email"
+              label="Email"
             />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
@@ -114,9 +122,17 @@
               class="bg-grey-3 q-ma-xs"
             >
               <q-item-section avatar>
-                <q-icon name="account_circle" size="58px" color="grey"/>
+                <q-icon
+                  name="account_circle"
+                  size="58px"
+                  color="grey"
+                  v-if="!child.childImage || child.childImage === ''"
+                />
+                <q-avatar  v-else>
+                  <img :src="utils.makeFileUrl(child.childImage)"/>
+                </q-avatar>
               </q-item-section>
-              <q-item-section class="text-capitalize">
+              <q-item-section class="text-capitalize cursor-pointer" @click="clkChild(child)">
                 <q-item-label>{{ child.childName }}</q-item-label>
                 <q-item-label caption>{{ child.responsibleLabel }}</q-item-label>
               </q-item-section>
@@ -276,6 +292,11 @@
     </q-page>
   </q-page-container>
 </template>
+
+<script setup>
+import utils from '../../boot/utils'
+</script>
+
 <script>
 import { defineComponent } from 'vue'
 import useFetch from '../../boot/useFetch'
@@ -287,7 +308,8 @@ export default defineComponent({
       userData: {
         name:'',
         phone:'',
-        document:''
+        document:'',
+        email: ''
       },
       permissions:[],
       allPermissions: [],
@@ -321,11 +343,35 @@ export default defineComponent({
   },
   mounted() {
     this.$q.loading.hide()
+    const profileImage = document.getElementById('profile-image-upload')
+    profileImage.onchange = () => {
+      const selectedFile = profileImage.files[0];
+      this.uploadProfileImage(selectedFile)
+    }
   },
   beforeMount() {
     this.getUserDetailById()
   },
   methods: {
+    uploadProfileImage (image) {
+      const opt = {
+        route: '/desktop/users/updateProfileImage',
+        body: {
+          userId: this.$route.query.userId
+        },
+        file: [ { file: image, name: image.name } ]
+      }
+      useFetch(opt).then(r => {
+        this.userData.image = r.data.image
+      })
+    },
+    clkProfileImage () {
+      const profileImage = document.getElementById('profile-image-upload')
+      profileImage.click()
+    },
+    clkChild(child) {
+      this.$router.push('/users/childDetail?userId=' + child.childId)
+    },
     updateUserData() {
       const opt = {
         route: "/desktop/adm/updateUserData",

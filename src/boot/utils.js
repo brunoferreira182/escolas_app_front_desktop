@@ -152,17 +152,12 @@ const useUtils = {
     window.localStorage.setItem("au", id);
   },
   makeFileUrl (filename) {
-    if (!filename) return '/assets/default_avatar.svg'
+    if (!filename || filename === '') return '/assets/default_avatar.svg'
     return this.attachmentsAddress() + filename + '?' + new Date().getTime()
   },
   attachmentsAddress() {
-    if (
-      MODE_MASTER_SERVER === "dev" &&
-      MODE_MASTER_SERVER === "dev_ext" &&
-      MODE_MASTER_SERVER === "prod"
-    )
-      return masterServerRoute() + `/static/${PROJECT_NAME}/`;
-    else return masterServerRoute("dev_ext") + `/static/${PROJECT_NAME}/`;
+    console.log(masterServerRoute() + `/static/`, 'eita caraia')
+    return masterServerRoute() + `/static/`;
   },
   getPermissions() {
     const opt = {

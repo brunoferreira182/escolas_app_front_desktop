@@ -71,6 +71,15 @@
         <q-tab-panel name="infos">
           <div class="row justify-around q-pa-md" >
             <div class="col-12 q-gutter-md" align="start">
+              <q-avatar
+                class="cursor-pointer"
+                size="150px"
+                @click="clkProfileImage"
+                square
+              >
+                <img :src="utils.makeFileUrl(classData.image)"/>
+              </q-avatar>
+              <input type="file" id="profile-image-upload" hidden  accept="image/png, image/jpeg"/>
               <q-input
                 v-if="typeSelected === 'semesterly' || typeSelected === 'yearly'"
                 outlined
@@ -107,11 +116,6 @@
                 label="Ano"
                 hint="Ano vigente"
                 v-model="yearSelected"
-              />
-              <q-file
-                label="Foto da turma - Clique aqui para escolher uma imagem"
-                outlined
-                v-model="classImg"
               />
             </div>
             <q-dialog v-model="dialogInactiveClass" @hide="dialogInactiveClass = false">
@@ -181,7 +185,11 @@
                         <img :src="utils.makeFileUrl(child.image)">
                       </q-avatar>
                     </q-item-section>
-                  <q-item-section class="text-wrap" lines="2">
+                  <q-item-section
+                    class="text-wrap cursor-pointer"
+                    lines="2"
+                    @click="clkUserInClass(child)"
+                  >
                     {{ child.userName }}
                     <div class="text-caption">
                       {{ child.userFunction }}
@@ -229,7 +237,11 @@
                         <img :src="utils.makeFileUrl(child.image)">
                       </q-avatar>
                     </q-item-section>
-                  <q-item-section class="text-wrap" lines="2">
+                  <q-item-section
+                    class="text-wrap cursor-pointer"
+                    lines="2"
+                    @click="clkUserInClass(child)"
+                  >
                     {{ child.userName }}
                   </q-item-section>
                   <q-item-section side >
@@ -482,10 +494,14 @@
     </q-page>
   </q-page-container>
 </template>
+
+<script setup>
+import utils from '../../boot/utils'
+</script>
+
 <script>
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
-import utils from "../../boot/utils"
 import { useTableColumns } from "stores/tableColumns";
 export default defineComponent({
   name: "ClassDetail",
@@ -549,12 +565,39 @@ export default defineComponent({
   },
   mounted() {
     this.$q.loading.hide();
+    const profileImage = document.getElementById('profile-image-upload')
+    profileImage.onchange = () => {
+      const selectedFile = profileImage.files[0];
+      this.uploadProfileImage(selectedFile)
+    }
   },
   beforeMount() {
     this.getClassDetailById()
     this.getChildrenNotInClass()
   },
   methods: {
+    uploadProfileImage (image) {
+      const opt = {
+        route: '/desktop/classes/updateClassImage',
+        body: {
+          classId: this.$route.query.classId
+        },
+        file: [ { file: image, name: image.name } ]
+      }
+      useFetch(opt).then(r => {
+        this.classData.image = r.data.image
+      })
+    },
+    clkProfileImage () {
+      const profileImage = document.getElementById('profile-image-upload')
+      profileImage.click()
+    },
+    clkUserInClass (user) {
+      let route
+      if (user.type === 'child') route = '/users/userDetail?userId='
+      else if (user.type === 'user') route = '/users/childDetail?userId='
+      this.$router.push(route + user.userId)
+    },
     clkOpenDialogInsertFamilyMember(child){
       this.dialogInsertFamilyMemberIntoClass.open = true
       this.dialogInsertFamilyMemberIntoClass.data = child
@@ -882,6 +925,7 @@ export default defineComponent({
           this.classData.name = r.data.className
           this.yearSelected = r.data.classData.yearSelected
         }
+        this.classData.image = r.data.classImage
       });
     },
     activateClassById() {
