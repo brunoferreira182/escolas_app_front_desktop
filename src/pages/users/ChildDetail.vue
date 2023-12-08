@@ -12,18 +12,19 @@
             Voltar
           </q-tooltip>
         </q-btn>
-          <div class="col-6 text-h5 text-capitalize">
-            {{ childData.name }}
-            <div class="text-caption">Dados da criança</div>
-          </div>
-          <div class="col q-pt-sm q-gutter-sm text-right">
+        <div class="col-6 text-h5 text-capitalize">
+          {{ childData.name }}
+          <div class="text-caption">Dados da criança</div>
+        </div>
+        <div class="col q-pt-sm q-gutter-sm text-right">
           <q-btn
-          rounded
-          no-caps unelevated color="primary"
-          @click="updateChildData()">
+            rounded
+            no-caps unelevated color="primary"
+            @click="updateChildData()"
+          >
             Salvar
           </q-btn>
-          </div>
+        </div>
       </div>
       <q-separator class="q-mx-md"></q-separator>
       <div class="row justify-between items-start">
@@ -250,7 +251,7 @@ export default defineComponent({
   },
   beforeMount() {
     this.getChildDetailById()
-    
+
   },
   mounted () {
     const profileImage = document.getElementById('profile-image-upload')
@@ -378,6 +379,9 @@ export default defineComponent({
         if (r.error) {
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
           return
+        }else {
+          this.$q.notify('Dados atualizados com sucesso')
+          this.getChildDetailById()
         }
       });
     },
