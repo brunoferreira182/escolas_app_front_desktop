@@ -185,6 +185,11 @@ const useUtils = {
           route: "/admin/eventsList",
           icon: "format_list_numbered",
         },
+        {
+          label: "Cardápios",
+          route: "/admin/menuList",
+          icon: "restaurant_menu",
+        },
       ],
       users: [
         {

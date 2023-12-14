@@ -16,6 +16,12 @@ const routes = [
       { path: "/admin/eventsList", component: () => import("pages/admin/EventsList.vue"),},
       { path: "/admin/createEvent", component: () => import("pages/admin/CreateEvent.vue"),},
       { path: "/admin/eventDetail", component: () => import("pages/admin/EventDetail.vue"),},
+      { path: "/admin/menuList", component: () => import("pages/admin/MenuList.vue"),},
+      { path: "/admin/createMenu", component: () => import("pages/admin/CreateMenu.vue"),},
+      { path: "/admin/menuDetail", component: () => import("pages/admin/MenuDetail.vue"),},
+
+
+
 
       //users
       { path: '/users', redirect: '/users/UsersWaitingApprovalList' },

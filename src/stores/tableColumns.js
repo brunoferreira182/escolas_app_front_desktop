@@ -25,6 +25,29 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
     ],
+    menuList: [
+      {
+        name: "name",
+        align: "left",
+        label: "Cardápio do dia",
+        field: "name",
+        sortable: true,
+      },
+      {
+        name: "date",
+        align: "left",
+        label: "Data",
+        field: "date",
+        sortable: true,
+      },
+      {
+        name: "status",
+        align: "left",
+        label: "Status",
+        field: (row) => row.status.status,
+        sortable: true,
+      },
+    ],
     schoolEvents: [
       {
         name: "eventName",
