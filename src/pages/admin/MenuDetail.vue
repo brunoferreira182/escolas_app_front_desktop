@@ -51,9 +51,8 @@
       <div class="row justify-around q-pa-md" >
         <div class="col-12 q-gutter-md" align="start">
           <div class="text-h5">
-            Preencha os dados
+            Dados
           </div>
-          <div class="no-margin q-px-md text-caption"> Cardápio do dia</div>
           <q-input
             outlined
             label="Nome do cardápio"
