@@ -17,7 +17,7 @@
             no-caps
             class="q-pa-sm"
           >
-            Inativar atividade
+            Inativar cardápio
           </q-btn>
           <q-btn
             v-if="isActive === 0"
@@ -29,7 +29,7 @@
             no-caps
             class="q-pa-sm"
           >
-            Ativar atividade
+            Ativar cardápio
           </q-btn>
           <q-btn
             @click="updateMenu"
@@ -43,7 +43,7 @@
                 ? "Salvar"
                 : "Criar"
             }}
-            atividade
+            cardápio
           </q-btn>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default defineComponent({
     return {
       menuName: '',
       menuContent: '',
-      menuDate: '',
+      menuDate: null,
       isActive: null,
       dialogInactiveMenu: false,
     };
@@ -170,29 +170,12 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
-        }this.menuName = r.data.name
-        this.menuContent = r.data.content
-        this.menuDate = r.data.date
-        this.isActive = r.data.isActive
-      });
-    },
-    getMenuDetailById() {
-      const opt = {
-        route: "/desktop/adm/getMenuDetailById",
-        body: {
-          menuId: this.$route.query.menuId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        }this.menuName = r.data.name
-        this.menuContent = r.data.content
-        this.menuDate = r.data.date
-        this.isActive = r.data.isActive
+        }else{
+          this.menuName = r.data.name
+          this.menuContent = r.data.content
+          this.menuDate = r.data.date
+          this.isActive = r.data.isActive
+        }
       });
     },
     updateMenu() {
