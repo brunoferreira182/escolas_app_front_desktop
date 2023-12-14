@@ -153,7 +153,7 @@
               <div class="row q-pt-md">
                 <div class="col-6">
                   <div class="text-h5">
-                    {{ selectedFilter === 'Aluno' || this.selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
+                    {{ selectedFilter === 'Aluno' || selectedFilter.type === 'child' ? 'Alunos' : 'Usuários'}}
                     <q-btn icon="history" flat color="primary">
                       <q-tooltip>Histórico</q-tooltip>
                     </q-btn>
