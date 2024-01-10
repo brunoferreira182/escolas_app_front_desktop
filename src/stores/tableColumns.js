@@ -206,6 +206,36 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
     ],
+    attendanceList: [
+      {
+        name: 'name',
+        label: 'Nome',
+        align: 'left',
+        field: 'name',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'document',
+        label: 'Documento ',
+        align: 'left',
+        field: 'document',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'attendance',
+        label: 'Presença',
+        align: 'left',
+        field: 'attendance',
+        style: 'min-width: 100px;'
+      },
+      {
+        name: 'date',
+        label: 'Data',
+        align: 'center',
+        field: 'date',
+        style: 'min-width: 120px;'
+      },
+    ],
     classesList: [
       {
         name: "className",
