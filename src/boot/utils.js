@@ -198,12 +198,12 @@ const useUtils = {
           icon: "access_time_filled",
         },
         {
-          label: "Lista de Usuários",
+          label: "Lista de usuários",
           route: "/users/usersList",
           icon: "group",
         },
         {
-          label: "Lista de Crianças",
+          label: "Lista de crianças",
           route: "/users/childrenList",
           icon: "child_care",
         },
@@ -217,7 +217,11 @@ const useUtils = {
           route: "/users/chatList",
           icon: "question_answer",
         },
-
+        {
+          label: "Lista de presença",
+          route: "/users/attendanceList",
+          icon: "list",
+        }
       ],
       social: [
         {
