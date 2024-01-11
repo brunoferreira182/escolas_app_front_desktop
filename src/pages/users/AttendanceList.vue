@@ -2,7 +2,7 @@
   <q-page-container class="no-padding">
     <q-page>
           <div class="row no-margin-top q-pl-lg justify-between">
-            <h5> Lista de presença</h5>
+            <h5 dense> Lista de presença</h5>
             <div class="row items-center q-pr-lg q-gutter-sm ">
               <q-input
                 outlined
@@ -13,7 +13,7 @@
                 label= "Escolha a data"
               />
               <q-input
-                @keyup="getClassesList()"
+                @keyup="getChildrenByClass()"
                 outlined
                 dense
                 v-model="filter"
@@ -25,9 +25,9 @@
                 </template>
               </q-input>
               <q-select
-              style="min-width: 102px;"
+              style="min-width: 105px;"
               outlined dense
-              v-model="clasFilter"
+              v-model="classFilter"
               :options="classesList"
               option-value="className"
               option-label="className"
@@ -69,7 +69,7 @@ import utils from '../../boot/utils'
 </script>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
 
@@ -77,8 +77,7 @@ export default defineComponent({
   name: "AttendanceList",
   data() {
     return {
-      clasFilter: null,
-      model: ref(null),
+      classFilter: {className: ''},
       utils,
       columns: useTableColumns().attendanceListClasses,
       filter: "",
@@ -93,17 +92,21 @@ export default defineComponent({
       attendance: []
     };
   },
-  mounted(){
-    this.getClassesList()
-    this.getChildrenByClass()
-  },
   beforeMount() {
     this.getChildrenByClass()
+    this.getClassesList()
   },
   watch: {
     filterDate: {
       handler(newDate, oldDate) {
         if (newDate !== oldDate) {
+          this.getChildrenByClass();
+        }
+      },
+    },
+    classFilter: {
+      handler(newFilter, oldFilter) {
+        if (newFilter.className !== oldFilter.className) {
           this.getChildrenByClass();
         }
       },
@@ -118,9 +121,10 @@ export default defineComponent({
           page : this.pagination.page,
           rowsPerPage : 50,
           searchString : this.filter,
-          classFilter : this.classFilter
+          classFilter : this.classFilter.className
         },
       }
+      console.log('body',opt);
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
@@ -129,8 +133,8 @@ export default defineComponent({
           return
         }
         this.$q.loading.hide()
-        this.attendance = r.data
-        console.log('lalalala', this.attendance)
+        this.attendance = r.data[0].list
+        console.log('filtro de turma', this.classFilter.className);
       })
     },
     getClassesList() {
@@ -139,7 +143,7 @@ export default defineComponent({
         body: {
           page : this.pagination.page,
           rowsPerPage : this.pagination.rowsPerPage,
-          searchString : this.filter,
+          searchString : this.classFilter,
           sortBy: this.pagination.sortBy,
         }
       }
