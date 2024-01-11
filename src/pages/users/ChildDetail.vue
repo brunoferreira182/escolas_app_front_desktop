@@ -144,7 +144,7 @@
         <q-tab-panel name="classPresence" class="no-padding">
           <q-input
             class="q-px-md q-mx-md"
-            @input="getChildrenByClass"
+            @input="getChildAttendance"
             type="date"
             v-model= "filterDate"
             label= "Escolha a data"
@@ -314,7 +314,7 @@ export default defineComponent({
   },
   beforeMount() {
     this.getChildDetailById()
-    this.getChildrenByClass()
+    this.getChildAttendance()
   },
   mounted () {
     const profileImage = document.getElementById('profile-image-upload')
@@ -327,7 +327,7 @@ export default defineComponent({
     filterDate: {
       handler(newDate, oldDate) {
         if (newDate !== oldDate) {
-          this.getChildrenByClass();
+          this.getChildAttendance();
         }
       },
     },
@@ -392,9 +392,9 @@ export default defineComponent({
         this.getChildDetailById()
       })
     },
-    async getChildrenByClass(){
+    async getChildAttendance(){
     const opt = {
-      route :  '/desktop/classes/getAttendanceList',
+      route :  '/desktop/users/getAttendanceByChildId',
       body : {
         childId: this.$route.query.userId,
         filterDate: this.filterDate,
@@ -405,12 +405,12 @@ export default defineComponent({
     this.$q.loading.show()
     useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        if(!r.data.list){
+        if(!r.data){
           this.$q.notify('deu merda.')
           return
         }
         this.$q.loading.hide()
-        this.attendance = r.data.list
+        this.attendance = r.data
         console.log('lalalala', this.attendance)
       })
     },

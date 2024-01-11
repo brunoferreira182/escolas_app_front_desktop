@@ -636,12 +636,12 @@ export default defineComponent({
     this.$q.loading.show()
     useFetch(opt).then((r) => {
       this.$q.loading.hide()
-      if(!r.data[0].list){
+      if(!r.data){
         this.$q.notify('deu merda.')
         return
       }
       this.$q.loading.hide()
-      this.attendance = r.data[0].list
+      this.attendance = r.data
       console.log('lalalala', this.attendance)
     })
   },
