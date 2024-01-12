@@ -18,6 +18,13 @@
         </div>
         <div class="col q-pt-sm q-gutter-sm text-right">
           <q-btn
+            icon= "calendar_month"
+            rounded
+            no-caps unelevated color="primary"
+            @click="dialog=true"
+            label="Calendário"
+          />
+          <q-btn
             rounded
             no-caps unelevated color="primary"
             @click="updateChildData()"
@@ -39,7 +46,7 @@
         narrow-indicator
       >
         <q-tab name="info" label="Informações"/>
-        <q-tab name="classPresence" label="Presença"/>
+        <q-tab name="classPresence" label="Presença" @click="getChildAttendance"/>
       </q-tabs>
       <q-separator class="q-mx-md"></q-separator>
       <q-tab-panels v-model="tab" animated>
@@ -142,13 +149,16 @@
         </div>
         </q-tab-panel>
         <q-tab-panel name="classPresence" class="no-padding">
-          <q-input
-            class="q-px-md q-mx-md"
-            @input="getChildAttendance"
-            type="date"
-            v-model= "filterDate"
-            label= "Escolha a data"
-          />
+            <q-dialog v-model="dialog" persistent>
+              <q-card no-padding>
+                  <q-date v-model="filterDate" :locale="myLocale" mask="YYYY-MM-DD" range>
+                    <q-card-actions align="right">
+                      <q-btn flat label="Fechar" color="primary" v-close-popup="cancelEnabled"/>
+                    </q-card-actions>
+                  </q-date>
+              </q-card>
+            </q-dialog>
+
             <div class="q-pa-md">
               <q-table
                 flat
@@ -175,6 +185,7 @@
             </div>
         </q-tab-panel>
       </q-tab-panels>
+      <!--  -->
       <q-dialog v-model="dialogInsertResponsable" @hide="clearInsertResponsableDialog()" @before-show="getUserRelationType()">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div class="text-h6 text-center">
@@ -275,13 +286,14 @@ import utils from '../../boot/utils'
 </script>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useTableColumns } from "stores/tableColumns";
 import useFetch from '../../boot/useFetch'
 export default defineComponent({
   name: 'ChildDetail',
   data() {
     return {
+      dialog: false,
       tab:'info',
       columns: useTableColumns().attendanceList,
       filterDate: '',
@@ -310,11 +322,20 @@ export default defineComponent({
         rowsNumber: 0,
         sortBy: "",
       },
+      myLocale: {
+        /* starting with Sunday */
+        days: 'Domingo_Segunda_Terça_Quarta_Quinta_Sexta_Sábado'.split('_'),
+        daysShort: 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
+        months: 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
+        monthsShort: 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+        firstDayOfWeek: 1, // 0-6, 0 - Sunday, 1 Monday, ...
+        format24h: true,
+        pluralDay: 'dias'
+      }
     }
   },
   beforeMount() {
     this.getChildDetailById()
-    this.getChildAttendance()
   },
   mounted () {
     const profileImage = document.getElementById('profile-image-upload')
@@ -360,6 +381,12 @@ export default defineComponent({
       this.userSelected = ''
       this.relationTypeSelected = ''
       this.dialogInsertResponsable = false
+    },
+    openCalendar() {
+      this.$refs.calendarPopup.show();
+    },
+    closeCalendar() {
+      this.$refs.calendarPopup.hide();
     },
     getUserRelationType(){
       const opt = {
@@ -412,6 +439,8 @@ export default defineComponent({
         this.$q.loading.hide()
         this.attendance = r.data
         console.log('lalalala', this.attendance)
+        console.log('BASDASBDKBASala', this.filterDate)
+        console.log('BASDASBDKBASala', this.filterDate)
       })
     },
     createRelation() {

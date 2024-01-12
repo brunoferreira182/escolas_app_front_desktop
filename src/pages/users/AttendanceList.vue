@@ -7,13 +7,13 @@
               <q-input
                 outlined
                 dense
-                @input="getChildrenByClass()"
+                @input="getAttendance"
                 type="date"
                 v-model= "filterDate"
                 label= "Escolha a data"
               />
               <q-input
-                @keyup="getChildrenByClass()"
+                @keyup="getAttendance"
                 outlined
                 dense
                 v-model="filter"
@@ -77,7 +77,8 @@ export default defineComponent({
   name: "AttendanceList",
   data() {
     return {
-      classFilter: {className: ''},
+      classFilter: {id:'', className: "-"},
+      classesList: [],
       utils,
       columns: useTableColumns().attendanceListClasses,
       filter: "",
@@ -88,53 +89,51 @@ export default defineComponent({
         sortBy: "",
       },
       filterDate: '',
-      classesList: [],
       attendance: []
     };
   },
   beforeMount() {
-    this.getChildrenByClass()
+    this.getAttendance()
     this.getClassesList()
   },
   watch: {
     filterDate: {
       handler(newDate, oldDate) {
         if (newDate !== oldDate) {
-          this.getChildrenByClass();
+          this.getAttendance();
         }
       },
     },
     classFilter: {
       handler(newFilter, oldFilter) {
-        if (newFilter.className !== oldFilter.className) {
-          this.getChildrenByClass();
+        if (newFilter.id !== oldFilter.id) {
+          this.getAttendance();
         }
       },
     },
   },
   methods: {
-    async getChildrenByClass(){
+    getAttendance(){
       const opt = {
         route :  '/desktop/users/getAttendanceList',
         body : {
-          filterDate: this.filterDate,
           page : this.pagination.page,
-          rowsPerPage : 50,
+          rowsPerPage : 1000,
+          filterDate: this.filterDate,
           searchString : this.filter,
-          classFilter : this.classFilter.className
+          classFilter : this.classFilter.id
         },
       }
-      console.log('body',opt);
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        if(!r.data){
-          this.$q.notify(r.error)
-          return
-        }
-        this.$q.loading.hide()
-        this.attendance = r.data[0].list
-        console.log('filtro de turma', this.classFilter.className);
+        // if(!r.data.list){
+        //   this.$q.notify(r.error)
+        //   return
+        // }
+        this.attendance = r.data.list
+        console.log('listaAAAAAAAAA',this.attendance);
+        console.log('dkjshdkhabsjha',this.classFilter);
       })
     },
     getClassesList() {
@@ -151,11 +150,11 @@ export default defineComponent({
       useFetch(opt).then(r => {
         this.$q.loading.hide()
         const list = r.data.list.map(classItem => ({
-            className: classItem.className,
+            id: classItem._id,
+            className: classItem.className
         }))
         this.classesList = list
         this.pagination.rowsNumber = r.data.count[0]?.count || 0;
-        console.log('lista de turma',this.classesList);
       });
     }
   }
