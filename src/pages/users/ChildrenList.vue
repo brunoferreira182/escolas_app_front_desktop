@@ -191,32 +191,6 @@ export default defineComponent({
         this.getChildrenList()
       })
     },
-    // createChild() {
-    //   if (this.childData.name === ''
-    //     || this.childData.document === ''
-    //     || this.childData.birthDayDate === ''
-    //     || !this.image.blob)
-    //   {
-    //     this.$q.notify('Preencha todos os dados e insira uma foto')
-    //     return
-    //   }
-    //   const opt = {
-    //     route: '/desktop/users/createChild',
-    //     body: {
-    //       childData: this.childData
-    //     },
-    //     file: [{ file: this.image.blob, name: 'userPhoto' }]
-    //   }
-    //   useFetch(opt).then((r) => {
-    //     if (r.error) {
-    //       this.$q.notify('Ocorreu um erro. Tente novamente.')
-    //       return
-    //     }
-    //     this.$q.notify('Filho adicionado com sucesso.')
-    //     this.openDialogCreateChild = false
-    //     this.getChildrenList()
-    //   })
-    // },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;

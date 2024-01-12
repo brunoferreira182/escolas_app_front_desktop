@@ -438,9 +438,7 @@ export default defineComponent({
         }
         this.$q.loading.hide()
         this.attendance = r.data
-        console.log('lalalala', this.attendance)
-        console.log('BASDASBDKBASala', this.filterDate)
-        console.log('BASDASBDKBASala', this.filterDate)
+        console.log('valentina',this.attendance);
       })
     },
     createRelation() {

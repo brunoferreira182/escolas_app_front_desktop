@@ -45,7 +45,9 @@
                 virtual-scroll
                 no-data-label="Nenhum dado inserido até o momento"
                 no-results-label="A pesquisa não retornou nenhum resultado"
-                :rows-per-page-options="[0]"
+                :rows-per-page-options="[10, 20, 30, 50]"
+                v-model:pagination="pagination"
+                @request="nextPage"
               >
                 <template #body-cell-attendance="props">
                     <q-td :props="props">
@@ -118,7 +120,7 @@ export default defineComponent({
         route :  '/desktop/users/getAttendanceList',
         body : {
           page : this.pagination.page,
-          rowsPerPage : 1000,
+          rowsPerPage : this.pagination.rowsPerPage,
           filterDate: this.filterDate,
           searchString : this.filter,
           classFilter : this.classFilter.id
@@ -127,13 +129,8 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        // if(!r.data.list){
-        //   this.$q.notify(r.error)
-        //   return
-        // }
         this.attendance = r.data.list
-        console.log('listaAAAAAAAAA',this.attendance);
-        console.log('dkjshdkhabsjha',this.classFilter);
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       })
     },
     getClassesList() {
@@ -156,7 +153,13 @@ export default defineComponent({
         this.classesList = list
         this.pagination.rowsNumber = r.data.count[0]?.count || 0;
       });
-    }
+    },
+    nextPage(e) {
+      this.pagination.page = e.pagination.page;
+      this.pagination.sortBy = e.pagination.sortBy;
+      this.pagination.rowsPerPage = e.pagination.rowsPerPage;
+      this.getAttendance();
+    },
   }
 })
   </script>
