@@ -140,6 +140,7 @@ export default defineComponent({
           } else {
             // Single date format
             const formattedList = format(menu, 'dd/MM/yyyy');
+            menu.date =
           }
 
         })
