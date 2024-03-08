@@ -28,19 +28,30 @@
           <div class="text-h5">
             Preencha os dados
           </div>
-          <div class="no-margin q-px-md text-caption"> Cardápio do dia</div>
+          <div class="no-margin q-px-md text-caption"> Cardápio</div>
           <q-input
             outlined
             label="Nome do cardápio"
-            hint="Ex: Cardápio segunda-feira"
+            hint="Ex: Cardápio Feveireiro, semanal do dia"
             v-model="menuName"
           />
           <q-input
             outlined
-            label="Data do cardápio"
-            type="date"
-            v-model="menuDate"
-          />
+            readonly
+            :label="dateFormater()"
+          >
+            <template v-slot:append>
+              <q-icon class="q-pa-md cursor-pointer" name="event">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="menuDate" range>
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
           <div class="text-subtitle">
             Insira o cardápio abaixo
           </div>
@@ -53,7 +64,9 @@
     </q-page>
   </q-page-container>
 </template>
+
 <script>
+import { format } from 'date-fns';
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 export default defineComponent({
@@ -62,24 +75,43 @@ export default defineComponent({
     return {
       menuName: '',
       menuContent: '',
-      menuDate: '',
+      menuDate: null,
     };
   },
   mounted() {
     this.$q.loading.hide();
   },
   methods: {
+    dateFormater(){
+    if (this.menuDate && this.menuDate.from && this.menuDate.to){
+        const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
+        const toDate = format(this.menuDate.to, 'dd/MM/yyyy');
+      return `Data do cardápio: ${fromDate} até ${toDate}`
+    }else if (this.menuDate && this.menuDate !== null){
+      const formattedDate = format(this.menuDate, 'dd/MM/yyyy');
+      return `Data do cardápio: ${formattedDate}`
+    }
+    return `Data do cardápio `
+  },
     createMenu() {
       if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
         this.$q.notify('Preencha todos os campos para prosseguir.')
         return
       }
+        if (this.menuDate && this.menuDate.from && this.menuDate.to) {
+          // Range date format sempre verificar o objeto inteiro
+          this.menuDate.from = format(this.menuDate.from, 'yyyy/MM/dd');
+          this.menuDate.to = format(this.menuDate.to, 'yyyy/MM/dd');
+        } else {
+          // Single date format
+          this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
+        }
       const opt = {
         route: "/desktop/adm/createMenu",
         body: {
           name: this.menuName,
           content: this.menuContent,
-          date: this.menuDate
+          menuDate: this.menuDate
         },
       };
       this.$q.loading.show();

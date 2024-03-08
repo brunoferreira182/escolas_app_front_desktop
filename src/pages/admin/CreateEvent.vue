@@ -37,7 +37,7 @@
           />
           <q-input
             outlined
-            label="Descrição"
+            label="Descrição (Opcional)"
             hint="Ex: Brincou com os colegas, Tirou soneca, Comeu todo o Almoço..."
             v-model="eventDescription"
           />
@@ -62,7 +62,7 @@ export default defineComponent({
   },
   methods: {
     createChildEvents() {
-      if(this.eventName === '' || this.eventDescription === ''){
+      if(this.eventName === ''){
         this.$q.notify('Preencha todos os campos para prosseguir.')
         return
       }

@@ -73,6 +73,7 @@
 </template>
 <script>
 import { defineComponent } from "vue";
+import { format } from 'date-fns';
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
 
@@ -128,6 +129,20 @@ export default defineComponent({
       useFetch(opt).then((r) => {
         this.menuList = r.data[0].list
         r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
+
+        this.menuList.forEach((menu) => {
+          if (menu.date && menu.date.from && menu.date.to) {
+            // Range date format sempre verificar o objeto inteiro
+            const formattedFrom = format(menu.from, 'dd/MM/yyyy');
+            const formattedTO = format(menu.to, 'dd/MM/yyyy');
+            menu.date.from = formattedFrom
+            menu.date.to = formattedTO
+          } else {
+            // Single date format
+            const formattedList = format(menu, 'dd/MM/yyyy');
+          }
+
+        })
       });
     },
 
