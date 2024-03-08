@@ -388,7 +388,7 @@ export default defineComponent({
         if (r.error) {
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         }
-        this.$q.notify('Seus dados foram salvos')
+        this.$q.notify('Dados do usuário salvos')
       });
     },
     createChildAndRelation() {

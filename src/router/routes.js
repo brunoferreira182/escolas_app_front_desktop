@@ -26,6 +26,7 @@ const routes = [
       //users
       { path: '/users', redirect: '/users/UsersWaitingApprovalList' },
       { path: '/users/usersWaitingApprovalList', component: () => import('pages/users/UsersWaitingApprovalList.vue') },
+      { path: '/users/attendanceList', component: () => import('pages/users/AttendanceList.vue') },
       { path: '/users/chatList', component: () => import('pages/users/ChatList.vue') },
       { path: '/users/usersList', component: () => import('pages/users/UsersList.vue') },
       { path: '/users/userDetail', component: () => import('pages/users/UserDetail.vue') },

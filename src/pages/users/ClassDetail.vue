@@ -65,6 +65,7 @@
       >
         <q-tab name="infos" label="Informações"/>
         <q-tab name="manageClass" label="Gerenciar turma"/>
+        <q-tab name="classPresence" label="Lista de presença"/>
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -490,6 +491,39 @@
             </q-card>
           </q-dialog>
         </q-tab-panel>
+        <q-tab-panel name="classPresence" class="no-padding">
+          <q-input
+            class="q-px-md q-mx-md"
+            @input="getChildrenByClass"
+            type="date"
+            v-model= "filterDate"
+            label= "Escolha a data"
+          />
+            <div class="q-pa-md">
+              <q-table
+                flat
+                bordered
+                :rows="attendance"
+                :columns="columns"
+                row-key="_id"
+                virtual-scroll
+                no-data-label="Nenhum dado inserido até o momento"
+                no-results-label="A pesquisa não retornou nenhum resultado"
+                :rows-per-page-options="[0]"
+              >
+                <template #body-cell-attendance="props">
+                    <q-td :props="props">
+                      <q-badge color="red" v-if="props.row.childAttendanceType === 'absent'">
+                        Ausente
+                      </q-badge>
+                      <q-badge color="green" v-else>
+                        Presente
+                      </q-badge>
+                    </q-td>
+                </template>
+              </q-table>
+            </div>
+          </q-tab-panel>
       </q-tab-panels>
     </q-page>
   </q-page-container>
@@ -508,6 +542,7 @@ export default defineComponent({
   data() {
     return {
       utils,
+      columns: useTableColumns().attendanceList,
       columnsData: useTableColumns().usersListInsideClass,
       tab: 'infos',
       classData: {
@@ -561,6 +596,8 @@ export default defineComponent({
       childrenInClassList: [],
       usersList: [],
       childrenList: [],
+      filterDate: '',
+      attendance: []
     };
   },
   mounted() {
@@ -573,9 +610,41 @@ export default defineComponent({
   },
   beforeMount() {
     this.getClassDetailById()
+    this.getChildrenByClass()
     this.getChildrenNotInClass()
   },
+  watch: {
+    filterDate: {
+      handler(newDate, oldDate) {
+        if (newDate !== oldDate) {
+          this.getChildrenByClass();
+        }
+      },
+    },
+  },
   methods: {
+    async getChildrenByClass(){
+    const opt = {
+      route :  '/desktop/classes/getAttendanceByClass',
+      body : {
+        classId : this.$route.query.classId,
+        filterDate: this.filterDate,
+        page : this.pagination.page,
+        rowsPerPage : 50
+      },
+    }
+    this.$q.loading.show()
+    useFetch(opt).then((r) => {
+      this.$q.loading.hide()
+      if(!r.data){
+        this.$q.notify('deu merda.')
+        return
+      }
+      this.$q.loading.hide()
+      this.attendance = r.data
+      console.log('lalalala', this.attendance)
+    })
+  },
     uploadProfileImage (image) {
       const opt = {
         route: '/desktop/classes/updateClassImage',
@@ -929,7 +998,6 @@ export default defineComponent({
       });
     },
     activateClassById() {
-      console.log('cuzinho moreno')
       const opt = {
         route: "/desktop/classes/activateClassById",
         body: {

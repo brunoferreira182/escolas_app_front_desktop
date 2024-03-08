@@ -29,7 +29,7 @@ export const useTableColumns = defineStore("tableColumns", {
       {
         name: "name",
         align: "left",
-        label: "Cardápio do dia",
+        label: "Nome do menu",
         field: "name",
         sortable: true,
       },
@@ -204,6 +204,73 @@ export const useTableColumns = defineStore("tableColumns", {
         label: "Nome de usuário",
         field: "name",
         sortable: true,
+      },
+    ],
+    attendanceList: [
+      {
+        name: 'name',
+        label: 'Nome',
+        align: 'left',
+        field: 'name',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'document',
+        label: 'Documento ',
+        align: 'left',
+        field: 'document',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'attendance',
+        label: 'Presença',
+        align: 'left',
+        field: 'attendance',
+        style: 'min-width: 100px;'
+      },
+      {
+        name: 'date',
+        label: 'Data',
+        align: 'center',
+        field: 'date',
+        style: 'min-width: 120px;'
+      },
+    ],
+    attendanceListClasses: [
+      {
+        name: 'name',
+        label: 'Nome',
+        align: 'left',
+        field: 'name',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'document',
+        label: 'Documento ',
+        align: 'left',
+        field: 'document',
+        style: 'min-width: 150px;'
+      },
+      {
+        name: 'attendance',
+        label: 'Presença',
+        align: 'left',
+        field: 'attendance',
+        style: 'min-width: 100px;'
+      },
+      {
+        name: 'date',
+        label: 'Data',
+        align: 'center',
+        field: 'date',
+        style: 'min-width: 120px;'
+      },
+      {
+        name: 'className',
+        label: 'Turma',
+        align: 'center',
+        field: 'className',
+        style: 'min-width: 150px;'
       },
     ],
     classesList: [
