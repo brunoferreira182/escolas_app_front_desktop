@@ -33,15 +33,15 @@ export const useTableColumns = defineStore("tableColumns", {
         field: "name",
         sortable: true,
       },
-      // {
-      //   name: "date",
-      //   align: "left",
-      //   label: "Data",
-      //   field: (row) => (row.remaningDate.label.split('-')[2])+'/'+
-      //   (row.remaningDate.label.split('-')[1]) + '/' +
-      //   (row.remaningDate.label.split('-')[0]),
-      //   sortable: true,
-      // },
+      {
+        name: "date",
+        align: "left",
+        label: "Data",
+        field: (row) => (row.date.label.split('-')[2])+'/'+
+        (row.date.label.split('-')[1]) + '/' +
+        (row.date.label.split('-')[0]),
+        sortable: true,
+      },
       {
         name: "status",
         align: "left",

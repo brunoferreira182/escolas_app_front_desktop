@@ -170,12 +170,11 @@ export default defineComponent({
         if(r.error){
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
-        }else{
+        }
           this.menuName = r.data.name
           this.menuContent = r.data.content
           this.menuDate = r.data.date
           this.isActive = r.data.isActive
-        }
       });
     },
     updateMenu() {
