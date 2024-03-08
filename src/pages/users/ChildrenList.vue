@@ -69,6 +69,11 @@
                 v-model="childData.document"
               />
               <q-input
+                label="Certidão de nascimento"
+                outlined
+                v-model="childData.birthDocument"
+              />
+              <q-input
                 label="Preencha o nome"
                 outlined
                 v-model="childData.name"
@@ -146,6 +151,7 @@ export default defineComponent({
       childData: {
         name: '',
         document: '',
+        birthDocument: '',
         birthdate: '',
       },
       image: {
