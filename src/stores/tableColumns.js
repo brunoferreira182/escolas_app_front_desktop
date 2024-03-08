@@ -37,7 +37,9 @@ export const useTableColumns = defineStore("tableColumns", {
         name: "date",
         align: "left",
         label: "Data",
-        field: 'date',
+        field: (row) => (row.date.label.split('-')[2])+'/'+
+        (row.date.label.split('-')[1]) + '/' +
+        (row.date.label.split('-')[0]),
         sortable: true,
       },
       {
