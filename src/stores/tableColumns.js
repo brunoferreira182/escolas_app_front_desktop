@@ -36,8 +36,14 @@ export const useTableColumns = defineStore("tableColumns", {
       {
         name: "date",
         align: "left",
-        label: "Data",
-        field: 'date',
+        label: "Data Início - Data Fim",
+        field: (row) => {
+          if (row.date && row.date.from && row.date.to) {
+            return `${row.date.from} - ${row.date.to}`;
+          } else if (row.date && !row.date.from) {
+            return `${row.date} - Fim do Dia`;
+          }
+        },
         sortable: true,
       },
       {

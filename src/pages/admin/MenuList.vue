@@ -73,7 +73,7 @@
 </template>
 <script>
 import { defineComponent } from "vue";
-import { format } from 'date-fns';
+import { date } from 'quasar';
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
 
@@ -133,17 +133,18 @@ export default defineComponent({
         this.menuList.forEach((menu) => {
           if (menu.date && menu.date.from && menu.date.to) {
             // Range date format sempre verificar o objeto inteiro
-            const formattedFrom = format(menu.from, 'dd/MM/yyyy');
-            const formattedTO = format(menu.to, 'dd/MM/yyyy');
+            const formattedFrom = date.formatDate(menu.date.from, 'DD/MM/YYYY');
+            const formattedTo = date.formatDate(menu.date.to, 'DD/MM/YYYY');
             menu.date.from = formattedFrom
-            menu.date.to = formattedTO
-          } else {
+            menu.date.to = formattedTo
+          } else  if (menu.date && !menu.date.from  && !menu.date.to) {
+            // Se não tiver data de val
             // Single date format
-            const formattedList = format(menu, 'dd/MM/yyyy');
-            menu.date =
+            const formattedList = date.formatDate(menu.date, 'DD/MM/YYYY');
+            menu.date = formattedList
           }
-
         })
+        console.log(this.menuList, "dasjbdsjbhdajh")
       });
     },
 
