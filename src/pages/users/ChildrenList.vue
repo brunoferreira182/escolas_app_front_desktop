@@ -192,7 +192,7 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro. Tente novamente.')
           return
         }
-        this.$q.notify('Filho adicionado com sucesso.')
+        this.$q.notify('Criança adicionada com sucesso.')
         this.openDialogCreateChild = false
         this.getChildrenList()
       })
