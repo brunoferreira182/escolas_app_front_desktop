@@ -233,6 +233,7 @@ export default defineComponent({
       this.openDialogCreateChild = false
       this.childData.name = ''
       this.childData.document = ''
+      this.childData.birthDocument = ''
       this.childData.birthdate = ''
       this.image.blob = null
       this.image.url = null

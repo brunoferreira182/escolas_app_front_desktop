@@ -118,7 +118,7 @@ export default defineComponent({
     },
     createChildEvents() {
       const extractedData = this.classSelected.map(item => ({
-        _id: item._id,
+        classId: item._id,
         className: item.className
       }));
       if(this.eventName === ''){

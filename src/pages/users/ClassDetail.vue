@@ -512,14 +512,14 @@
                 :rows-per-page-options="[0]"
               >
                 <template #body-cell-attendance="props">
-                    <q-td :props="props">
-                      <q-badge color="red" v-if="props.row.childAttendanceType === 'absent'">
-                        Ausente
-                      </q-badge>
-                      <q-badge color="green" v-else>
-                        Presente
-                      </q-badge>
-                    </q-td>
+                  <q-td :props="props">
+                    <q-badge color="red" v-if="props.row.childAttendanceType === 'absent'">
+                      Ausente
+                    </q-badge>
+                    <q-badge color="green" v-else>
+                      Presente
+                    </q-badge>
+                  </q-td>
                 </template>
               </q-table>
             </div>
@@ -963,8 +963,8 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        this.childrenList = r.data[0].list
-        r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
+        this.childrenList = r.data.list
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });
     },
     getClassDetailById() {
