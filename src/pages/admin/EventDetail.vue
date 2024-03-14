@@ -92,6 +92,11 @@
             label="Descrição"
             v-model="eventDescription"
           />
+          <q-input
+            outlined
+            label="Adicionar intensidade"
+            v-model="subTypeEvent"
+          />
         </div>
         <q-dialog v-model="dialogInactiveEvent" @hide="dialogInactiveEvent = false">
           <q-card style="border-radius: 1rem">
@@ -144,6 +149,7 @@ export default defineComponent({
         rowsNumber: 0,
         sortBy: "",
       },
+      subTypeEvent:[],
     };
   },
   mounted() {
@@ -241,6 +247,7 @@ export default defineComponent({
           name: this.eventName,
           classesSelected: extractedData,
           description: this.eventDescription,
+          volume: this.subTypeEvent
         },
       };
       this.$q.loading.show();
