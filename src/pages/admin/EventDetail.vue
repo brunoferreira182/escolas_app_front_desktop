@@ -70,7 +70,7 @@
             multiple
             input-debounce="0"
             :loading="false"
-            :option-value="(item) => item._id"
+            :option-value="(item) => item.classId"
           >
             <template v-slot:no-option>
               <q-item>
@@ -231,7 +231,7 @@ export default defineComponent({
     },
     updateChildEvent() {
       const extractedData = this.classSelected.map(item => ({
-        classId: item._id,
+        classId: item.classId,
         className: item.className
       }));
       const opt = {

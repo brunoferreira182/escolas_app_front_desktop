@@ -6,34 +6,45 @@
           Envio de arquivo
         </div>
         <div class="col text-right">
-          <q-btn
-            color="primary"
-            unelevated
-            no-caps
-            @click = "sendDocumentsToUserById()"
-            rounded
-            class="q-pa-sm"
-            label="Enviar Documento"
-            icon="send"
-            />
+          <div class="row justify-center items-center">
+            <div class="col">
+              <q-select rounded outlined dense :options="typeArch" v-model="documentType" label="Tipo de arquivo" />
+            </div>
+            <div class="col">
+              <q-btn
+              color="primary"
+              unelevated
+              no-caps
+              @click = "sendDocumentsToUserById()"
+              rounded
+              dense
+              class="q-pa-sm"
+              label="Enviar Documento"
+              icon="send"
+              />
+            </div>
+          </div>
         </div>
       </div>
       <q-separator class="q-mx-md" />
       <div class="row">
         <div class="col-6 q-ma-md q-gutter-y-md">
-            <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
-              <template v-slot:prepend>
-                <q-icon name="cloud_upload" />
-              </template>
-            </q-file>
-            <div
+          <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
+            <template v-slot:prepend>
+              <q-icon name="cloud_upload" />
+            </template>
+          </q-file>
+          <div v-if= "documentType === 'Boleto' && documentType !== ''" >
+            <q-input filled v-model= "barCode" label= "Código de barras"/>
+          </div>
+          <div
               v-if = "user || user===true" style="border-radius: 20px;"
               class="row items-center text-subtitle2 q-pa-md bg-grey-3">
               <div
                 class="col"
               >
-                {{ this.user.name }} <br>
-                {{ this.user.registerNumber}}
+                Nome: {{ this.user.name }} <br>
+                Registro: {{ this.user.registerNumber}}
               </div>
               <div class="self-end" >
                 <q-btn @click="selectUser(null, true)" class="justify-end" unelevated icon="clear"/>
@@ -85,9 +96,14 @@ export default defineComponent({
   name: "ArchiveSender",
   data() {
     return {
+      typeArch:[
+        'Boleto', 'Outros',
+      ],
       fileAttach: null,
       userList: [],
+      barCode: '',
       user: null,
+      documentType: '',
       userId: null,
       pagination: {
         page: 1,
@@ -126,11 +142,17 @@ export default defineComponent({
       const opt = {
         route : "/desktop/adm/sendDocumentToUserById",
         body : {
+          type: this.documentType,
           userId: this.userId
         }
       };
       if (this.fileAttach !== null) opt.file = file
       console.log(opt.file);
+      if (this.documentType === 'Boleto' && this.barCode !== ''){
+        opt.body.barCode = this.barCode
+      } else if (this.documentType === 'Boleto' && this.barCode === ''){
+        return this.$q.notify('Insíra o código de barras!')
+      }
 
       this.$q.loading.show()
       useFetch(opt).then((r) =>{
