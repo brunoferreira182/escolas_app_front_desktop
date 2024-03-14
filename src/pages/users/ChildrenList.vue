@@ -192,7 +192,7 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro. Tente novamente.')
           return
         }
-        this.$q.notify('Filho adicionado com sucesso.')
+        this.$q.notify('Criança adicionada com sucesso.')
         this.openDialogCreateChild = false
         this.getChildrenList()
       })
@@ -233,6 +233,7 @@ export default defineComponent({
       this.openDialogCreateChild = false
       this.childData.name = ''
       this.childData.document = ''
+      this.childData.birthDocument = ''
       this.childData.birthdate = ''
       this.image.blob = null
       this.image.url = null

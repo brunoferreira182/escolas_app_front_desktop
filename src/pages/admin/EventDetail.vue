@@ -32,7 +32,7 @@
             Ativar atividade
           </q-btn>
           <q-btn
-            @click="updateFunction"
+            @click="updateChildEvent"
             rounded
             color="primary"
             unelevated
@@ -59,6 +59,34 @@
             v-model="eventName"
             hint="Ex: Brincou, dormiu, comeu..."
           />
+          <q-select
+            use-input
+            outlined
+            label="Turmas"
+            option-label="className"
+            v-model="classSelected"
+            :options="classesOptions"
+            use-chips
+            multiple
+            input-debounce="0"
+            :loading="false"
+            :option-value="(item) => item._id"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  Nenhum resultado
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.className }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
           <q-input
             outlined
             label="Descrição"
@@ -108,6 +136,14 @@ export default defineComponent({
       isAdm: false,
       isActive: null,
       dialogInactiveEvent: false,
+      classSelected: null,
+      classesOptions: [],
+      pagination: {
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 0,
+        sortBy: "",
+      },
     };
   },
   mounted() {
@@ -115,8 +151,28 @@ export default defineComponent({
   },
   beforeMount(){
     this.getChildEventDetailById()
+    this.getClassesList()
   },
   methods: {
+    getClassesList() {
+      const page = this.pagination.page
+      const rowsPerPage = this.pagination.rowsPerPage
+      const searchString = this.filter
+      const sortBy = this.pagination.sortBy
+      const opt = {
+        route: "/desktop/classes/getClassesList",
+        body: {
+          page: page,
+          rowsPerPage: rowsPerPage,
+          searchString: searchString,
+          sortBy: sortBy,
+        },
+      };
+      useFetch(opt).then((r) => {
+        this.classesOptions = r.data.list
+        r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
+      });
+    },
     getChildEventDetailById(){
       const opt = {
         route: "/desktop/adm/getChildEventDetailById",
@@ -133,6 +189,7 @@ export default defineComponent({
         }
           this.eventName = r.data.name
           this.eventDescription = r.data.description
+          this.classSelected = r.data.classesData
           this.isActive = r.data.isActive
       });
     },
@@ -172,12 +229,17 @@ export default defineComponent({
           this.$router.back()
       });
     },
-    updateFunction() {
+    updateChildEvent() {
+      const extractedData = this.classSelected.map(item => ({
+        classId: item._id,
+        className: item.className
+      }));
       const opt = {
-        route: "/desktop/adm/updateFunction",
+        route: "/desktop/adm/updateChildEvent",
         body: {
           childEventId: this.$route.query.childEventId,
           name: this.eventName,
+          classesSelected: extractedData,
           description: this.eventDescription,
         },
       };

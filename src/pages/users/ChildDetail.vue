@@ -57,13 +57,26 @@
               Informações
             </div>
             <div class="q-gutter-lg q-py-md" v-if="childData && childData !== ''">
-              <q-avatar
+              <q-avatar size="150px" >
+                <img :src="utils.makeFileUrl(childData.image)" class="avatar-image" />
+                <div class="camera-icon cursor-pointer" @click="clkProfileImage">
+                  <q-tooltip>
+                    Trocar foto
+                  </q-tooltip>
+                </div>
+              </q-avatar>
+              <!-- <q-avatar
                 class="cursor-pointer"
                 size="150px"
                 @click="clkProfileImage"
               >
                 <img :src="utils.makeFileUrl(childData.image)"/>
-              </q-avatar>
+              </q-avatar> -->
+              <!-- <q-img
+                :src="utils.makeFileUrl(childData.image)"
+                spinner-color="white"
+                style="height: 140px; max-width: 150px"
+              /> -->
               <input type="file" id="profile-image-upload" hidden  accept="image/png, image/jpeg"/>
               <q-input
                 outlined
@@ -527,4 +540,25 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+  .cursor-pointer {
+    cursor: pointer;
+  }
 
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .camera-icon {
+    position: absolute;
+    bottom: 5px;
+    right: -16px;
+    width: 36px; /* Ajuste o tamanho conforme necessário */
+    height: 36px; /* Ajuste o tamanho conforme necessário */
+    background-image: url('../../assets/camera-svgrepo-com.svg'); /* Substitua pelo caminho do seu ícone de câmera */
+    background-size: cover;
+    fill: #000000;
+  }
+</style>
