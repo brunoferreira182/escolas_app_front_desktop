@@ -122,18 +122,24 @@ export default defineComponent({
       this.getUsersList();
     },
     sendDocumentsToUserById (){
+      const file = [{file: this.fileAttach, name:'document'}]
       const opt = {
         route : "/desktop/adm/sendDocumentToUserById",
         body : {
-          file: this.fileAttach,
           userId: this.userId
         }
       };
+      if (this.fileAttach !== null) opt.file = file
+      console.log(opt.file);
+
+      this.$q.loading.show()
       useFetch(opt).then((r) =>{
+        this.$q.loading.hide()
         if(r.error) return this.$q.notify('Falha ao enviar documento!')
         else{
-          this.fileAttach = null
           this.$q.notify('Arquivo enviado!')
+          this.selectUser(null, true)
+          this.fileAttach = null
         }
       })
     },
