@@ -66,12 +66,19 @@
               outlined
               v-model="userData.phone"
               label="Telefone"
-              mask="## #####-####"
+              mask="(##) #####-####"
             />
             <q-input
               outlined
               v-model="userData.email"
               label="Email"
+            />
+            <!-- mascara ta com 15 caracteres -->
+            <q-input v-if="familiarChecked"
+              outlined
+              mask="###############"
+              v-model="userData.billNum"
+              label="Número de cadastro"
             />
           </div>
           <div v-else class="text-grey-8 q-ma-sm">
@@ -309,12 +316,14 @@ export default defineComponent({
         name:'',
         phone:'',
         document:'',
-        email: ''
+        email: '',
+        billNum: '',
       },
       permissions:[],
       allPermissions: [],
       childrenData: [],
       checkedPermissionsList: [],
+      familiarChecked: false,
       childrenList: [],
       userIdSQL: '',
       isActive: 0,
@@ -349,6 +358,9 @@ export default defineComponent({
       this.uploadProfileImage(selectedFile)
     }
   },
+  beforeUnMount() {
+    this.updateUserData()
+  },
   beforeMount() {
     this.getUserDetailById()
   },
@@ -379,7 +391,8 @@ export default defineComponent({
           userId: this.$route.query.userId,
           name: this.userData.name,
           document: this.userData.document,
-          phone: this.childData.phone
+          phone: this.userData.phone,
+          registerNumber: this.userData.billNum
         }
       };
       this.$q.loading.show()
@@ -565,6 +578,9 @@ export default defineComponent({
             this.checkedPermissionsList.forEach((checked) => {
               if (all.id === checked.id) {
                 this.allPermissions[i].checked = true;
+              }
+              if(checked.id === 1){
+                this.familiarChecked = true
               }
             });
           });

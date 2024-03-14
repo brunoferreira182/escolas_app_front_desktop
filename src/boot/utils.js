@@ -190,6 +190,11 @@ const useUtils = {
           route: "/admin/menuList",
           icon: "restaurant_menu",
         },
+        {
+          label: "Arquivos",
+          route: "/admin/archiveSender",
+          icon: "backup",
+        },
       ],
       users: [
         {
