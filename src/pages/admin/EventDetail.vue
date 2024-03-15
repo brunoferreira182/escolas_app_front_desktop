@@ -94,8 +94,22 @@
           />
           <q-input
             outlined
-            label="Adicionar intensidade"
-            v-model="subTypeEvent"
+            label="Adicionar um subtipo de atividade"
+            hint="Ex: Muito, pouco, nada..."
+            v-model="eventActivitySubtypeName"
+          >
+            <template v-slot:after>
+              <q-btn round dense flat color="primary" icon="add"  @click="addActivitySubtype"/>
+            </template>
+          </q-input>
+          <q-chip
+            v-for="(item, index) in activitySubtypes"
+            :key="index"
+            removable
+            @remove="activitySubtypes.splice(index, 1)"
+            color="primary"
+            text-color="white"
+            :label="item"
           />
         </div>
         <q-dialog v-model="dialogInactiveEvent" @hide="dialogInactiveEvent = false">
@@ -150,6 +164,8 @@ export default defineComponent({
         sortBy: "",
       },
       subTypeEvent:[],
+      activitySubtypes: [],
+      eventActivitySubtypeName: ''
     };
   },
   mounted() {
@@ -160,6 +176,14 @@ export default defineComponent({
     this.getClassesList()
   },
   methods: {
+    addActivitySubtype () {
+      if (this.eventActivitySubtypeName === '') {
+        this.$q.notify('Preencha o campo para adicionar um subtipo de atividade.')
+        return
+      }
+      this.activitySubtypes.push(this.eventActivitySubtypeName)
+      this.eventActivitySubtypeName = ''
+    },
     getClassesList() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
@@ -193,10 +217,11 @@ export default defineComponent({
           this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
           return
         }
-          this.eventName = r.data.name
-          this.eventDescription = r.data.description
-          this.classSelected = r.data.classesData
-          this.isActive = r.data.isActive
+        this.eventName = r.data.name
+        this.eventDescription = r.data.description
+        this.classSelected = r.data.classesData
+        this.isActive = r.data.isActive
+        this.activitySubtypes = r.data.activitySubtypes
       });
     },
     inactivateChildEvents() {
@@ -247,7 +272,7 @@ export default defineComponent({
           name: this.eventName,
           classesSelected: extractedData,
           description: this.eventDescription,
-          volume: this.subTypeEvent
+          activitySubtypes: this.activitySubtypes
         },
       };
       this.$q.loading.show();

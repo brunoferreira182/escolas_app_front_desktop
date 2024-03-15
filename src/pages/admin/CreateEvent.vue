@@ -68,6 +68,33 @@
             label="Descrição (Opcional)"
             v-model="eventDescription"
           />
+          <q-input
+            outlined
+            label="Adicionar um subtipo de atividade"
+            hint="Ex: Muito, pouco, nada..."
+            v-model="eventActivitySubtypeName"
+          >
+            <template v-slot:after>
+              <q-btn round dense flat color="primary" icon="add"  @click="addActivitySubtype"/>
+            </template>
+          </q-input>
+          <q-chip
+            v-for="(item, index) in activitySubtypes"
+            :key="index"
+            removable
+            @remove="activitySubtypes.splice(index, 1)"
+            color="primary"
+            text-color="white"
+            :label="item"
+          />
+          <!-- <q-btn
+            label="Adicionar status"
+            color="primary"
+            no-caps
+            unelevated
+            rounded
+            @click="addSubType"
+          /> -->
         </div>
       </div>
     </q-page>
@@ -84,6 +111,8 @@ export default defineComponent({
       eventDescription: '',
       classesOptions: [],
       classSelected: null,
+      activitySubtypes: [],
+      eventActivitySubtypeName: '',
       pagination: {
         page: 1,
         rowsPerPage: 10,
@@ -97,6 +126,14 @@ export default defineComponent({
     this.getClassesList()
   },
   methods: {
+    addActivitySubtype () {
+      if (this.eventActivitySubtypeName === '') {
+        this.$q.notify('Preencha o campo para adicionar um subtipo de atividade.')
+        return
+      }
+      this.activitySubtypes.push(this.eventActivitySubtypeName)
+      this.eventActivitySubtypeName = ''
+    },
     getClassesList() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
@@ -131,6 +168,7 @@ export default defineComponent({
           name: this.eventName,
           classesSelected: extractedData,
           description: this.eventDescription,
+          activitySubtypes: this.activitySubtypes
         },
       };
       this.$q.loading.show();

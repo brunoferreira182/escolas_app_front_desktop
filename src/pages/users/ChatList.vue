@@ -4,17 +4,21 @@
       <div class="row no-padding no-margin" style="height: 90%;">
         <div class="col-4">
           <div>
-            <div class="text-h6 q-ma-sm q-pb-xs" style="margin-right: auto;">Conversas</div>
-            <q-input v-model="search" @keyup="getUsersList()" outlined dense type="search" class="q-mx-sm"
+            <div class="text-h6 q-ma-sm q-pb-xs" style="margin-right: auto;">Turmas</div>
+            <!-- <q-input v-model="search" @keyup="getUsersList()" outlined dense type="search" class="q-mx-sm"
               placeholder="Buscar usuários">
               <template v-slot:append>
                 <q-icon name="search" @click="getUsersList()"/>
               </template>
-            </q-input>
-            <q-list class="q-mt-sm" v-if="clientsList.length > 0 && search.length === 0">
+            </q-input> -->
+            <q-list class="q-mt-sm" v-if="resumeMessagesList">
               <q-scroll-area style="height: 84.85vh;">
-                <q-item class="q-px-none q-py-sm" v-for="(item, i) in clientsList" :key="i"
-                  @click="clkContact(item.userId, i, 'fromList')" clickable>
+                <q-item
+                  class="q-px-none q-py-sm"
+                  v-for="(item, i) in resumeMessagesList"
+                  :key="i"
+                  clickable
+                >
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>
                       <q-img src="../../assets/default-avatar.svg"></q-img>
@@ -22,49 +26,37 @@
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-subtitle1">
-                      {{ item.name }}
+                      {{ item.className }}
                     </q-item-label>
                     <q-item-label class="text-grey-7">
-                      <div v-if="item.lastMessage.text.length > 0">
-                        {{ item.lastMessage.text }}
+                      <div v-if="item.lastMessage">
+                        {{ item.lastMessage.messageData.message }}
                       </div>
-                      <div v-else>
+                      <!-- <div v-else>
                         <div v-if="item.lastMessage.file">
                           <i>{{ item.lastMessage.file.includes('image') ? 'Enviou uma imagem' : 'Enviou um arquivo.' }}</i>
 
                         </div>
-                      </div>
+                      </div> -->
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side class="q-mr-md">
-                    <q-badge v-if="item.lastMessage.internalRead === 0" color="blue-4">{{ item.count }}</q-badge>
+                    <q-item-label caption>
+                      {{ item.lastMessage.createdAt.createdAtLocale.split(' ')[1].slice(0, 5) }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-scroll-area>
             </q-list>
-            <q-list v-if="clientsList.length" class="q-mt-sm">
-              <q-scroll-area style="height: 84.85vh;">
-                <q-item class="q-px-none q-mr-sm" v-for="(client, i) in clientsList" :key="i"
-                  @click="clkContact(client.userId)" clickable>
-                  <q-item-section avatar class="q-pl-sm">
-                    <q-avatar>
-                      <q-img src="../../assets/default-avatar.svg"></q-img>
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section class="text-subtitle1">
-                    {{ client.name }}
-                  </q-item-section>
-                </q-item>
-              </q-scroll-area>
-            </q-list>
-            <div v-else
+
+            <!-- <div v-else
               class="text-center q-mt-xl text-subtitle1 q-mx-md text-grey-8">
               Não foram encontrados clientes.
-            </div>
+            </div> -->
 
           </div>
         </div>
-        <div class="col-8" style="height: 95.3vh;">
+        <!-- <div class="col-8" style="height: 95.3vh;">
           <div @click="clkUserProfile(selectedClient.userId)"
             style="height:6%;display:flex;align-items: center;padding-left: 20px; gap: 15px;border-bottom: 1px ridge #e1e1e1;">
             <q-avatar v-if="selectedClient">
@@ -103,13 +95,14 @@
                 color="primary" icon="attach_file" :disabled="!selectedClient" />
               <q-btn v-if="inputStatus === 'file'" @click="inputStatus = 'message'; currentFile = null" round
                 color="primary" icon="close" />
-              <!-- <q-btn v-if="currentMessage.length > 0 || currentFile !== null" @click="insertInternalMessage" round color="primary"
-                icon="send" /> -->
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
-      <q-dialog v-model="dialogDetailMessage.open">
+
+
+
+      <!-- <q-dialog v-model="dialogDetailMessage.open">
         <q-card class="app-font" style="min-width: 300px;text-align: center;">
           <q-card-section>
             <div class="text-h6">Detalhes da mensagem</div>
@@ -141,7 +134,7 @@
             </div>
           </q-card-section>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
     </q-page>
   </q-page-container>
 </template>
@@ -156,187 +149,177 @@ export default {
   data() {
     return {
       utils,
-      search: '',
-      clientsList: [],
-      resumeMessagesList: [],
-      selectedClient: null,
-      messagesList: [],
-      currentMessage: '',
-      currentFile: null,
-      dialogDetailMessage: {
-        open: false,
-        messageData: null
-      },
-      inputStatus: 'message',
-      messagesLoaded: null,
-      userInfo: '',
-      socket: {
-        messages: null,
-        resume: null
-      }
+      resumeMessagesList: null
     }
   },
   beforeMount() {
-    this.userInfo = utils.presentUserInfo()
-    if (this.$route.query.userId) {
-      console.log('oi')
-      const id = +this.$route.query.userId
-      this.getMessages(id)
-      this.clkContact(id, null, 'fromList')
-    }
-    this.getResumeMessages()
-    this.startSocketResume()
+    this.getActiveClassesAndLastMessage()
+    // this.startSocketResume()
   },
   beforeRouteLeave() {
     if (this.socket.messages) this.socket.messages.disconnect()
     if (this.socket.resume) this.socket.resume.disconnect()
   },
   methods: {
-    startSocketResume: async function () {
-      this.socket.resume = io(this.$masterServerRoute(), {
-        query: {
-          type: 'messengerResume',
-          userId: 'userIdVSPcompanyId' + this.userInfo.companyId
-        }
-      })
-      this.socket.resume.on('newMessage', msg => { this.getResumeMessages() })
-    },
-    startSocketMessages: async function (userId) {
-      console.log('meda aquio?')
-      this.socket.messages = io(this.$masterServerRoute(), {
-        query: {
-          type: 'messengerChat',
-          connectionId: 'VSP-userId' + userId
-        }
-      })
-      this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
-    },
-    pushMessage(msg, type) {
-      if (msg.createdBy.userId === this.userInfo.userId) return
-      this.messagesList.push(msg)
-      this.scrollToBottom()
-    },
-    getUsersList() {
+    getActiveClassesAndLastMessage () {
       const opt = {
-        route: '/desktop/users/getUsersList',
+        route: '/desktop/messenger/getActiveClassesAndLastMessage',
         body: {
-          page: 1,
-          rowsPerPage: 100,
-          searchString: this.search
+          page: 1
         }
-      }
-      useFetch(opt).then(r => {
-        this.clientsList = r.data.list
-      })
-    },
-    getMessages(id) {
-      this.messagesLoaded = null
-      const opt = {
-        route: '/desktop/messenger/getMessages',
-        body: {
-          userId: id
-        }
-      }
-      useFetch(opt).then(r => {
-        this.messagesList = r.data
-        this.messagesLoaded = 1
-        this.scrollToBottom()
-      })
-    },
-    scrollToBottom() {
-      this.$nextTick(() => {
-        this.$refs.chatscrollarea.setScrollPercentage('vertical', 2)
-      })
-    },
-    getResumeMessages() {
-      const opt = {
-        route: '/desktop/messenger/getResumeMessages',
       }
       useFetch(opt).then(r => {
         this.resumeMessagesList = r.data
       })
     },
-    insertInternalMessage() {
-      console.log('qualquer coisa')
-      if (this.currentMessage !== '' || this.currentFile) {
-        const opt = {
-          route: '/desktop/messenger/insertInternalMessage',
-          body: {
-            userId: this.selectedClient.userId,
-            message: this.currentMessage
-          },
-        }
-        if (this.currentFile) opt.file = [{ file: this.currentFile }, { name: 'arquivo' }]
-        const id = this.selectedClient.userId
-        useFetch(opt).then(r => {
-          this.currentMessage = ''
-          this.currentFile = null
-          this.inputStatus = 'message'
-          this.getMessages(id)
-          this.getResumeMessages()
-        })
-      }
-    },
-    getClientInfoById(id) {
-      console.log(id)
-      const opt = {
-        method: 'POST',
-        route: '/desktop/messenger/getClientDetailById',
-        body: {
-          clientId: id,
-        }
-      }
-      useFetch(opt).then(r => {
-        this.selectedClient = r.data
-        this.getMessages(id)
-      })
-    },
-    clkContact(id, i, type) {
-      console.log(id, i, type)
-      // if (i >= 0) {
-      //   this.resumeMessagesList[i].lastMessage.internalRead = 1
-      // }
-      this.getMessages(id)
-      this.getClientInfoById(id)
-      if (type === 'fromList') {
-        try { this.socket.messages.disconnect() }
-        catch (e) { console.log(e, 'nao ha o que desconectar') }
-        this.startSocketMessages(id)
-      }
-    },
-    clkMessage(message) {
-      this.dialogDetailMessage.messageData = message
-      this.dialogDetailMessage.open = true
-    },
-    deleteMessage(message) {
-      const opt = {
-        method: 'POST',
-        route: '/desktop/messenger/updateMessageStatus',
-        body: {
-          messageId: message._id,
-        }
-      }
-      useFetch(opt).then(r => {
-        const id = this.selectedClient.userId
-        this.getMessages(id)
-        this.dialogDetailMessage.open = false
-        this.dialogDetailMessage.messageData = null
-      })
-    },
-    clkAttach() {
-      this.currentMessage = ''
-      this.inputStatus = 'file'
-      this.$nextTick(() => {
-        this.$refs.filepicker.pickFiles();
-      });
-      // fp.pickFiles()
-    },
-    downloadFile(address) {
-      openURL(address)
-    },
-    clkUserProfile(userId) {
-      this.$router.push('/admin/userDetail?_userId=' + userId)
-    }
+
+
+
+    // startSocketResume: async function () {
+    //   this.socket.resume = io(this.$masterServerRoute(), {
+    //     query: {
+    //       type: 'messengerResume',
+    //       userId: 'userIdVSPcompanyId' + this.userInfo.companyId
+    //     }
+    //   })
+    //   this.socket.resume.on('newMessage', msg => { this.getResumeMessages() })
+    // },
+    // startSocketMessages: async function (userId) {
+    //   console.log('meda aquio?')
+    //   this.socket.messages = io(this.$masterServerRoute(), {
+    //     query: {
+    //       type: 'messengerChat',
+    //       connectionId: 'VSP-userId' + userId
+    //     }
+    //   })
+    //   this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
+    // },
+    // pushMessage(msg, type) {
+    //   if (msg.createdBy.userId === this.userInfo.userId) return
+    //   this.messagesList.push(msg)
+    //   this.scrollToBottom()
+    // },
+    // getUsersList() {
+    //   const opt = {
+    //     route: '/desktop/users/getUsersList',
+    //     body: {
+    //       page: 1,
+    //       rowsPerPage: 100,
+    //       searchString: this.search
+    //     }
+    //   }
+    //   useFetch(opt).then(r => {
+    //     this.clientsList = r.data.list
+    //   })
+    // },
+    // getMessages(id) {
+    //   this.messagesLoaded = null
+    //   const opt = {
+    //     route: '/desktop/messenger/getMessages',
+    //     body: {
+    //       userId: id
+    //     }
+    //   }
+    //   useFetch(opt).then(r => {
+    //     this.messagesList = r.data
+    //     this.messagesLoaded = 1
+    //     this.scrollToBottom()
+    //   })
+    // },
+    // scrollToBottom() {
+    //   this.$nextTick(() => {
+    //     this.$refs.chatscrollarea.setScrollPercentage('vertical', 2)
+    //   })
+    // },
+    // getResumeMessages() {
+    //   const opt = {
+    //     route: '/desktop/messenger/getResumeMessages',
+    //   }
+    //   useFetch(opt).then(r => {
+    //     this.resumeMessagesList = r.data
+    //   })
+    // },
+    // insertInternalMessage() {
+    //   console.log('qualquer coisa')
+    //   if (this.currentMessage !== '' || this.currentFile) {
+    //     const opt = {
+    //       route: '/desktop/messenger/insertInternalMessage',
+    //       body: {
+    //         userId: this.selectedClient.userId,
+    //         message: this.currentMessage
+    //       },
+    //     }
+    //     if (this.currentFile) opt.file = [{ file: this.currentFile }, { name: 'arquivo' }]
+    //     const id = this.selectedClient.userId
+    //     useFetch(opt).then(r => {
+    //       this.currentMessage = ''
+    //       this.currentFile = null
+    //       this.inputStatus = 'message'
+    //       this.getMessages(id)
+    //       this.getResumeMessages()
+    //     })
+    //   }
+    // },
+    // getClientInfoById(id) {
+    //   console.log(id)
+    //   const opt = {
+    //     method: 'POST',
+    //     route: '/desktop/messenger/getClientDetailById',
+    //     body: {
+    //       clientId: id,
+    //     }
+    //   }
+    //   useFetch(opt).then(r => {
+    //     this.selectedClient = r.data
+    //     this.getMessages(id)
+    //   })
+    // },
+    // clkContact(id, i, type) {
+    //   console.log(id, i, type)
+    //   // if (i >= 0) {
+    //   //   this.resumeMessagesList[i].lastMessage.internalRead = 1
+    //   // }
+    //   this.getMessages(id)
+    //   this.getClientInfoById(id)
+    //   if (type === 'fromList') {
+    //     try { this.socket.messages.disconnect() }
+    //     catch (e) { console.log(e, 'nao ha o que desconectar') }
+    //     this.startSocketMessages(id)
+    //   }
+    // },
+    // clkMessage(message) {
+    //   this.dialogDetailMessage.messageData = message
+    //   this.dialogDetailMessage.open = true
+    // },
+    // deleteMessage(message) {
+    //   const opt = {
+    //     method: 'POST',
+    //     route: '/desktop/messenger/updateMessageStatus',
+    //     body: {
+    //       messageId: message._id,
+    //     }
+    //   }
+    //   useFetch(opt).then(r => {
+    //     const id = this.selectedClient.userId
+    //     this.getMessages(id)
+    //     this.dialogDetailMessage.open = false
+    //     this.dialogDetailMessage.messageData = null
+    //   })
+    // },
+    // clkAttach() {
+    //   this.currentMessage = ''
+    //   this.inputStatus = 'file'
+    //   this.$nextTick(() => {
+    //     this.$refs.filepicker.pickFiles();
+    //   });
+    //   // fp.pickFiles()
+    // },
+    // downloadFile(address) {
+    //   openURL(address)
+    // },
+    // clkUserProfile(userId) {
+    //   this.$router.push('/admin/userDetail?_userId=' + userId)
+    // }
 
   }
 }
