@@ -26,7 +26,6 @@
                   :key="i"
                   @click="console.log(item)"
                   clickable
-                  @click="openClassChat(resumeMessagesList[i]._id)"
                 >
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>
