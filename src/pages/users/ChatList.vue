@@ -1,17 +1,30 @@
 <template>
   <q-page-container class="no-padding no-margin">
-    <q-page class="no-padding no-margin">
-      <div class="row no-padding no-margin" style="height: 90%;">
-        <div class="col-4">
-          <div>
-            <div class="text-h6 q-ma-sm q-pb-xs" style="margin-right: auto;">Turmas</div>
+    <q-page >
+      <div class="row q-px-md q-gutter-md items-center">
+        <div class="col q-pa-md text-left text-h5">
+          Chat de Turmas
+        </div>
+        <!-- botões ao lado do título -->
+        <!-- <div class="col text-right">
+          <div class="row justify-center items-center">
+            <div class="col">
+            </div>
+            <div class="col">
+            </div>
+          </div>
+        </div> -->
+      </div>
+      <q-separator class="q-mx-" />
+      <div class="row">
+        <div class="col-5 q-ma-md">
             <!-- <q-input v-model="search" @keyup="getUsersList()" outlined dense type="search" class="q-mx-sm"
               placeholder="Buscar usuários">
               <template v-slot:append>
                 <q-icon name="search" @click="getUsersList()"/>
               </template>
             </q-input> -->
-            <q-list class="q-mt-sm" v-if="resumeMessagesList">
+            <q-list v-if="resumeMessagesList">
               <q-scroll-area style="height: 84.85vh;">
                 <q-item
                   class="q-px-none q-py-sm"
@@ -19,6 +32,7 @@
                   :key="i"
                   @click="console.log(item)"
                   clickable
+                  @click="openClassChat(resumeMessagesList[i]._id)"
                 >
                   <q-item-section avatar class="q-pl-sm">
                     <q-avatar>
@@ -48,13 +62,17 @@
                 </q-item>
               </q-scroll-area>
             </q-list>
-
             <!-- <div v-else
               class="text-center q-mt-xl text-subtitle1 q-mx-md text-grey-8">
               Não foram encontrados clientes.
             </div> -->
+        </div>
+        <q-separator vertical />
+        <div class="col q-pa-sm q-ma-sm"
+          v-if="selectedClassMessages || !selectedClassMessages===''"
+        >
+        {{ selectedClassMessages.messageText }} {{ selectedClassMessages.messageAudio }}
 
-          </div>
         </div>
         <!-- <div class="col-8" style="height: 95.3vh;">
           <div @click="clkUserProfile(selectedClient.userId)"
@@ -99,8 +117,6 @@
           </div>
         </div> -->
       </div>
-
-
 
       <!-- <q-dialog v-model="dialogDetailMessage.open">
         <q-card class="app-font" style="min-width: 300px;text-align: center;">
@@ -148,6 +164,7 @@ export default {
   name: 'MessengerChat',
   data() {
     return {
+      selectedClassMessages: null,
       utils,
       resumeMessagesList: null
     }
@@ -172,6 +189,18 @@ export default {
         this.resumeMessagesList = r.data
       })
     },
+    openClassChat(classId) {
+      const opt = {
+        route: '/desktop/messenger/getClassMessages',
+        body: {
+          classId: classId
+        }
+      }
+      useFetch(opt).then((r) => {
+        this.selectedClassMessages = r.data
+      })
+      console.log('chupando pau', this.selectedClassMessages)
+    }
 
 
 
