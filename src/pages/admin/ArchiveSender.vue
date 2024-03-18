@@ -68,7 +68,7 @@
                 </template>
               </q-input>
             </div>
-            <q-scroll-area style="height: 475px; max-width: 400px;">
+            <q-scroll-area style="height: 475px; max-width: auto;">
                 <q-item v-for="(user, i) in userList"
                   :key="user"
                   class="bg-grey-3 cursor-pointer"
@@ -140,7 +140,7 @@ export default defineComponent({
     sendDocumentsToUserById (){
       const file = [{file: this.fileAttach, name:'document'}]
       const opt = {
-        route : "/desktop/adm/sendDocumentToUserById",
+        route : "/desktop/adm/sendFileToUserById",
         body : {
           type: this.documentType,
           userId: this.userId
