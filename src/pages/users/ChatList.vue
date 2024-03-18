@@ -17,6 +17,7 @@
                   class="q-px-none q-py-sm"
                   v-for="(item, i) in resumeMessagesList"
                   :key="i"
+                  @click="console.log(item)"
                   clickable
                 >
                   <q-item-section avatar class="q-pl-sm">
@@ -35,7 +36,6 @@
                       <!-- <div v-else>
                         <div v-if="item.lastMessage.file">
                           <i>{{ item.lastMessage.file.includes('image') ? 'Enviou uma imagem' : 'Enviou um arquivo.' }}</i>
-
                         </div>
                       </div> -->
                     </q-item-label>

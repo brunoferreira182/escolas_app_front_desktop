@@ -157,11 +157,14 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then((r) =>{
         this.$q.loading.hide()
-        if(r.error) return this.$q.notify('Falha ao enviar documento!')
-        else{
+        if(!r.error){
           this.$q.notify('Arquivo enviado!')
           this.selectUser(null, true)
           this.fileAttach = null
+        }
+        else{
+          this.$q.notify('Falha ao enviar documento!')
+          return
         }
       })
     },
