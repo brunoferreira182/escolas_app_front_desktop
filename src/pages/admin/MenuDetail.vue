@@ -62,6 +62,7 @@
           /> -->
           <q-input
             outlined
+            readonly
             label="Data de início e fim"
           >
           <template v-slot:append>
@@ -190,10 +191,10 @@ export default defineComponent({
         this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
         return
       }
-      console.log(r.data,'QUI LOUCURAA')
       // this.menuName = r.data.name
       // this.menuContent = r.data.content
       this.menuDate = r.data.date
+      this.fileAttach = r.data.file
       this.isActive = r.data.isActive
     });
     this.formatDate()

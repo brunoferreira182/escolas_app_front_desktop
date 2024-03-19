@@ -26,13 +26,13 @@ export const useTableColumns = defineStore("tableColumns", {
       },
     ],
     menuList: [
-      {
-        name: "name",
-        align: "left",
-        label: "Nome do menu",
-        field: "name",
-        sortable: true,
-      },
+      // {
+      //   name: "name",
+      //   align: "left",
+      //   label: "Nome do menu",
+      //   field: "name",
+      //   sortable: true,
+      // },
       {
         name: "date",
         align: "left",
