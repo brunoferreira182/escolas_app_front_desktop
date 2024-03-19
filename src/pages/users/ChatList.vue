@@ -59,16 +59,15 @@
           <q-separator vertical />
           <div class="col q-pa-sm q-mr-md items-center" style="position:relative; ">
           <q-scroll-area v-if="selectedClassMessages"  ref="chatscrollarea" >
-            <div style="height: calc(100hv - 170px); overflow-y: auto;">
+            <div style="height: 400px; overflow-y: auto;">
               <q-chat-message
-                v-for="message in selectedClassMessages"
-                :key="message"
-                :name="message.createdBy.name"
+                v-for="(message, i) in messagesInClass"
+                :key="message._id"
+                :name="message.createdBy"
                 avatar="../../assets/default-avatar.svg"
                 :stamp="message.createdAt.createdAtLocale.split(' ')[1].slice(0,5)"
-                :text="message.messageText"
               >
-              <div v-if="message.messageText" > {{ message.messageText }}</div>
+              <div v-if="message.messageText"> {{ message.messageText }}</div>
               <!-- <div v-else>
                 <q-img :src="`${$attachmentsAddress()}${message.messageFile}`" />
                 </div> -->
@@ -79,7 +78,7 @@
           <div
             style="display: flex; "
             class="fixed-bot items-center q-gutter-sm q-px-sm q-ma-sm bg-grey-3 ">
-            <q-input
+              <q-input
               v-if="inputStatus === 'message'"
               @keyup.enter="newBkoMessage"
               v-model="currentMessage"
@@ -88,9 +87,9 @@
               outlined
               :readonly="!selectedClassMessages"
               />
-            <q-file
-            v-if="inputStatus === 'file'"
-            ref="filepicker"
+              <q-file
+              v-if="inputStatus === 'file'"
+              ref="filepicker"
               outlined
               bg-color="white"
               v-model="currentFile"
@@ -138,6 +137,7 @@ export default {
       selectedClassMessages: null,
       currentMessage: '',
       utils,
+      messagesInClass: [],
       resumeMessagesList: null
     }
   },
@@ -163,8 +163,16 @@ export default {
         })
       }
     },
+    clkAttach () {
+      this.currentMessage = ''
+      this.inputStatus = 'file'
+      this.$nextTick(() => {
+        this.$refs.filepicker.pickFiles();
+      });
+      // fp.pickFiles()
+    },
     clkAttach(){
-      console.log('CHUPA CU DA ROLa GROSAAA')
+      console.log('CHupisco')
     },
     getActiveClassesAndLastMessage () {
       const opt = {
@@ -183,6 +191,7 @@ export default {
       })
     },
     openClassChat(classId) {
+      this.selectedClassMessages = null
       const opt = {
         route: '/desktop/messenger/getClassMessages',
         body: {
@@ -191,11 +200,22 @@ export default {
       }
       useFetch(opt).then((r) => {
         this.selectedClassMessages = r.data
+        r.data.forEach(message => {
+          this.messagesInClass.push(message.messageText)
+        });
         console.log('CHUPADOR DE CANO CURTO', this.selectedClassMessages)
       })
-    }
-
-
+    },
+    // startSocketMessages: async function (userId) {
+    //   console.log('meda aquio?')
+    //   this.socket.messages = io(this.$masterServerRoute(), {
+    //     query: {
+    //       type: 'messengerChat',
+    //       connectionId: 'VSP-userId' + userId
+    //     }
+    //   })
+    //   this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
+    // },
   }
 }
 </script>
