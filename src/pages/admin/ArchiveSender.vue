@@ -147,7 +147,6 @@ export default defineComponent({
         }
       };
       if (this.fileAttach !== null) opt.file = file
-      console.log(opt.file);
       if (this.documentType === 'Boleto' && this.barCode !== ''){
         opt.body.barCode = this.barCode
       } else if (this.documentType === 'Boleto' && this.barCode === ''){

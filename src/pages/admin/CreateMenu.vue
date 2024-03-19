@@ -29,12 +29,12 @@
             Preencha os dados
           </div>
           <div class="no-margin q-px-md text-caption"> Cardápio</div>
-          <q-input
+          <!-- <q-input
             outlined
             label="Nome do cardápio"
             hint="Ex: Cardápio Feveireiro, semanal do dia"
             v-model="menuName"
-          />
+          /> -->
           <q-input
             outlined
             readonly
@@ -55,10 +55,15 @@
           <div class="text-subtitle">
             Insira o cardápio abaixo
           </div>
-          <q-editor
+          <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
+            <template v-slot:prepend>
+              <q-icon name="cloud_upload" />
+            </template>
+          </q-file>
+          <!-- <q-editor
             v-model="menuContent"
             min-height="5rem"
-          />
+          /> -->
         </div>
       </div>
     </q-page>
@@ -73,9 +78,10 @@ export default defineComponent({
   name: "CreateMenu",
   data() {
     return {
-      menuName: '',
-      menuContent: '',
+      // menuName: '',
+      // menuContent: '',
       menuDate: null,
+      fileAttach: null,
     };
   },
   mounted() {
@@ -94,26 +100,32 @@ export default defineComponent({
     return `Data do cardápio `
   },
     createMenu() {
-      if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
-        this.$q.notify('Preencha todos os campos para prosseguir.')
+    // if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
+    //   this.$q.notify('Preencha todos os campos para prosseguir.')
+    //   return
+    // }
+      if(this.date === null){
+        this.$q.notify('Preencha a Data de aplicação do cardápio!')
         return
       }
-        if (this.menuDate && this.menuDate.from && this.menuDate.to) {
-          // Range date format sempre verificar o objeto inteiro
-          this.menuDate.from = format(this.menuDate.from, 'yyyy/MM/dd');
-          this.menuDate.to = format(this.menuDate.to, 'yyyy/MM/dd');
-        } else {
-          // Single date format
-          this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
-        }
+      if (this.menuDate && this.menuDate.from && this.menuDate.to) {
+        // Range date format sempre verificar o objeto inteiro
+        this.menuDate.from = format(this.menuDate.from, 'yyyy/MM/dd');
+        this.menuDate.to = format(this.menuDate.to, 'yyyy/MM/dd');
+      } else {
+        // Single date format
+        this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
+      }
+      const file = [{file: this.fileAttach, name:'menu'}]
       const opt = {
         route: "/desktop/adm/createMenu",
         body: {
-          name: this.menuName,
-          content: this.menuContent,
+          // name: this.menuName,
+          // content: this.menuContent,
           menuDate: this.menuDate
         },
       };
+      if(this.fileAttach && this.fileAttach !== null) opt.file = file
       this.$q.loading.show();
       useFetch(opt).then((r) => {
         this.$q.loading.hide()

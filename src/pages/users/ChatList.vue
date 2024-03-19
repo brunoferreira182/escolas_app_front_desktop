@@ -57,17 +57,17 @@
             </q-list>
           </div>
           <q-separator vertical />
-          <div class="col q-pa-sm q-mr-md items-center" style="position:relative; ">
-          <q-scroll-area v-if="selectedClassMessages"  ref="chatscrollarea" >
-            <div style="height: 400px; overflow-y: auto;">
+          <div class="col q-pa-sm q-mr-md " style="position:relative; ">
+          <q-scroll-area ref="chatscrollarea" style="height: 100%;padding-bottom: 75px;" >
+            <div style="display: flex;flex-direction: column;width: 100%;padding-inline: 10px;">
               <q-chat-message
-                v-for="(message, i) in messagesInClass"
+                v-for="message in messagesInClass"
                 :key="message._id"
                 :name="message.createdBy"
                 avatar="../../assets/default-avatar.svg"
-                :stamp="message.createdAt.createdAtLocale.split(' ')[1].slice(0,5)"
+
               >
-              <div v-if="message.messageText"> {{ message.messageText }}</div>
+              <div v-if="!message.messageFile"> {{ message }}</div>
               <!-- <div v-else>
                 <q-img :src="`${$attachmentsAddress()}${message.messageFile}`" />
                 </div> -->
@@ -137,6 +137,7 @@ export default {
       selectedClassMessages: null,
       currentMessage: '',
       utils,
+      classIdSelected: '',
       messagesInClass: [],
       resumeMessagesList: null
     }
@@ -153,12 +154,16 @@ export default {
     newBkoMessage(){
       if(this.currentMessage !== '' && this.currentMessage){
         const opt = {
-          route: '/desktop/messenger/',
+          route: '/desktop/messenger/insertInternalMessage',
           body:{
+            userId: this.classIdSelected,
             message: this.currentMessage,
           }
         }
-        useFetch(opt).then(r=>{
+        useFetch(opt).then((r) => {
+          if(error){
+            console.log('Internal Error')
+          }
           console.log('CHUPA CU DA ROLA LONGA')
         })
       }
@@ -174,7 +179,7 @@ export default {
     clkAttach(){
       console.log('CHupisco')
     },
-    getActiveClassesAndLastMessage () {
+    getActiveClassesAndLastMessage (){
       const opt = {
         route: '/desktop/messenger/getActiveClassesAndLastMessage',
         body: {
@@ -191,6 +196,7 @@ export default {
       })
     },
     openClassChat(classId) {
+      this.classIdSelected = classId
       this.selectedClassMessages = null
       const opt = {
         route: '/desktop/messenger/getClassMessages',
@@ -216,6 +222,11 @@ export default {
     //   })
     //   this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
     // },
+    pushMessage(msg, type) {
+      if (msg.createdBy.userId === this.userInfo.userId) return;
+      this.messagesList.push(msg);
+      this.scrollToBottom();
+    },
   }
 }
 </script>

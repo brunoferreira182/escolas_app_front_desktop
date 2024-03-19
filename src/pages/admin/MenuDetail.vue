@@ -3,7 +3,8 @@
     <q-page>
       <div class="q-pa-md q-ml-sm row justify-between">
         <div class="col-6 text-h5 text-capitalize">
-          {{ menuName}}
+          {{ formatDate() }}
+          <!-- {{ menuDate.from }} a {{ menuDate.to}} -->
           <div class="text-caption">Detalhe do cardápio</div>
         </div>
         <div class="col text-right q-gutter-x-sm">
@@ -53,25 +54,40 @@
           <div class="text-h5">
             Dados
           </div>
-          <q-input
+          <!-- <q-input
             outlined
             label="Nome do cardápio"
             hint="Ex: Cardápio segunda-feira"
             v-model="menuName"
-          />
+          /> -->
           <q-input
             outlined
-            label="Data do cardápio"
-            type="date"
-            v-model="menuDate"
-          />
+            label="Data de início e fim"
+          >
+          <template v-slot:append>
+              <q-icon class="q-pa-md cursor-pointer" name="event">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date mask="DD/MM/YYYY" v-model="menuDate" range>
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
           <div class="text-subtitle">
             Insira o cardápio abaixo
           </div>
-          <q-editor
+          <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
+            <template v-slot:prepend>
+              <q-icon name="cloud_upload" />
+            </template>
+          </q-file>
+          <!-- <q-editor
             v-model="menuContent"
             min-height="5rem"
-          />
+          /> -->
         </div>
       </div>
       <q-dialog v-model="dialogInactiveMenu" @hide="dialogInactiveMenu = false">
@@ -106,14 +122,17 @@
 </template>
 <script>
 import { defineComponent } from "vue";
+import { format } from 'date-fns';
 import useFetch from "../../boot/useFetch";
 export default defineComponent({
   name: "MenuDetail",
   data() {
     return {
-      menuName: '',
-      menuContent: '',
+      // menuName: '',
+      fileAttach: null,
+      // menuContent: '',
       menuDate: null,
+      formattedDate: '',
       isActive: null,
       dialogInactiveMenu: false,
     };
@@ -123,84 +142,103 @@ export default defineComponent({
     this.getMenuDetailById()
   },
   methods: {
-    inactiveMenu() {
-      const opt = {
-        route: "/desktop/adm/inactiveMenu",
-        body: {
-          menuId: this.$route.query.menuId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Cardápio inativado com sucesso!')
-          this.$router.back()
+  inactiveMenu() {
+    const opt = {
+      route: "/desktop/adm/inactiveMenu",
+      body: {
+        menuId: this.$route.query.menuId
+      },
+    };
+    this.$q.loading.show();
+    useFetch(opt).then((r) => {
+      this.$q.loading.hide()
+      if(r.error){
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+        return
+      } this.$q.notify('Cardápio inativado com sucesso!')
+        this.$router.back()
       });
     },
-    activeMenu() {
-      const opt = {
-        route: "/desktop/adm/activeMenu",
-        body: {
-          menuId: this.$route.query.menuId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Cardápio ativado com sucesso!')
-          this.$router.back()
-      });
-    },
-    getMenuDetailById() {
-      const opt = {
-        route: "/desktop/adm/getMenuDetailById",
-        body: {
-          menuId: this.$route.query.menuId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        }
-          this.menuName = r.data.name
-          this.menuContent = r.data.content
-          this.menuDate = r.data.date
-          this.isActive = r.data.isActive
-      });
-    },
-    updateMenu() {
-      if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
-        this.$q.notify('Preencha todos os campos para prosseguir.')
+  activeMenu() {
+    const opt = {
+      route: "/desktop/adm/activeMenu",
+      body: {
+        menuId: this.$route.query.menuId
+      },
+    };
+    this.$q.loading.show();
+    useFetch(opt).then((r) => {
+      this.$q.loading.hide()
+      if(r.error){
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+        return
+      } this.$q.notify('Cardápio ativado com sucesso!')
+      this.$router.back()
+    });
+  },
+  getMenuDetailById() {
+    const opt = {
+      route: "/desktop/adm/getMenuDetailById",
+      body: {
+        menuId: this.$route.query.menuId
+      },
+    };
+    this.$q.loading.show();
+    useFetch(opt).then((r) => {
+      this.$q.loading.hide()
+      if(r.error){
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
         return
       }
-      const opt = {
-        route: "/desktop/adm/updateMenu",
-        body: {
-          name: this.menuName,
-          content: this.menuContent,
-          date: this.menuDate,
-          menuId: this.$route.query.menuId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Cardápio atualizado com sucesso!')
-          this.$router.back()
-      });
-    },
+      console.log(r.data,'QUI LOUCURAA')
+      // this.menuName = r.data.name
+      // this.menuContent = r.data.content
+      this.menuDate = r.data.date
+      this.isActive = r.data.isActive
+    });
+    this.formatDate()
+  },
+  formatDate(){
+    if (this.menuDate && this.menuDate.from && this.menuDate.to){
+        const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
+        const toDate = format(this.menuDate.to, 'dd/MM/yyyy');
+      return `${fromDate} até ${toDate}`
+    }
+    // else if (this.menuDate && this.menuDate !== null){
+    //   const formattedDate = format(this.menuDate, 'dd/MM/yyyy');
+    //   return `${formattedDate}`
+    // }
+  },
+  updateMenu() {
+    if(this.menuDate.from ==='' && this.menuDate.from ===''){
+      this.$q.notify('Preencha a data de uso do cardápio.')
+      return
+    }
+    // if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
+    //   this.$q.notify('Preencha todos os campos para prosseguir.')
+    //   return
+    // }
+    const file = [{file: this.fileAttach, name:'menu'}]
+    const opt = {
+      route: "/desktop/adm/updateMenu",
+      body: {
+        // name: this.menuName,
+        // content: this.menuContent,
+        date: this.menuDate,
+        menuId: this.$route.query.menuId
+      },
+    };
+    if(this.fileAttach !== null) opt.file= file
+    this.$q.loading.show();
+    useFetch(opt).then((r) => {
+      this.$q.loading.hide()
+      if(r.error){
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+        return
+      } this.$q.notify('Cardápio atualizado com sucesso!')
+        this.$router.back()
+    });
+  },
   },
 });
 </script>
