@@ -24,7 +24,7 @@
                   class="q-px-none q-py-sm"
                   v-for="(item, i) in resumeMessagesList"
                   :key="i"
-                  @click="console.log(item)"
+                  @click="openClassChat(resumeMessagesList[i]._id)"
                   clickable
                 >
                   <q-item-section avatar class="q-pl-sm">
@@ -57,17 +57,18 @@
             </q-list>
           </div>
           <q-separator vertical />
-          <div class="col q-pa-sm items-center">
+          <div class="col q-pa-sm q-mr-md items-center" style="position:relative; ">
           <q-scroll-area v-if="selectedClassMessages"  ref="chatscrollarea" >
-            <div style="padding-inline: 10px;" class="q-mt-sm">
+            <div style="height: calc(100hv - 170px); overflow-y: auto;">
               <q-chat-message
                 v-for="message in selectedClassMessages"
                 :key="message"
                 :name="message.createdBy.name"
                 avatar="../../assets/default-avatar.svg"
                 :stamp="message.createdAt.createdAtLocale.split(' ')[1].slice(0,5)"
+                :text="message.messageText"
               >
-              <div v-if="!message.messageFile">{{ message.messageText }}</div>
+              <div v-if="message.messageText" > {{ message.messageText }}</div>
               <!-- <div v-else>
                 <q-img :src="`${$attachmentsAddress()}${message.messageFile}`" />
                 </div> -->
@@ -76,8 +77,8 @@
           </q-scroll-area>
 
           <div
-            style="display: flex;"
-            class="items-center q-gutter-sm q-px-sm q-ma-sm bg-grey-3 ">
+            style="display: flex; "
+            class="fixed-bot items-center q-gutter-sm q-px-sm q-ma-sm bg-grey-3 ">
             <q-input
               v-if="inputStatus === 'message'"
               @keyup.enter="newBkoMessage"
@@ -150,7 +151,17 @@ export default {
   },
   methods: {
     newBkoMessage(){
-      console.log('CHUPA CU DA ROLA LONGA')
+      if(this.currentMessage !== '' && this.currentMessage){
+        const opt = {
+          route: '/desktop/messenger/',
+          body:{
+            message: this.currentMessage,
+          }
+        }
+        useFetch(opt).then(r=>{
+          console.log('CHUPA CU DA ROLA LONGA')
+        })
+      }
     },
     clkAttach(){
       console.log('CHUPA CU DA ROLa GROSAAA')
@@ -180,12 +191,21 @@ export default {
       }
       useFetch(opt).then((r) => {
         this.selectedClassMessages = r.data
+        console.log('CHUPADOR DE CANO CURTO', this.selectedClassMessages)
       })
-      console.log('CHUPADOR DE CANO CURTO', this.selectedClassMessages)
     }
 
 
   }
 }
 </script>
+
+<style>
+.fixed-bot {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+</style>
 
