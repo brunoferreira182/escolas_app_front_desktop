@@ -215,17 +215,25 @@ export default defineComponent({
       this.$q.notify('Preencha a data de uso do cardápio.')
       return
     }
+    if (this.menuDate && this.menuDate.from && this.menuDate.to) {
+      // Range date format sempre verificar o objeto inteiro
+      this.menuDate.from = format(this.menuDate.from, 'yyyy/MM/dd');
+      this.menuDate.to = format(this.menuDate.to, 'yyyy/MM/dd');
+    } else {
+      // Single date format
+      this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
+    }
     // if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
     //   this.$q.notify('Preencha todos os campos para prosseguir.')
     //   return
     // }
-    const file = [{file: this.fileAttach, name:'menu'}]
+    const file = [{file: this.fileAttach, Name:'menu'}]
     const opt = {
       route: "/desktop/adm/updateMenu",
       body: {
         // name: this.menuName,
         // content: this.menuContent,
-        date: this.menuDate,
+        menuDate: this.menuDate,
         menuId: this.$route.query.menuId
       },
     };

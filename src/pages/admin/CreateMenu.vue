@@ -116,7 +116,7 @@ export default defineComponent({
         // Single date format
         this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
       }
-      const file = [{file: this.fileAttach, name:'menu'}]
+      const file = [{file: this.fileAttach, Name:'menu'}]
       const opt = {
         route: "/desktop/adm/createMenu",
         body: {
