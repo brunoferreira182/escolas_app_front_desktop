@@ -59,18 +59,36 @@
           <q-separator vertical />
           <div class="col q-pa-sm q-mr-md " style="position:relative; ">
           <q-scroll-area ref="chatscrollarea" style="height: 100%;padding-bottom: 75px;" >
-            <div style="display: flex;flex-direction: column;width: 100%;padding-inline: 10px;">
-              <q-chat-message
-                v-for="message in messagesInClass"
-                :key="message._id"
-                :name="message.createdBy"
-                avatar="../../assets/default-avatar.svg"
+            <div style="display: flex; flex-direction: column; width: 100%; padding-inline: 10px;">
 
+              <q-chat-message
+                v-for="message in selectedClassMessages"
+                :key="message._id"
+                text-color="white"
+                avatar="../../assets/default-avatar.svg"
               >
-              <div v-if="!message.messageFile"> {{ message }}</div>
-              <!-- <div v-else>
-                <q-img :src="`${$attachmentsAddress()}${message.messageFile}`" />
-                </div> -->
+              <template v-slot:name>{{message.createdBy.name}}</template>
+              <template v-slot:avatar>
+                <img
+                  class="q-message-avatar q-message-avatar--received"
+                  src="../../assets/default-avatar.svg"
+                >
+              </template>
+              <div> {{message.messageText}} </div>
+              </q-chat-message>
+              <q-chat-message
+                sent
+                bg-color="primary"
+                text-color="white"
+              >
+              <div v-if="currentMessage !== ''"> {{currentMessage}} </div>
+                <template v-slot:avatar>
+                  <img
+                    v-if="currentMessage !== ''"
+                    class="q-message-avatar q-message-avatar--sent"
+                    src="../../assets/default-avatar.svg"
+                  >
+                </template>
               </q-chat-message>
             </div>
           </q-scroll-area>
@@ -139,6 +157,7 @@ export default {
       utils,
       classIdSelected: '',
       messagesInClass: [],
+      lastMessage: '',
       resumeMessagesList: null
     }
   },
@@ -161,10 +180,16 @@ export default {
           }
         }
         useFetch(opt).then((r) => {
-          if(error){
+          if(r.error){
             console.log('Internal Error')
           }
-          console.log('CHUPA CU DA ROLA LONGA')
+          console.log()
+          this.currentMessage = ''
+          // this.selectedClassMessages.push({
+          //   _id: r.data._id, // Supondo que a resposta contenha o ID da mensagem
+          //   createdBy: { name: 'Você' }, // Supondo que a mensagem enviada deve ser exibida como vinda do usuário atual
+          //   messageText: r.data.message // Supondo que a resposta contém o texto da mensagem
+          // })
         })
       }
     },
@@ -209,19 +234,8 @@ export default {
         r.data.forEach(message => {
           this.messagesInClass.push(message.messageText)
         });
-        console.log('CHUPADOR DE CANO CURTO', this.selectedClassMessages)
       })
     },
-    // startSocketMessages: async function (userId) {
-    //   console.log('meda aquio?')
-    //   this.socket.messages = io(this.$masterServerRoute(), {
-    //     query: {
-    //       type: 'messengerChat',
-    //       connectionId: 'VSP-userId' + userId
-    //     }
-    //   })
-    //   this.socket.messages.on('newMessage', msg => { this.pushMessage(msg, 'veio do socket') })
-    // },
     pushMessage(msg, type) {
       if (msg.createdBy.userId === this.userInfo.userId) return;
       this.messagesList.push(msg);
