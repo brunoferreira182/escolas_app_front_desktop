@@ -38,7 +38,7 @@
           <q-input
             outlined
             readonly
-            :label="dateFormater()"
+            :label=" label"
           >
             <template v-slot:append>
               <q-icon class="q-pa-md cursor-pointer" name="event">
@@ -80,31 +80,40 @@ export default defineComponent({
     return {
       // menuName: '',
       // menuContent: '',
-      menuDate: null,
+      menuDate: {
+        from: '',
+        to: ''
+      },
       fileAttach: null,
+      label: '',
     };
   },
   mounted() {
     this.$q.loading.hide();
   },
+  watch:{
+    menuDate:{
+      handler: 'dateFormater',
+      deep: true
+    }
+  },
   methods: {
     dateFormater(){
-    if (this.menuDate && this.menuDate.from && this.menuDate.to){
+      if (this.menuDate && this.menuDate.from && this.menuDate.to){
         const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
         const toDate = format(this.menuDate.to, 'dd/MM/yyyy');
-      return `Data do cardápio: ${fromDate} até ${toDate}`
-    }else if (this.menuDate && this.menuDate !== null){
-      const formattedDate = format(this.menuDate, 'dd/MM/yyyy');
-      return `Data do cardápio: ${formattedDate}`
-    }
-    return `Data do cardápio `
-  },
+        this.label= `Data do cardápio: ${fromDate} até ${toDate}`
+      }else if (this.menuDate && this.menuDate !== null){
+        const formattedDate = format(this.menuDate, 'dd/MM/yyyy');
+        this.label= `Data do cardápio: ${formattedDate}`
+      }
+    },
     createMenu() {
     // if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
     //   this.$q.notify('Preencha todos os campos para prosseguir.')
     //   return
     // }
-      if(this.date === null){
+      if(this.menuDate.from === '' || this.menuDate.to === ''){
         this.$q.notify('Preencha a Data de aplicação do cardápio!')
         return
       }

@@ -193,13 +193,14 @@ export default defineComponent({
       }
       // this.menuName = r.data.name
       // this.menuContent = r.data.content
+      console.log(r.data.date,'data')
       this.menuDate = r.data.date
       this.fileAttach = r.data.file
       this.isActive = r.data.isActive
     });
     this.formatDate()
   },
-  formatDate(){
+  async formatDate(){
     if (this.menuDate && this.menuDate.from && this.menuDate.to){
         const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
         const toDate = format(this.menuDate.to, 'dd/MM/yyyy');
