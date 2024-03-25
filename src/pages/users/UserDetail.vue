@@ -77,7 +77,7 @@
             <q-input v-if="familiarChecked"
               outlined
               mask="###############"
-              v-model="userData.billNum"
+              v-model="userData.registerNumber"
               label="Número de cadastro"
             />
           </div>
@@ -317,7 +317,7 @@ export default defineComponent({
         phone:'',
         document:'',
         email: '',
-        billNum: '',
+        registerNumber: '',
       },
       permissions:[],
       allPermissions: [],
@@ -392,7 +392,7 @@ export default defineComponent({
           name: this.userData.name,
           document: this.userData.document,
           phone: this.userData.phone,
-          registerNumber: this.userData.billNum
+          registerNumber: this.userData.registerNumber
         }
       };
       this.$q.loading.show()
