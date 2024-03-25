@@ -95,6 +95,11 @@
                 v-model="childData.birthdate"
                 label="Data de nascimento"
               />
+              <q-input
+                outlined
+                v-model="childData.birthDocument"
+                label="Certidão de nascimento"
+              />
             </div>
             <div v-else class="text-grey-8 q-ma-sm">
               Este usuário não possui dados compartilhados
@@ -323,6 +328,7 @@ export default defineComponent({
       childData: {
         name: '',
         document: '',
+        birthDocument: '',
         birthdate: '',
       },
       dialogDeleteResponsable: {
@@ -505,6 +511,7 @@ export default defineComponent({
           childId: this.$route.query.userId,
           name: this.childData.name,
           document: this.childData.document,
+          document: this.childData.birthDocument,
           birthdate: this.childData.birthdate
         }
       }
