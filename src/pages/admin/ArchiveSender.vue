@@ -8,7 +8,13 @@
         <div class="col text-right">
           <div class="row justify-center items-center">
             <div class="col">
-              <q-select rounded outlined dense :options="typeArch" v-model="documentType" label="Tipo de arquivo" />
+              <q-select
+                outlined
+                dense
+                debounce="300"
+                :options="typeArch"
+                v-model="documentType"
+                label="Tipo de arquivo" />
             </div>
             <div class="col">
               <q-btn
@@ -160,6 +166,7 @@ export default defineComponent({
           this.$q.notify('Arquivo enviado!')
           this.selectUser(null, true)
           this.fileAttach = null
+          this.barCode = ''
         }
         else{
           this.$q.notify('Falha ao enviar documento!')
