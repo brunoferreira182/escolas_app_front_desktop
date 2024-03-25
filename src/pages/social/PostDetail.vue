@@ -377,7 +377,7 @@ export default defineComponent({
         body: {
           postId: this.$route.query.postId,
           resume: this.postData.resume,
-          detail:this.postData.detail
+          detail: this.postData.detail
         },
         file: files
       }
@@ -390,7 +390,6 @@ export default defineComponent({
 })
 </script>
 <style >
-
 
 .color-primary {
   color: #222222;

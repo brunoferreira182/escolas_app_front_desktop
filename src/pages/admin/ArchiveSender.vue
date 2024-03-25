@@ -78,7 +78,7 @@
                 <q-item v-for="(user, i) in userList"
                   :key="user"
                   class="bg-grey-3 cursor-pointer"
-                  style="margin-bottom: 3px; border-radius: 15px;"
+                  style="margin-bottom: 3px;"
                   >
                   <q-item-section
                   @click="selectUser(userList[i])"

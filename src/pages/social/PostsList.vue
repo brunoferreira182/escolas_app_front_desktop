@@ -129,13 +129,10 @@ export default defineComponent({
           sortBy: sortBy,
         },
       };
-      switch(this.selectFilter){
-        case 'Ativos:':
-          opt.body.status = 'active'
-        break;
-        case 'Inativos:':
-          opt.body.status = 'inactive'
-        break;
+      if (this.selectFilter === "Ativos" || this.selectFilter === null){
+          opt.body.isActive = 1
+      } else if (this.selectFilter === "Inativos"){
+          opt.body.isActive = 0
       }
       useFetch(opt).then((r) => {
         this.postsList = r.data.list
