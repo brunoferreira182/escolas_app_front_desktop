@@ -8,13 +8,7 @@
         <div class="col text-right">
           <div class="row justify-center items-center">
             <div class="col">
-              <q-select
-                outlined
-                dense
-                debounce="300"
-                :options="typeArch"
-                v-model="documentType"
-                label="Tipo de arquivo" />
+              
             </div>
             <div class="col">
               <q-btn
@@ -35,31 +29,74 @@
       <q-separator class="q-mx-md" />
       <div class="row">
         <div class="col-6 q-ma-md q-gutter-y-md">
-          <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
+          <q-select
+            outlined
+            debounce="300"
+            :options="typeArch"
+            v-model="documentType"
+            label="Tipo de arquivo"
+          />
+          <q-file outlined v-model="fileAttach" label="Escolher arquivo">
             <template v-slot:prepend>
               <q-icon name="cloud_upload" />
             </template>
           </q-file>
           <div v-if= "documentType === 'Boleto' && documentType !== ''" >
-            <q-input filled v-model= "barCode" label= "Código de barras"/>
+            <q-input outlined v-model= "barCode" label= "Código de barras"/>
           </div>
-          <div
-              v-if = "user || user===true" style="border-radius: 20px;"
-              class="row items-center text-subtitle2 q-pa-md bg-grey-3">
-              <div
-                class="col"
-              >
-                Nome: {{ this.user.name }} <br>
-                Registro: {{ this.user.registerNumber}}
-              </div>
-              <div class="self-end" >
-                <q-btn @click="selectUser(null, true)" class="justify-end" unelevated icon="clear"/>
-              </div>
+          <div 
+            v-if="userId"
+            style="border-radius: 20px;"
+            class="row items-center text-subtitle2 q-pa-md bg-grey-3"
+          >
+            <div class="col">
+              Nome: {{ this.user.name }} <br>
+              Registro: {{ this.user.registerNumber}}
             </div>
+            <div class="self-end" >
+              <q-btn @click="selectUser(null, true)" class="justify-end" unelevated icon="clear"/>
+            </div>
+          </div>
         </div>
         <q-separator vertical />
         <div class="col">
-          <div class="col q-pa-sm items-center">
+          <q-table
+            flat class="bg-accent"
+            :columns="columnsData"
+            row-key="_id"
+            virtual-scroll
+            rows-per-page-label="Registros por página"
+            no-data-label="Nenhum dado"
+            no-results-label="A pesquisa não retornou nenhum resultado"
+            :rows-per-page-options="[10, 20, 30, 50]"
+            :filter="filter"
+            title="Usuário"
+            :rows="userList"
+            @row-click="selectUser"
+            :virtual-scroll-item-size="48"
+            v-model:pagination="pagination"
+            @request="nextPage"
+          >
+            <template #top-right>
+              <div class="flex row q-gutter-sm items-center text-right">
+                <div class="col" >
+                  <q-input
+                    @keyup="getUsersList"
+                    outlined
+                    dense
+                    debounce="300"
+                    v-model="filter"
+                    placeholder="Procurar"
+                  >
+                    <template #append>
+                      <q-icon name="search" />
+                    </template>
+                  </q-input>
+                </div>
+              </div>
+            </template>
+          </q-table>
+          <!-- <div class="col q-pa-sm items-center">
             <div class="col q-gutter-lg q-py-sm">
               <q-input
                 @keyup="getUsersList"
@@ -87,7 +124,7 @@
                   </q-item-section>
                 </q-item>
             </q-scroll-area>
-          </div>
+          </div> -->
         </div>
       </div>
     </q-page>
@@ -97,6 +134,7 @@
 <script>
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
+import { useTableColumns } from "stores/tableColumns";
 
 export default defineComponent({
   name: "ArchiveSender",
@@ -118,6 +156,8 @@ export default defineComponent({
         sortBy: "",
       },
       filter: "",
+      columnsData: useTableColumns().usersListInsideClass,
+      
     };
   },
   mounted() {
@@ -127,15 +167,17 @@ export default defineComponent({
     this.getUsersList();
   },
   methods: {
-    selectUser(user, clear){
-      if (!clear) {
-        this.userId = user._id
-        this.user = user
-        console.log(userId)
-      } else{
-        this.userid = null
-        this.user = null
-      }
+    selectUser(user, data){
+      this.userId = data._id
+      this.user = data
+      // if (!clear) {
+      //   this.userId = user._id
+      //   this.user = user
+      //   console.log(userId)
+      // } else{
+      //   this.userid = null
+      //   this.user = null
+      // }
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
