@@ -264,7 +264,7 @@ export default defineComponent({
     },
     updateChildEvent() {
       const extractedData = this.classSelected.map(item => ({
-        classId: item.classId,
+        classId: item.classId || item._id,
         className: item.className
       }));
       const opt = {
