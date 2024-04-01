@@ -2,8 +2,8 @@
   <q-page-container class="no-padding">
     <q-page>
       <div class="q-pa-md q-ml-sm row justify-between">
-        <div class="col-6 text-h5 text-capitalize">
-          {{ formatDate() }}
+        <div class="col-6 text-h5">
+          {{ menuName }}
           <!-- {{ menuDate.from }} a {{ menuDate.to}} -->
           <div class="text-caption">Detalhe do cardápio</div>
         </div>
@@ -16,7 +16,6 @@
             color="red-8"
             unelevated
             no-caps
-            class="q-pa-sm"
           >
             Inativar cardápio
           </q-btn>
@@ -28,7 +27,6 @@
             color="green-8"
             unelevated
             no-caps
-            class="q-pa-sm"
           >
             Ativar cardápio
           </q-btn>
@@ -51,44 +49,7 @@
       <q-separator class="q-mx-md" />
       <div class="row justify-around q-pa-md" >
         <div class="col-12 q-gutter-md" align="start">
-          <div class="text-h5">
-            Dados
-          </div>
-          <!-- <q-input
-            outlined
-            label="Nome do cardápio"
-            hint="Ex: Cardápio segunda-feira"
-            v-model="menuName"
-          /> -->
-          <q-input
-            outlined
-            readonly
-            label="Data de início e fim"
-          >
-          <template v-slot:append>
-              <q-icon class="q-pa-md cursor-pointer" name="event">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date mask="DD/MM/YYYY" v-model="menuDate" range>
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-          <div class="text-subtitle">
-            Insira o cardápio abaixo
-          </div>
-          <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
-            <template v-slot:prepend>
-              <q-icon name="cloud_upload" />
-            </template>
-          </q-file>
-          <!-- <q-editor
-            v-model="menuContent"
-            min-height="5rem"
-          /> -->
+          <q-img :src="utils.makeFileUrl(fileAttach.filename)" v-if="fileAttach"/>
         </div>
       </div>
       <q-dialog v-model="dialogInactiveMenu" @hide="dialogInactiveMenu = false">
@@ -125,11 +86,13 @@
 import { defineComponent } from "vue";
 import { format } from 'date-fns';
 import useFetch from "../../boot/useFetch";
+import utils from '../../boot/utils'
 export default defineComponent({
   name: "MenuDetail",
   data() {
     return {
-      // menuName: '',
+      utils,
+      menuName: '',
       fileAttach: null,
       // menuContent: '',
       menuDate: null,
@@ -197,14 +160,15 @@ export default defineComponent({
       this.menuDate = r.data.date
       this.fileAttach = r.data.file
       this.isActive = r.data.isActive
+      this.formatDate()
     });
-    this.formatDate()
+    
   },
   async formatDate(){
     if (this.menuDate && this.menuDate.from && this.menuDate.to){
         const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
         const toDate = format(this.menuDate.to, 'dd/MM/yyyy');
-      return `${fromDate} até ${toDate}`
+      this.menuName = `${fromDate} até ${toDate}`
     }
     // else if (this.menuDate && this.menuDate !== null){
     //   const formattedDate = format(this.menuDate, 'dd/MM/yyyy');

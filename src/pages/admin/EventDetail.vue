@@ -70,7 +70,6 @@
             multiple
             input-debounce="0"
             :loading="false"
-            :option-value="(item) => item.classId"
           >
             <template v-slot:no-option>
               <q-item>
@@ -176,6 +175,9 @@ export default defineComponent({
     this.getClassesList()
   },
   methods: {
+    updateClassList (val) {
+      console.log(val)
+    },
     addActivitySubtype () {
       if (this.eventActivitySubtypeName === '') {
         this.$q.notify('Preencha o campo para adicionar um subtipo de atividade.')

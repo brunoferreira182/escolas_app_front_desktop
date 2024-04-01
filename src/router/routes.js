@@ -14,6 +14,7 @@ const routes = [
       { path: "/admin/createFunctionType", component: () => import("pages/admin/CreateFunctionType.vue"),},
       { path: "/admin/functionTypeDetail", component: () => import("pages/admin/FunctionTypeDetail.vue"),},
       { path: "/admin/archiveSender", component: () => import("pages/admin/ArchiveSender.vue"),},
+      { path: "/admin/archiveList", component: () => import("pages/admin/ArchiveList.vue"),},
       { path: "/admin/eventsList", component: () => import("pages/admin/EventsList.vue"),},
       { path: "/admin/createEvent", component: () => import("pages/admin/CreateEvent.vue"),},
       { path: "/admin/eventDetail", component: () => import("pages/admin/EventDetail.vue"),},

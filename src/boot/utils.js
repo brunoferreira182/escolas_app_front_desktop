@@ -192,7 +192,7 @@ const useUtils = {
         },
         {
           label: "Arquivos",
-          route: "/admin/archiveSender",
+          route: "/admin/archiveList",
           icon: "backup",
         },
       ],

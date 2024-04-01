@@ -3,11 +3,11 @@
     <q-page>
       <q-table
         flat class="bg-accent"
-        title="Cardápios"
+        title="Arquivos"
         :columns="columnsData"
-        :rows="menuList"
+        :rows="archivesList"
         row-key="_id"
-        @row-click="clkOpenMenuDetail"
+        @row-click="clkArchive"
         virtual-scroll
         rows-per-page-label="Registros por página"
         no-data-label="Nenhum dado inserido até o momento"
@@ -20,7 +20,7 @@
           <div class="flex row q-gutter-sm items-center text-right">
             <div class="col">
               <q-input
-                @keyup="getMenuList"
+                @keyup="getArchivesList"
                 outlined
                 dense
                 debounce="300"
@@ -34,13 +34,13 @@
             </div>
             <div class="col text-right">
               <q-btn
-                @click="$router.push('/admin/createMenu')"
+                @click="$router.push('/admin/archiveSender')"
                 color="primary"
                 unelevated
                 no-caps
                 rounded
                 icon="add"
-                label="Novo cardápio"
+                label="Novo arquivo"
                 />
             </div>
           </div>
@@ -72,19 +72,17 @@
 </template>
 <script>
 import { defineComponent } from "vue";
-import { date } from 'quasar';
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
 
 export default defineComponent({
-  name: "MenuList",
+  name: "ArchiveList",
   data() {
     return {
-      columnsData: useTableColumns().menuList,
-      menuList: [],
+      columnsData: useTableColumns().archivesList,
+      archivesList: [],
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
-      filterRow: [],
       selectFilter: null,
       pagination: {
         page: 1,
@@ -92,32 +90,37 @@ export default defineComponent({
         rowsNumber: 0,
         sortBy: "",
       },
+      selectedFilters: {
+        parent: false,
+        child: false,
+      },
+      userPermissionsOptions: [],
     };
   },
   mounted() {
     this.$q.loading.hide();
   },
   beforeMount() {
-    this.getMenuList();
+    this.getArchivesList();
   },
   methods: {
-    clkOpenMenuDetail(e, r){
-      const menuId = r._id
-      this.$router.push('/admin/menuDetail?menuId=' + menuId)
+    clkArchive(e, r){
+      const childEventId = r._id
+      // this.$router.push('/admin/eventDetail?childEventId=' + childEventId)
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;
       this.pagination.sortBy = e.pagination.sortBy;
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
-      this.getMenuList();
+      this.getArchivesList();
     },
-    getMenuList() {
+    getArchivesList() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
       const sortBy = this.pagination.sortBy
       const opt = {
-        route: "/desktop/adm/getMenuList",
+        route: "/desktop/adm/getArchivesList",
         body: {
           page: page,
           rowsPerPage: rowsPerPage,
@@ -126,24 +129,8 @@ export default defineComponent({
         },
       };
       useFetch(opt).then((r) => {
-        this.menuList = r.data[0].list
+        this.archivesList = r.data[0].list
         r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
-
-        this.menuList.forEach((menu) => {
-          if (menu.date && menu.date.from && menu.date.to) {
-            // Range date format sempre verificar o objeto inteiro
-            const formattedFrom = date.formatDate(menu.date.from, 'DD/MM/YYYY');
-            const formattedTo = date.formatDate(menu.date.to, 'DD/MM/YYYY');
-            menu.date.from = formattedFrom
-            menu.date.to = formattedTo
-          } else  if (menu.date && !menu.date.from  && !menu.date.to) {
-            // Se não tiver data de val
-            // Single date format
-            const formattedList = date.formatDate(menu.date, 'DD/MM/YYYY');
-            menu.date = formattedList
-          }
-        })
-        console.log(this.menuList, "dasjbdsjbhdajh")
       });
     },
 

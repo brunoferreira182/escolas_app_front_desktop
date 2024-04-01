@@ -93,6 +93,36 @@ export const useTableColumns = defineStore("tableColumns", {
         sortable: true,
       },
     ],
+    archivesList: [
+      {
+        type: "type",
+        align: "left",
+        label: "Tipo do arquivo",
+        field: "type",
+        sortable: true,
+      },
+      {
+        name: "name",
+        align: "left",
+        label: "Destinatário",
+        field: "name",
+        sortable: true,
+      },
+      {
+        name: "createdAt",
+        align: "left",
+        label: "Data",
+        field: "createdAt",
+        sortable: true,
+      },
+      {
+        name: "status",
+        align: "left",
+        label: "Status",
+        field: (row) => row.status.status,
+        sortable: true,
+      },
+    ],
     postsList: [
       {
         name: "name",
