@@ -139,9 +139,9 @@
                   <img :src="utils.makeFileUrl(child.childImage)"/>
                 </q-avatar>
               </q-item-section>
-              <q-item-section class="text-capitalize cursor-pointer" @click="clkChild(child)">
+              <q-item-section class="cursor-pointer" @click="clkChild(child)">
                 <q-item-label>{{ child.childName }}</q-item-label>
-                <q-item-label caption>{{ child.responsibleLabel }}</q-item-label>
+                <q-item-label caption>{{ userData.name }} é {{ child.responsibleLabel }}</q-item-label>
               </q-item-section>
               <q-item-section side >
                 <div class="text-grey-8 q-gutter-xs">
