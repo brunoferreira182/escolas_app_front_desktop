@@ -49,7 +49,7 @@
         narrow-indicator
       >
         <q-tab name="profile" label="Perfil"/>
-        <q-tab name="noteList" label="Recados "/>
+        <q-tab name="noteList" label="Recados" @click="clkRecados"/>
       </q-tabs>
       <q-separator class="q-mx-md"></q-separator>
       <q-tab-panels v-model="tab" animated>
@@ -186,14 +186,24 @@
         </div>
       </div>
       </q-tab-panel>
-      <q-tab-panel name="noteList" class="no-padding">
-        <div class="row justify-between items-start">
-          <div class="col-6 q-pa-md ">
-            djonakjsndknskdn
-          </div>
-          <q-separator vertical/>
-          <div class="col-6 q-pa-md q-gutter-md"> dkjasndkjnaskjdnk</div>
-        </div>
+      <q-tab-panel name="noteList">
+        <q-list class="q-mt-md" bordered separator>
+          <q-item class="items-center q-mx-sm"
+            v-for="note in notesList"
+            :key="note"
+            >
+            <q-item-section>
+              <q-item-label>{{ note.noteName }}</q-item-label>
+              <q-item-label caption>{{ note.noteContent }}</q-item-label>
+              <q-item-label caption>{{ note.createdDate }} {{ note.hour }}</q-item-label>
+            </q-item-section>
+            <q-item-section side top>
+              <q-btn color="red" @click="deleteNote(note._id)" unelevated>
+                <q-icon name="delete" />
+              </q-btn>
+            </q-item-section>
+          </q-item>
+        </q-list>
       </q-tab-panel>
     </q-tab-panels>
       <q-dialog v-model="dialogInsertChild.open" @before-show="getUserRelationType()" @hide="childData = {}">
@@ -379,6 +389,7 @@ export default defineComponent({
       },
       relationTypeList: [],
       relationTypeSelected: '' ,
+      notesList: []
     }
   },
   mounted() {
@@ -414,6 +425,37 @@ export default defineComponent({
     },
     clkChild(child) {
       this.$router.push('/users/childDetail?userId=' + child.childId)
+    },
+    deleteNote(noteId){
+      const opt = {
+        route: "/desktop/users/deleteUserNote",
+        body: {
+          noteId : noteId,
+          userId: this.$route.query.userId,
+        }
+      };
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        this.clkRecados()
+        this.$q.notify("Recado deletado!")
+      });
+    },
+    clkRecados(){
+      const opt = {
+        route: "/desktop/users/getUserNotes",
+        body: {
+          rowsPerPage: 50,
+          page: 1,
+          userId: this.$route.query.userId,
+        }
+      };
+      useFetch(opt).then((r) => {
+        this.notesList = r.data.list
+        if (r.error) {
+          this.$q.notify("Ocorreu um erro, tente novamente por favor!")
+        }
+      });
     },
     updateUserData() {
       const opt = {
