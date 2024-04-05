@@ -165,13 +165,14 @@ export default defineComponent({
     createNewSchoolEvent() {
       const file = [{file:this.eventImg,name:'eventImg'}]
       if(
-        this.eventName === '' ||
-        this.eventDescription  === '' ||
-        this.eventDate === '' ||
-        this.paymentValue === '' ||
-        this.deadlinePayment === ''
+        this.eventName === '' //||
+        // this.eventDescription  === '' ||
+        // this.eventDate === '' ||
+        // this.paymentValue === '' ||
+        // this.deadlinePayment === ''
       ){
-        this.$q.notify('Preencha todos os campos para prosseguir')
+        this.$q.notify('Preencha o nome do evento!')
+        // this.$q.notify('Preencha todos os campos para prosseguir')
         return
       }
       const opt = {

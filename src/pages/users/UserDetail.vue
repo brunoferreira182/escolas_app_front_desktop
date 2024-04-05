@@ -37,77 +37,96 @@
         </div>
       </div>
       <q-separator class="q-mx-md"></q-separator>
-      <div class="row justify-between items-start">
-        <div class="col-6 q-pa-md ">
-          <div class="text-grey-8 text-h6">
-            Informações
-          </div>
-          <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
-            <q-avatar
-              class="cursor-pointer"
-              size="150px"
-              @click="clkProfileImage"
-            >
-              <img :src="utils.makeFileUrl(userData.image)" />
-            </q-avatar>
-            <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/>
-            <q-input
-              outlined
-              v-model="userData.name"
-              label="Nome"
-            />
-            <q-input
-              outlined
-              v-model="userData.document"
-              label="CPF"
-              mask="###.###.###-##"
-            />
-            <q-input
-              outlined
-              v-model="userData.phone"
-              label="Telefone"
-              mask="(##) #####-####"
-            />
-            <q-input
-              outlined
-              v-model="userData.email"
-              label="Email"
-            />
-            <!-- mascara ta com 15 caracteres -->
-            <q-input v-if="familiarChecked"
-              outlined
-              mask="###############"
-              v-model="userData.registerNumber"
-              label="Número de cadastro"
-            />
-          </div>
-          <div v-else class="text-grey-8 q-ma-sm">
-            Este usuário não possui dados compartilhados <q-icon name="warning" size="sm" color="yellow-8"/>
-          </div>
-        </div>
-        <q-separator vertical />
-        <div class="col-6 q-pa-md q-gutter-md">
-          <div class="text-grey-8 text-h6 q-px-xs">Permissões:</div>
-          <div  v-if="allPermissions && allPermissions.length">
-            <div class="visions-field q-mt-none row">
-              <div
-                v-for="permission in allPermissions"
-                :key="permission"
-                class="col-12 q-my-xs"
-              >
-                <q-checkbox
-                  @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
-                  :label="permission.label"
-                  v-model="permission.checked"
+      <q-tabs
+        v-model="tab"
+        dense
+        no-caps
+        class="text-grey q-py-sm"
+        active-color="primary"
+        indicator-color="primary"
+        inline-label
+        align="justify"
+        narrow-indicator
+      >
+        <q-tab name="profile" label="Perfil"/>
+        <q-tab name="noteList" label="Recados "/>
+      </q-tabs>
+      <q-separator class="q-mx-md"></q-separator>
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="profile" class="no-padding">
+          <div class="row justify-between items-start">
+            <div class="col-6 q-pa-md ">
+              <div class="text-grey-8 text-h6">
+                Informações
+              </div>
+              <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
+                <q-avatar
+                  class="cursor-pointer"
+                  size="150px"
+                  @click="clkProfileImage"
+                >
+                  <img :src="utils.makeFileUrl(userData.image)" />
+                </q-avatar>
+                <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/>
+                <q-input
+                  outlined
+                  v-model="userData.name"
+                  label="Nome"
                 />
+                <q-input
+                  outlined
+                  v-model="userData.document"
+                  label="CPF"
+                  mask="###.###.###-##"
+                />
+                <q-input
+                  outlined
+                  v-model="userData.phone"
+                  label="Telefone"
+                  mask="(##) #####-####"
+                />
+                <q-input
+                  outlined
+                  v-model="userData.email"
+                  label="Email"
+                />
+                <!-- mascara ta com 15 caracteres -->
+                <q-input v-if="familiarChecked"
+                  outlined
+                  mask="###############"
+                  v-model="userData.registerNumber"
+                  label="Número de cadastro"
+                />
+              </div>
+              <div v-else class="text-grey-8 q-ma-sm">
+                Este usuário não possui dados compartilhados <q-icon name="warning" size="sm" color="yellow-8"/>
+              </div>
+            </div>
+            <q-separator vertical />
+            <div class="col-6 q-pa-md q-gutter-md">
+              <div class="text-grey-8 text-h6 q-px-xs">Permissões:</div>
+              <div  v-if="allPermissions && allPermissions.length">
+                <div class="visions-field q-mt-none row">
+                  <div
+                    v-for="permission in allPermissions"
+                    :key="permission"
+                    class="col-12 q-my-xs"
+                  >
+                    <q-checkbox
+                      @update:model-value="(value, evt ) => updateUserPermissions(value, evt, permission)"
+                      :label="permission.label"
+                      v-model="permission.checked"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-grey-8">
+                Este usuário não possui permissões <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
               </div>
             </div>
           </div>
-          <div v-else class="text-grey-8">
-            Este usuário não possui permissões <q-icon name="warning" size="sm" color="yellow-8"></q-icon>
-          </div>
-        </div>
-      </div>
+        <!-- </q-tab-panel>
+      </q-tab-panels> -->
       <div class="row">
         <div class="col-6 q-px-md">
           <div class="text-grey-8 text-h6 q-px-xs">Crianças vinculadas:
@@ -166,6 +185,17 @@
           </div>
         </div>
       </div>
+      </q-tab-panel>
+      <q-tab-panel name="noteList" class="no-padding">
+        <div class="row justify-between items-start">
+          <div class="col-6 q-pa-md ">
+            djonakjsndknskdn
+          </div>
+          <q-separator vertical/>
+          <div class="col-6 q-pa-md q-gutter-md"> dkjasndkjnaskjdnk</div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
       <q-dialog v-model="dialogInsertChild.open" @before-show="getUserRelationType()" @hide="childData = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div >
@@ -327,6 +357,7 @@ export default defineComponent({
       childrenList: [],
       userIdSQL: '',
       isActive: 0,
+      tab:'profile',
       userSelected: '',
       dialogInsertChild: {
         open: false,

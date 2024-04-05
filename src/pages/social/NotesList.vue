@@ -33,6 +33,16 @@
                 </template>
               </q-input>
             </div>
+            <!-- <div class="col">
+              <q-select dense outlined
+                :options= "types"
+                v-model= "type"
+                emit-value
+                map-options
+                label="tipo"
+              >
+              </q-select>
+            </div> -->
             <div class="col text-right">
               <q-btn
                 @click="$router.push('/social/createNewNote')"
@@ -84,6 +94,21 @@ export default defineComponent({
       notesList: [],
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
+      // types: [
+      //   {
+      //     label: "Privado",
+      //     value: "userNote"
+      //   },
+      //   {
+      //     label: "Escolar",
+      //     value: "schoolNote"
+      //   },
+      //   {
+      //     label: "Todos",
+      //     value: 'all'
+      //   }
+      // ],
+      // type: '',
       pagination: {
         page: 1,
         rowsPerPage: 10,
