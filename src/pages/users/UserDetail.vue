@@ -18,14 +18,24 @@
           <div class="text-caption">Dados de usuário</div>
         </div>
         <div class="col q-pt-sm q-gutter-sm text-right">
-            <q-btn
+          <q-btn
+            rounded
+            unelevated
+            no-caps
+            v-if = "tab === 'noteList'"
+            color = "primary"
+            @click = "dialogNewNoteForUser.open = true"
+          > Novo Recado
+            <q-icon side name="add"/>
+          </q-btn>
+          <q-btn
             rounded
             no-caps
             unelevated
             color="primary"
             @click="updateUserData()">
               Salvar
-            </q-btn>
+          </q-btn>
           <q-chip
             v-if="userData.status"
             color="green-8"
@@ -197,8 +207,8 @@
               <q-item-label caption>{{ note.noteContent }}</q-item-label>
               <q-item-label caption>{{ note.createdDate }} às {{ note.hour }}</q-item-label>
             </q-item-section>
-            <q-icon v-if="note.isRead === 1" name="done_all" size="1.5em" color="green"></q-icon>
-            <q-icon v-if="note.isRead === 0" name="done_all" size="1.5em" color="gray"></q-icon>
+            <q-icon v-if="note.isRead === 1" name="done_all" size="2em" color="green"></q-icon>
+            <q-icon v-if="note.isRead === 0" name="done_all" size="2em" color="gray"></q-icon>
             <q-item-section class="items-center" side>
               <q-btn color="red" @click="deleteNote(note._id)" unelevated>
                 <q-icon name="delete" />
@@ -338,6 +348,14 @@
           </div>
         </q-card>
       </q-dialog>
+      <q-dialog v-model="dialogNewNoteForUser.open" @hide="dialogNewNoteForUser.data = {}">
+        <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
+          <div>
+
+            ksjdbnkajsbdkjsabk
+          </div>
+        </q-card>
+      </q-dialog>
     </q-page>
   </q-page-container>
 </template>
@@ -371,6 +389,10 @@ export default defineComponent({
       isActive: 0,
       tab:'profile',
       userSelected: '',
+      dialogNewNoteForUser: {
+        open: false,
+        data: {}
+      },
       dialogInsertChild: {
         open: false,
         data: {},
@@ -674,4 +696,3 @@ export default defineComponent({
   overflow-y: auto;
 }
 </style>
-
