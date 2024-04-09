@@ -49,7 +49,7 @@
         narrow-indicator
       >
         <q-tab name="profile" label="Perfil"/>
-        <q-tab name="noteList" label="Recados" @click="clkRecados"/>
+        <q-tab name="noteList" label="Recados" @click="getuserNotesById"/>
       </q-tabs>
       <q-separator class="q-mx-md"></q-separator>
       <q-tab-panels v-model="tab" animated>
@@ -195,9 +195,11 @@
             <q-item-section>
               <q-item-label>{{ note.noteName }}</q-item-label>
               <q-item-label caption>{{ note.noteContent }}</q-item-label>
-              <q-item-label caption>{{ note.createdDate }} {{ note.hour }}</q-item-label>
+              <q-item-label caption>{{ note.createdDate }} às {{ note.hour }}</q-item-label>
             </q-item-section>
-            <q-item-section side top>
+            <q-icon v-if="note.isRead === 1" name="done_all" size="1.5em" color="green"></q-icon>
+            <q-icon v-if="note.isRead === 0" name="done_all" size="1.5em" color="gray"></q-icon>
+            <q-item-section class="items-center" side>
               <q-btn color="red" @click="deleteNote(note._id)" unelevated>
                 <q-icon name="delete" />
               </q-btn>
@@ -437,11 +439,11 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        this.clkRecados()
+        this.getuserNotesById()
         this.$q.notify("Recado deletado!")
       });
     },
-    clkRecados(){
+    getuserNotesById(){
       const opt = {
         route: "/desktop/users/getUserNotes",
         body: {
