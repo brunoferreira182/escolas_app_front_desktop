@@ -24,7 +24,7 @@
             no-caps
             v-if = "tab === 'noteList'"
             color = "primary"
-            @click = "dialogNewNoteForUser.open = true"
+            @click = "clkDialogNewNoteForUser(userData)"
           > Novo Recado
             <q-icon side name="add"/>
           </q-btn>
@@ -351,8 +351,40 @@
       <q-dialog v-model="dialogNewNoteForUser.open" @hide="dialogNewNoteForUser.data = {}">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div>
-
-            ksjdbnkajsbdkjsabk
+            <div class="text-h6 q-py-sm text-center">
+              Escreva o recado para {{ dialogNewNoteForUser.data.name }}?
+            </div>
+            <q-card-section class="q-gutter-sm q-pa-sm">
+              <q-input outlined
+                class="q-ma-sm"
+                label="Título do recado"
+                v-model="dialogNewNoteForUser.data.noteName" >
+              </q-input>
+              <q-input outlined
+                class="q-ma-sm"
+                label="Conteúdo do recado"
+                v-model="dialogNewNoteForUser.data.noteContent">
+                <!-- <q-btn rounded icon-right="upload" unelevated /> botão pra mandar arquivo-->
+              </q-input>
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn
+                label="Sair"
+                @click="dialogNewNoteForUser.open = false"
+                rounded
+                color="primary"
+                no-caps
+                flat
+              />
+              <q-btn
+                label="Confirmar"
+                @click="createNewNote(dialogNewNoteForUser.data)"
+                rounded
+                color="primary"
+                no-caps
+                unelevated
+              />
+            </q-card-actions>
           </div>
         </q-card>
       </q-dialog>
@@ -534,15 +566,6 @@ export default defineComponent({
         opt.file = [{ file: this.image.blob, name: 'userPhoto' }]
       }
       return useFetch(opt)
-      useFetch(opt).then((r) => {
-        if (r.error) {
-          this.$q.notify('Ocorreu um erro. Tente novamente.')
-          return
-        }
-
-        this.$q.notify('Filho adicionado com sucesso.')
-        this.openDialogCreateChild.open = false
-      })
     },
     getUserRelationType(){
       const opt = {
@@ -556,9 +579,30 @@ export default defineComponent({
         this.relationTypeList = r.data
       })
     },
+    createNewNote(data){
+      const opt = {
+        route: "/desktop/users/insertNewUserNote",
+        body: {
+          noteName: data.noteName,
+          noteContent: data.noteContent,
+          userReceiver: this.$route.query.userId
+        }
+      };
+      useFetch(opt).then((r) => {
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente por favor')
+          return
+        }
+        this.dialogNewNoteForUser.open = false
+        this.getuserNotesById()
+      })
+    },
     clkOpenDialogDeleteChildren(child){
       this.dialogDeleteChildren.data = child
       this.dialogDeleteChildren.open = true
+    },
+    clkDialogNewNoteForUser(){
+      this.dialogNewNoteForUser.open = true
     },
     removeRelation(){
       const opt = {
