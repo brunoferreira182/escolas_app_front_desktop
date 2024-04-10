@@ -24,7 +24,7 @@
             no-caps
             v-if = "tab === 'noteList'"
             color = "primary"
-            @click = "clkDialogNewNoteForUser(userData)"
+            @click = "clkDialogNewNoteForUser()"
           > Novo Recado
             <q-icon side name="add"/>
           </q-btn>
@@ -355,11 +355,11 @@
               Escreva o recado para {{ dialogNewNoteForUser.data.name }}?
             </div>
             <q-card-section class="q-gutter-sm q-pa-sm">
-              <q-input outlined
+              <!-- <q-input outlined
                 class="q-ma-sm"
                 label="Título do recado"
                 v-model="dialogNewNoteForUser.data.noteName" >
-              </q-input>
+              </q-input> -->
               <q-input outlined
                 class="q-ma-sm"
                 label="Conteúdo do recado"
@@ -583,7 +583,7 @@ export default defineComponent({
       const opt = {
         route: "/desktop/users/insertNewUserNote",
         body: {
-          noteName: data.noteName,
+          // noteName: data.noteName,
           noteContent: data.noteContent,
           userReceiver: this.$route.query.userId
         }
