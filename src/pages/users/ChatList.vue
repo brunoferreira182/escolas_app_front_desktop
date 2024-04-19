@@ -165,9 +165,9 @@ export default {
     this.getActiveClassesAndLastMessage()
     // this.startSocketResume()
   },
-  beforeRouteLeave() {
-    if (this.socket.messages) this.socket.messages.disconnect()
-    if (this.socket.resume) this.socket.resume.disconnect()
+  beforeUnmount() {
+    if (this.socket && this.socket.messages) this.socket.messages.disconnect()
+    if (this.socket && this.socket.resume) this.socket.resume.disconnect()
   },
   methods: {
     newBkoMessage(){
