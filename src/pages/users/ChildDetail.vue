@@ -105,6 +105,7 @@
                 mask="###############"
                 v-model="childData.registerNumber"
                 label="Número de cadastro"
+                :rules="[ val => val.length >= 15 || 'O número de cadastro precisa ter 15 dígitos']"
               />
             </div>
             <div v-else class="text-grey-8 q-ma-sm">
