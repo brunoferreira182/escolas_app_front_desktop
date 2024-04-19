@@ -48,7 +48,7 @@
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side class="q-mr-md">
-                    <q-item-label caption>
+                    <q-item-label caption v-if="item.lastMessage && item.lastMessage.createdAt">
                       {{ item.lastMessage.createdAt.createdAtLocale.split(' ')[1].slice(0, 5) }}
                     </q-item-label>
                   </q-item-section>
