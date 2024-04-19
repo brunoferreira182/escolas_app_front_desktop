@@ -100,6 +100,12 @@
                 v-model="childData.birthDocument"
                 label="Certidão de nascimento"
               />
+              <q-input
+                outlined
+                mask="###############"
+                v-model="childData.registerNumber"
+                label="Número de cadastro"
+              />
             </div>
             <div v-else class="text-grey-8 q-ma-sm">
               Este usuário não possui dados compartilhados
@@ -330,6 +336,7 @@ export default defineComponent({
         document: '',
         birthDocument: '',
         birthdate: '',
+        registerNumber: ''
       },
       dialogDeleteResponsable: {
         data: {},
@@ -512,7 +519,8 @@ export default defineComponent({
           name: this.childData.name,
           document: this.childData.document,
           document: this.childData.birthDocument,
-          birthdate: this.childData.birthdate
+          birthdate: this.childData.birthdate,
+          registerNumber: this.childData.registerNumber
         }
       }
       useFetch(opt).then((r) => {

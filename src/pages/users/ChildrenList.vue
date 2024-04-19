@@ -84,6 +84,13 @@
                 type="date"
                 v-model="childData.birthdate"
               />
+              <q-input
+                outlined
+                mask="###############"
+                v-model="childData.registerNumber"
+                :rules="[ val => val.length >= 15 || 'O número de cadastro precisa ter 15 dígitos']"
+                label="Número de cadastro"
+              />
               <q-file
                 v-model="image.blob"
                 label="Clique para inserir foto"
@@ -153,6 +160,7 @@ export default defineComponent({
         document: '',
         birthDocument: '',
         birthdate: '',
+        registerNumber: ''
       },
       image: {
         url: null,
@@ -235,6 +243,7 @@ export default defineComponent({
       this.childData.document = ''
       this.childData.birthDocument = ''
       this.childData.birthdate = ''
+      this.childData.registerNumber = ''
       this.image.blob = null
       this.image.url = null
       this.image.name = null

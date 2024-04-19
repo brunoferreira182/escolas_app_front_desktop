@@ -98,7 +98,7 @@
             class="fixed-bot items-center q-gutter-sm q-px-sm q-ma-sm bg-grey-3 ">
               <q-input
               v-if="inputStatus === 'message'"
-              @keyup.enter="newBkoMessage"
+              @keyup.enter="insertInternalMessage"
               v-model="currentMessage"
               bg-color="white"
               class="q-ma-sm full-width"
@@ -130,11 +130,11 @@
             />
             <q-btn
               v-if="currentMessage.length > 0 || currentFile !== null"
-              @click="newBkoMessage"
+              @click="insertInternalMessage"
               round
               color="primary"
               icon="send"
-              />
+            />
             </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default {
     if (this.socket && this.socket.resume) this.socket.resume.disconnect()
   },
   methods: {
-    newBkoMessage(){
+    insertInternalMessage(){
       if(this.currentMessage !== '' && this.currentMessage){
         const opt = {
           route: '/desktop/messenger/insertInternalMessage',
