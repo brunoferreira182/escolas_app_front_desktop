@@ -8,7 +8,7 @@
         <div class="col text-right">
           <div class="row justify-center items-center">
             <div class="col">
-              
+
             </div>
             <div class="col">
               <q-btn
@@ -29,6 +29,15 @@
       <q-separator class="q-mx-md" />
       <div class="row">
         <div class="col-6 q-ma-md q-gutter-y-md">
+          <FileUpload
+            mode="basic"
+            name="file"
+            url="http://localhost:8010/desktop/adm/sendFileToUserById"
+            accept="image/*"
+            :maxFileSize="1000000"
+            :auto="true"
+            chooseLabel="Browse"
+          />
           <q-select
             outlined
             debounce="300"
@@ -44,7 +53,7 @@
           <div v-if= "documentType === 'Boleto' && documentType !== ''" >
             <q-input outlined v-model= "barCode" label= "Código de barras"/>
           </div>
-          <div 
+          <div
             v-if="userId"
             style="border-radius: 20px;"
             class="row items-center text-subtitle2 q-pa-md bg-grey-3"
@@ -135,6 +144,8 @@
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
+import FileUpload from 'primevue/fileupload';
+
 
 export default defineComponent({
   name: "ArchiveSender",
@@ -157,7 +168,7 @@ export default defineComponent({
       },
       filter: "",
       columnsData: useTableColumns().usersListInsideClass,
-      
+
     };
   },
   mounted() {
@@ -194,12 +205,17 @@ export default defineComponent({
           userId: this.userId
         }
       };
-      if (this.fileAttach !== null) opt.file = file
-      if (this.documentType === 'Boleto' && this.barCode !== ''){
-        opt.body.barCode = this.barCode
-      } else if (this.documentType === 'Boleto' && this.barCode === ''){
-        return this.$q.notify('Insíra o código de barras!')
+      if (this.fileAttach !== null){
+        opt.file = file
+        console.log("🚀 ~ sendDocumentsToUserById ~ file:", file)
+        console.log("🚀 ~ sendDocumentsToUserById ~ file:", typeof file)
       }
+      // if (this.documentType === 'Boleto' && this.barCode !== ''){
+      //   opt.body.barCode = this.barCode
+      // }
+      // else if (this.documentType === 'Boleto' && this.barCode === ''){
+      //   return this.$q.notify('Insíra o código de barras!')
+      // }
 
       this.$q.loading.show()
       useFetch(opt).then((r) =>{

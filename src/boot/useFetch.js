@@ -53,13 +53,12 @@ const useFetch = async ({
     newBody.destinationserver = destinationserver
     newBody.destinationroute = destinationroute
     form = new FormData();
-    form.append("body", JSON.stringify(newBody));
+    form.append('body', JSON.stringify(newBody))
     file.forEach(f => {
-      const fileName = f.name ? f.name : 'userFile.png';
-      const blob = new Blob([f.file], { type: f.type });
-      form.append('file', blob, fileName);
+      form.append('file', f.file, f.name ? f.name : 'userFile.png');
     });
-    bodyToSend = form;
+
+    bodyToSend = form
   }
   //////////////////////////////////////////////////
 

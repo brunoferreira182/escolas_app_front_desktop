@@ -6,8 +6,8 @@ import {
 import CryptoJS from "crypto-js";
 import { Loading, Notify, LocalStorage } from "quasar";
 import useFetch from "./useFetch";
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { masterServerRoute } from './masterServerRoutes.js'
-
 let loadingVar = [];
 let updateUserInfoOnNextRoute = false;
 const useUtils = {
@@ -26,7 +26,70 @@ const useUtils = {
       return JSON.parse(window.localStorage.getItem("ut"));
     },
   },
+  getFilesystemAccess() {
+    return new Promise(async (resolve) => {
+      const status = await Filesystem.checkPermissions()
+      const state = status.publicStorage
 
+      if (state === 'granted') {
+        return resolve(true)
+      } else if (state === 'denied') {
+      } else {
+        Filesystem.requestPermissions()
+      }
+      return resolve(false)
+    })
+  },
+  async downloadFile(file) {
+    // Define a URL para o download
+    const url = `/download/${+ file.path + file.filename}`;
+
+    // Faz o download do arquivo
+    const response = await fetch(url);
+    const data = await response.blob();
+
+    // Cria um blob com o arquivo baixado
+    const blob = new Blob([data], {type: file.mimetype});
+    const link = URL.createObjectURL(blob);
+
+    // Cria um link para download do arquivo
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = link;
+    a.download = file.originalname; // Usa o nome original do arquivo
+    a.click();
+
+    // Revoga a URL criada para o arquivo
+    URL.revokeObjectURL(link);
+  },
+  // async downloadFile (obj) {
+  //   console.log("🚀 ~ downloadFile ~ obj:", obj)
+  //   const perm = await this.getFilesystemAccess()
+  //   if (!perm) return false
+  //   const originalnameSplit = obj.originalname.split('.')
+  //   const currentDate = new Date().toLocaleString().replace(/[,:\s\/]/g, '-')
+  //   let nameToDownload
+  //   if (originalnameSplit.length === 1) nameToDownload = obj.originalname + '_' + currentDate
+  //   else nameToDownload = originalnameSplit[0] + '_' + currentDate + '.' + originalnameSplit[originalnameSplit.length - 1]
+  //   const opt = {
+  //     url: `/download/${obj.filename}`,
+  //     method: 'GET',
+  //     directory: Directory.Data
+  //     // path: '/Users/tiago/Documents/'
+  //   }
+  //   console.log(opt, 'opt aqui')
+  //   const dl = await Filesystem.downloadFile(opt)
+  //   console.log(dl, 'blob')
+  //   const blob = new Blob([dl.blob], {type: obj.mimetype})
+  //   console.log('blob', blob)
+  //   const link = URL.createObjectURL(blob)
+  //   const a = document.createElement("a");
+  //   document.body.appendChild(a);
+  //   a.href = link;
+  //   a.download = obj.originalname;
+  //   a.click();
+  //   URL.revokeObjectURL(link);
+  // },
   updateNextRoute: {
     get() {
       return updateUserInfoOnNextRoute;
