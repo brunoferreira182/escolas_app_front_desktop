@@ -81,6 +81,7 @@ export default defineComponent({
     return {
       columnsData: useTableColumns().archivesList,
       archivesList: [],
+      utils,
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
       selectFilter: null,
@@ -104,12 +105,21 @@ export default defineComponent({
     this.getArchivesList();
   },
   methods: {
-    download(e, r){
-      utils.downloadFile({
-        path: r.file.destination,
+    // async convertBlobToBase64(blob) {
+    //   return new Promise((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.onerror = reject;
+    //     reader.onload = () => {
+    //       resolve(reader.result);
+    //     };
+    //     reader.readAsDataURL(blob);
+    //   });
+    // },
+    async download(e, r){
+      await utils.downloadFile({
         filename: r.file.filename,
         mimetype: r.file.mimetype,
-        originalname: "document"
+        originalname: r.file.originalname
       })
     },
     clkArchive(e, r){

@@ -29,15 +29,6 @@
       <q-separator class="q-mx-md" />
       <div class="row">
         <div class="col-6 q-ma-md q-gutter-y-md">
-          <FileUpload
-            mode="basic"
-            name="file"
-            url="http://localhost:8010/desktop/adm/sendFileToUserById"
-            accept="image/*"
-            :maxFileSize="1000000"
-            :auto="true"
-            chooseLabel="Browse"
-          />
           <q-select
             outlined
             debounce="300"
@@ -45,11 +36,28 @@
             v-model="documentType"
             label="Tipo de arquivo"
           />
-          <q-file outlined v-model="fileAttach" label="Escolher arquivo">
+          <PhotoHandler
+            v-show="startPhotoHandler"
+            :start="startPhotoHandler"
+            :allFiles="true"
+            :noCrop="false"
+            @captured="captured"
+            @cancel="cancelPhotoHandler"
+          />
+          <q-btn
+            class="q-mr-xs"
+            flat
+            no-caps
+            color="primary"
+            label="Clique para inserir um arquivo"
+            @click="clkAddAttachment"
+          />
+
+          <!-- <q-file outlined v-model="fileAttach" label="Escolher arquivo">
             <template v-slot:prepend>
               <q-icon name="cloud_upload" />
             </template>
-          </q-file>
+          </q-file> -->
           <div v-if= "documentType === 'Boleto' && documentType !== ''" >
             <q-input outlined v-model= "barCode" label= "Código de barras"/>
           </div>
@@ -144,10 +152,12 @@
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
-import FileUpload from 'primevue/fileupload';
-
-
+// import utils from '../../boot/utils'
+import PhotoHandler from '../../components/PhotoHandler.vue'
 export default defineComponent({
+  components:{
+    PhotoHandler
+  },
   name: "ArchiveSender",
   data() {
     return {
@@ -159,6 +169,7 @@ export default defineComponent({
       barCode: '',
       user: null,
       documentType: '',
+
       userId: null,
       pagination: {
         page: 1,
@@ -166,6 +177,7 @@ export default defineComponent({
         rowsNumber: 0,
         sortBy: "",
       },
+      startPhotoHandler: false,
       filter: "",
       columnsData: useTableColumns().usersListInsideClass,
 
@@ -178,6 +190,22 @@ export default defineComponent({
     this.getUsersList();
   },
   methods: {
+    captured(img, imgBlob, fileName) {
+      this.step = 'initial'
+      this.startPhotoHandler = false
+      this.sendDocumentsToUserById({
+        file: imgBlob,
+        name: fileName,
+      })
+    },
+    clkAddAttachment () {
+      this.step = 'addAttachment'
+      this.startPhotoHandler = true
+    },
+    cancelPhotoHandler () {
+      this.startPhotoHandler = false
+      this.step = 'initial'
+    },
     selectUser(user, data){
       this.userId = data._id
       this.user = data
@@ -196,8 +224,9 @@ export default defineComponent({
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersList();
     },
-    sendDocumentsToUserById (){
-      const file = [{file: this.fileAttach, name:'document'}]
+    sendDocumentsToUserById (file){
+      // const file = [{file: this.fileAttach, name:'document'}]
+      console.log("🚀 ~ sendDocumentsToUserById ~ file:", file)
       const opt = {
         route : "/desktop/adm/sendFileToUserById",
         body : {
@@ -205,10 +234,8 @@ export default defineComponent({
           userId: this.userId
         }
       };
-      if (this.fileAttach !== null){
-        opt.file = file
-        console.log("🚀 ~ sendDocumentsToUserById ~ file:", file)
-        console.log("🚀 ~ sendDocumentsToUserById ~ file:", typeof file)
+      if (file.file) {
+        opt.file = [ file ]
       }
       // if (this.documentType === 'Boleto' && this.barCode !== ''){
       //   opt.body.barCode = this.barCode
