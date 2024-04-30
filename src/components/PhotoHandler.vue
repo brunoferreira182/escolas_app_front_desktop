@@ -9,8 +9,8 @@
         <q-separator />
 
         <q-card-section>
-          <q-btn color="primary" flat no-caps label="Câmera" @click="handleClick('camera')" />
-          <q-btn color="primary" flat no-caps label="Galeria de fotos" @click="handleClick('gallery')" />
+          <!-- <q-btn color="primary" flat no-caps label="Câmera" @click="handleClick('camera')" /> -->
+          <!-- <q-btn color="primary" flat no-caps label="Galeria de fotos" @click="handleClick('gallery')" /> -->
           <q-btn color="primary" flat no-caps label="Documentos" @click="handleClick('documents')" />
           <q-btn color="red-8" flat no-caps label="Cancelar" @click="handleClick('cancel')" />
         </q-card-section>
