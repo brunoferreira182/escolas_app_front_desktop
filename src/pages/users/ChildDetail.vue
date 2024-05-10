@@ -18,6 +18,15 @@
         </div>
         <div class="col q-pt-sm q-gutter-sm text-right">
           <q-btn
+            rounded
+            outline
+            no-caps
+            unelevated
+            :color="`${isActive === 1 ? 'red-8' : 'green-8'}`"
+            :label="`${isActive === 1 ? 'Inativar usuário' : 'Ativar usuário'}`"
+            @click="isActive === 1 ? inactiveUser() : activeUser()">
+          </q-btn>
+          <q-btn
             icon= "calendar_month"
             rounded
             no-caps unelevated color="primary"
@@ -99,6 +108,12 @@
                 outlined
                 v-model="childData.birthDocument"
                 label="Certidão de nascimento"
+              />
+              <q-input
+                outlined
+                mask="###############"
+                v-model="childData.registerNumber"
+                label="Número de cadastro"
               />
             </div>
             <div v-else class="text-grey-8 q-ma-sm">
@@ -330,6 +345,7 @@ export default defineComponent({
         document: '',
         birthDocument: '',
         birthdate: '',
+        registerNumber: ''
       },
       dialogDeleteResponsable: {
         data: {},
@@ -373,6 +389,44 @@ export default defineComponent({
     },
   },
   methods: {
+    inactiveUser() {
+      const opt = {
+        route: '/desktop/users/inactiveUser',
+        body: {
+          userId: this.$route.query.userId
+        },
+      }
+      this.$q.loading.show()
+      useFetch(opt).then(r => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.$q.notify('Usuário inativado com sucesso!')
+          this.getChildDetailById()
+        }
+      })
+    },
+    activeUser() {
+      const opt = {
+        route: '/desktop/users/activeUser',
+        body: {
+          userId: this.$route.query.userId
+        },
+      }
+      this.$q.loading.show()
+      useFetch(opt).then(r => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.$q.notify('Usuário ativado com sucesso!')
+          this.getChildDetailById()
+        }
+      })
+    },
     uploadProfileImage (image) {
       const opt = {
         route: '/desktop/users/updateProfileImage',
@@ -512,7 +566,8 @@ export default defineComponent({
           name: this.childData.name,
           document: this.childData.document,
           document: this.childData.birthDocument,
-          birthdate: this.childData.birthdate
+          birthdate: this.childData.birthdate,
+          registerNumber: this.childData.registerNumber
         }
       }
       useFetch(opt).then((r) => {
@@ -540,6 +595,7 @@ export default defineComponent({
           this.$q.notify("Ocorreu um erro, tente novamente por favor");
         } else {
           this.childData = r.data.userData
+          this.isActive = r.data.userData.isActive
           this.responsibleData = r.data.responsibleData
         }
       });

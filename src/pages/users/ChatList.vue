@@ -48,7 +48,7 @@
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side class="q-mr-md">
-                    <q-item-label caption>
+                    <q-item-label caption v-if="item.lastMessage && item.lastMessage.createdAt">
                       {{ item.lastMessage.createdAt.createdAtLocale.split(' ')[1].slice(0, 5) }}
                     </q-item-label>
                   </q-item-section>
@@ -98,7 +98,7 @@
             class="fixed-bot items-center q-gutter-sm q-px-sm q-ma-sm bg-grey-3 ">
               <q-input
               v-if="inputStatus === 'message'"
-              @keyup.enter="newBkoMessage"
+              @keyup.enter="insertInternalMessage"
               v-model="currentMessage"
               bg-color="white"
               class="q-ma-sm full-width"
@@ -130,11 +130,11 @@
             />
             <q-btn
               v-if="currentMessage.length > 0 || currentFile !== null"
-              @click="newBkoMessage"
+              @click="insertInternalMessage"
               round
               color="primary"
               icon="send"
-              />
+            />
             </div>
         </div>
       </div>
@@ -165,12 +165,12 @@ export default {
     this.getActiveClassesAndLastMessage()
     // this.startSocketResume()
   },
-  beforeRouteLeave() {
-    if (this.socket.messages) this.socket.messages.disconnect()
-    if (this.socket.resume) this.socket.resume.disconnect()
+  beforeUnmount() {
+    if (this.socket && this.socket.messages) this.socket.messages.disconnect()
+    if (this.socket && this.socket.resume) this.socket.resume.disconnect()
   },
   methods: {
-    newBkoMessage(){
+    insertInternalMessage(){
       if(this.currentMessage !== '' && this.currentMessage){
         const opt = {
           route: '/desktop/messenger/insertInternalMessage',

@@ -24,7 +24,7 @@
             <q-card-section>
               <div style="display: flex; align-items: center;">
                 <div>
-                  <div class="text-grey text-bold" style="text-transform: capitalize;">
+                  <div class="text-black text-bold" style="text-transform: capitalize;">
                     {{ comment.createdBy.name }}
                   </div>
                   <div class="">

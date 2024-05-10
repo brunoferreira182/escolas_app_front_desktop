@@ -30,6 +30,15 @@
           </q-btn>
           <q-btn
             rounded
+            outline
+            no-caps
+            unelevated
+            :color="`${isActive === 1 ? 'red-8' : 'green-8'}`"
+            :label="`${isActive === 1 ? 'Inativar usuário' : 'Ativar usuário'}`"
+            @click="isActive === 1 ? inactiveUser() : activeUser()">
+          </q-btn>
+          <q-btn
+            rounded
             no-caps
             unelevated
             color="primary"
@@ -443,6 +452,7 @@ export default defineComponent({
         blob: null,
         name: null
       },
+      isActive: null,
       relationTypeList: [],
       relationTypeSelected: '' ,
       notesList: []
@@ -463,6 +473,44 @@ export default defineComponent({
     this.getUserDetailById()
   },
   methods: {
+    inactiveUser() {
+      const opt = {
+        route: '/desktop/users/inactiveUser',
+        body: {
+          userId: this.$route.query.userId
+        },
+      }
+      this.$q.loading.show()
+      useFetch(opt).then(r => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.$q.notify('Usuário inativado com sucesso!')
+          this.getUserDetailById()
+        }
+      })
+    },
+    activeUser() {
+      const opt = {
+        route: '/desktop/users/activeUser',
+        body: {
+          userId: this.$route.query.userId
+        },
+      }
+      this.$q.loading.show()
+      useFetch(opt).then(r => {
+        this.$q.loading.hide()
+        if(r.error){
+          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
+          return
+        }else{
+          this.$q.notify('Usuário ativado com sucesso!')
+          this.getUserDetailById()
+        }
+      })
+    },
     uploadProfileImage (image) {
       const opt = {
         route: '/desktop/users/updateProfileImage',
@@ -713,6 +761,7 @@ export default defineComponent({
           r.data.allPermissions ? this.allPermissions = r.data.allPermissions :
           this.allPermissions = [],
           this.userIdSQL = r.data.userId
+          this.isActive = r.data.userData.isActive
           this.checkedPermissionsList = r.data.permissions
           this.allPermissions.forEach((all, i) => {this.allPermissions[i].checked = false;})
           this.allPermissions.forEach((all, i) => {

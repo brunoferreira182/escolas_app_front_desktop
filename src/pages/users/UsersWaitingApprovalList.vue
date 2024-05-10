@@ -88,7 +88,10 @@
           <q-icon name="check" size="20px" v-if="selectedFilters[button.callback]"/>
         </q-chip>
       </div> -->
-      <q-dialog v-model="dialogOpenSolicitation.open" @before-hide="clearDialogSolicitation() || getUsersList()" @show="getUserRelationType()">
+      <q-dialog
+        v-model="dialogOpenSolicitation.open"
+        @before-hide="clearDialogSolicitation() || getUsersList()" @show="getUserRelationType()"
+      >
         <q-card
           style="border-radius: 1rem; width: 480px; padding: 10px;"
         >
@@ -100,9 +103,9 @@
             :height="`${userApprovalStep === 'approval' ? '480px' : '640px'}`"
           >
             <q-carousel-slide name="approval" >
-              <div class="text-center text-subtitle1">
+              <!-- <div class="text-center text-subtitle1">
                 Passo 1 de 2
-              </div>
+              </div> -->
               <div class="text-h6 text-center q-pt-md">
                 Como deseja proceder com essa solicitação?
               </div>
@@ -124,7 +127,7 @@
                 </div>
               </q-card-actions>
             </q-carousel-slide>
-            <q-carousel-slide name="askInsertChild"  class="no-padding ">
+            <!-- <q-carousel-slide name="askInsertChild"  class="no-padding ">
               <div class="text-center q-pa-md text-subtitle1">
                 Passo 2 de 2
               </div>
@@ -206,7 +209,7 @@
                   />
                 </div>
               </q-card-actions>
-            </q-carousel-slide>
+            </q-carousel-slide> -->
           </q-carousel>
         </q-card>
       </q-dialog>
@@ -472,7 +475,8 @@ export default defineComponent({
           return
         }
         this.$q.notify('Responsável vinculado!')
-        this.userApprovalStep = 'askInsertChild'
+        this.clearDialogSolicitation()
+        // this.userApprovalStep = 'askInsertChild'
       })
     },
     getUserPermissionsOptions(){

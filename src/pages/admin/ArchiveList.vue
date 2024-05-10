@@ -7,7 +7,7 @@
         :columns="columnsData"
         :rows="archivesList"
         row-key="_id"
-        @row-click="clkArchive"
+        @row-click="download"
         virtual-scroll
         rows-per-page-label="Registros por página"
         no-data-label="Nenhum dado inserido até o momento"
@@ -74,13 +74,14 @@
 import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
 import { useTableColumns } from "stores/tableColumns";
-
+import utils from '../../boot/utils'
 export default defineComponent({
   name: "ArchiveList",
   data() {
     return {
       columnsData: useTableColumns().archivesList,
       archivesList: [],
+      utils,
       selectStatus: ["Ativos", "Inativos"],
       filter: "",
       selectFilter: null,
@@ -104,6 +105,23 @@ export default defineComponent({
     this.getArchivesList();
   },
   methods: {
+    // async convertBlobToBase64(blob) {
+    //   return new Promise((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.onerror = reject;
+    //     reader.onload = () => {
+    //       resolve(reader.result);
+    //     };
+    //     reader.readAsDataURL(blob);
+    //   });
+    // },
+    async download(e, r){
+      await utils.downloadFile({
+        filename: r.file.filename,
+        mimetype: r.file.mimetype,
+        originalname: r.file.originalname
+      })
+    },
     clkArchive(e, r){
       const childEventId = r._id
       // this.$router.push('/admin/eventDetail?childEventId=' + childEventId)
