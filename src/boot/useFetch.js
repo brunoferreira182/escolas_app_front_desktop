@@ -4,6 +4,8 @@ import CryptoJS from 'crypto-js'
 import { masterServerRoute } from './masterServerRoutes.js'
 import { PROJECT_NAME, MODE_APP_SERVER, DEFAULT_SERVER_NAME, COMPANY_ID, MODE_SERVER } from './variables.js'
 
+const fileToBlob = async (file) => new Blob([new Uint8Array(await file.arrayBuffer())], {type: file.type });
+
 const useFetch = async ({
   project,
   serverName,
@@ -54,9 +56,9 @@ const useFetch = async ({
     newBody.destinationroute = destinationroute
     form = new FormData();
     form.append("body", JSON.stringify(newBody));
-    file.forEach(f => {
+    file.forEach(async f => {
       const fileName = f.name ? f.name : 'userFile.png';
-      const blob = new Blob([f.file], { type: f.type });
+      const blob = await fileToBlob(f.file);
       form.append('file', blob, fileName);
     });
     bodyToSend = form;

@@ -6,24 +6,15 @@
           Envio de arquivo
         </div>
         <div class="col text-right">
-          <div class="row justify-center items-center">
-            <div class="col">
-              
-            </div>
-            <div class="col">
-              <q-btn
-              color="primary"
-              unelevated
-              no-caps
-              @click = "sendDocumentsToUserById()"
-              rounded
-              dense
-              class="q-pa-sm"
-              label="Enviar Documento"
-              icon="send"
-              />
-            </div>
-          </div>
+          <q-btn
+            color="primary"
+            unelevated
+            no-caps
+            @click = "sendDocumentsToUserById()"
+            rounded
+            label="Enviar Documento"
+            icon="send"
+          />
         </div>
       </div>
       <q-separator class="q-mx-md" />
@@ -185,7 +176,12 @@ export default defineComponent({
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersList();
     },
-    sendDocumentsToUserById (){
+    sendDocumentsToUserById () {
+      // console.log(this.fileAttach, 'mnaern')
+      // this.fileAttach.arrayBuffer().then((arrayBuffer) => {
+      //   const bl = new Blob([new Uint8Array(arrayBuffer)], {type: this.fileAttach.type });
+      //   console.log(bl, 'blob aqui');
+      // });
       const file = [{file: this.fileAttach, name:'document'}]
       const opt = {
         route : "/desktop/adm/sendFileToUserById",
