@@ -80,7 +80,6 @@
               >
                 <img :src="utils.makeFileUrl(classData.image)"/>
               </q-avatar>
-              <input type="file" id="profile-image-upload" hidden  accept="image/png, image/jpeg"/>
               <q-input
                 v-if="typeSelected === 'semesterly' || typeSelected === 'yearly'"
                 outlined
@@ -525,12 +524,23 @@
             </div>
           </q-tab-panel>
       </q-tab-panels>
+
+      <PhotoHandler
+        :start="startPhotoHandler"
+        :camera="true"
+        :gallery="true"
+        :documents="false"
+        :noCrop="false"
+        @captured="captured"
+        @cancel="cancelPhotoHandler"
+      />
     </q-page>
   </q-page-container>
 </template>
 
 <script setup>
 import utils from '../../boot/utils'
+import PhotoHandler from '../../components/PhotoHandler.vue'
 </script>
 
 <script>
@@ -597,16 +607,13 @@ export default defineComponent({
       usersList: [],
       childrenList: [],
       filterDate: '',
-      attendance: []
+      attendance: [],
+      startPhotoHandler: false,
+      fileSelected: null
     };
   },
   mounted() {
     this.$q.loading.hide();
-    const profileImage = document.getElementById('profile-image-upload')
-    profileImage.onchange = () => {
-      const selectedFile = profileImage.files[0];
-      this.uploadProfileImage(selectedFile)
-    }
   },
   beforeMount() {
     this.getClassDetailById()
@@ -623,43 +630,53 @@ export default defineComponent({
     },
   },
   methods: {
-    async getChildrenByClass(){
-    const opt = {
-      route :  '/desktop/classes/getAttendanceByClass',
-      body : {
-        classId : this.$route.query.classId,
-        filterDate: this.filterDate,
-        page : this.pagination.page,
-        rowsPerPage : 50
-      },
-    }
-    this.$q.loading.show()
-    useFetch(opt).then((r) => {
-      this.$q.loading.hide()
-      if(!r.data){
-        this.$q.notify('deu merda.')
-        return
+    clkProfileImage () {
+      this.startPhotoHandler = true
+    },
+    captured(img, imgBlob, fileName) {
+      this.startPhotoHandler = false
+      this.fileSelected = {
+        file: imgBlob,
+        name: fileName
       }
-      this.$q.loading.hide()
-      this.attendance = r.data
-      console.log('lalalala', this.attendance)
-    })
-  },
+      this.uploadProfileImage()
+    },
     uploadProfileImage (image) {
       const opt = {
         route: '/desktop/classes/updateClassImage',
         body: {
           classId: this.$route.query.classId
         },
-        file: [ { file: image, name: image.name } ]
+        file: [ this.fileSelected ]
       }
       useFetch(opt).then(r => {
         this.classData.image = r.data.image
       })
     },
-    clkProfileImage () {
-      const profileImage = document.getElementById('profile-image-upload')
-      profileImage.click()
+    cancelPhotoHandler () {
+      this.startPhotoHandler = false
+    },
+    async getChildrenByClass(){
+      const opt = {
+        route :  '/desktop/classes/getAttendanceByClass',
+        body : {
+          classId : this.$route.query.classId,
+          filterDate: this.filterDate,
+          page : this.pagination.page,
+          rowsPerPage : 50
+        },
+      }
+      this.$q.loading.show()
+      useFetch(opt).then((r) => {
+        this.$q.loading.hide()
+        if(!r.data){
+          this.$q.notify('deu merda.')
+          return
+        }
+        this.$q.loading.hide()
+        this.attendance = r.data
+        console.log('lalalala', this.attendance)
+      })
     },
     clkUserInClass (user) {
       let route

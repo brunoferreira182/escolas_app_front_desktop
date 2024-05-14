@@ -7,9 +7,9 @@
         </q-card-section>
 
         <q-card-actions>
-          <q-btn color="primary" flat no-caps label="Câmera" @click="openCamera" />
-          <q-btn color="primary" flat no-caps label="Galeria" @click="pickFile('gallery')" />
-          <q-btn color="primary" flat no-caps label="Arquivo" @click="pickFile('documents')" />
+          <q-btn color="primary" flat no-caps label="Câmera" @click="openCamera" v-if="camera" />
+          <q-btn color="primary" flat no-caps label="Galeria" @click="pickFile('gallery')" v-if="gallery"/>
+          <q-btn color="primary" flat no-caps label="Arquivo" @click="pickFile('documents')" v-if="documents" />
           <q-btn color="red-8" flat no-caps label="Cancelar" @click="clkBack" />
         </q-card-actions>
       </q-card>
@@ -61,7 +61,7 @@ import {
   // Photo 
 } from '@capacitor/camera';
 
-const props = defineProps(['square', 'allFiles', 'start', 'noCrop', 'acceptImageCaption'])
+const props = defineProps(['square', 'start', 'noCrop', 'camera', 'gallery', 'documents'])
 const emits = defineEmits([
   'captured',
   'cancel'
@@ -76,50 +76,15 @@ const openDialog = ref(false)
 const dialogCrop = ref({
   open: false
 })
-
 let fileName = null
-const buttons = [
-  {
-    text: 'Câmera',
-    data: {
-      action: 'camera',
-    },
-  },
-  {
-    text: 'Galeria de fotos',
-    data: {
-      action: 'gallery',
-    },
-  },
-  {
-    text: 'Documentos',
-    data: {
-      action: 'documents',
-    },
-  },
-  {
-    text: 'Cancelar',
-    role: 'cancel',
-    data: {
-      action: 'cancel',
-    },
-  },
-]
 
 onMounted(() => {
   if (props.square) stencilProps.aspectRatio = 1
 })
 
 watch (props, (n, o) => {
-  if (n.start) showBottomSheet()
+  if (n.start) openDialog.value = true
 })
-
-
-
-async function showBottomSheet () {
-  if (!props.allFiles) buttons.splice(2, 1)
-  openDialog.value = true
-}
 
 
 function cancelCrop () {
@@ -139,12 +104,10 @@ async function openCamera () {
     quality: 50,
     width: 400
   });
-  
-  // utils.loading.show()
   fileName = 'Foto da câmera'
   img.value = tp
+  openDialog.value = false
   if (props.noCrop) {
-    // utils.loading.hide()
     sendPhoto(img.value)
   } else {
     step.value = 'crop'
@@ -170,6 +133,9 @@ async function pickFile (type) {
     file.blob = await fileTemp.blob()
   }
 
+  openDialog.value = false
+  fileName = file.name
+
   if (type === 'gallery' && !props.noCrop) {
     img.value = await convertBlobToBase64(file.blob)
     step.value = 'crop'
@@ -194,19 +160,11 @@ async function sendPhoto (img) {
   emits('captured', file.url, fileBlob, fileName, imageCaption, null, 'camera' )
 }
 
-function clkRestart() {
-  step.value = 'initial'
-  // openCamera()
-  showBottomSheet()
-}
-
 function clkBack () {
   step.value = 'initial'
+  openDialog.value = false
   emits('cancel')
 }
-
-
-
 
 const convertBlobToBase64 = (blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();

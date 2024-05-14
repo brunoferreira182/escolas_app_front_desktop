@@ -29,12 +29,6 @@
             Preencha os dados
           </div>
           <div class="no-margin q-px-md text-caption"> Cardápio</div>
-          <!-- <q-input
-            outlined
-            label="Nome do cardápio"
-            hint="Ex: Cardápio Feveireiro, semanal do dia"
-            v-model="menuName"
-          /> -->
           <q-input
             outlined
             readonly
@@ -52,28 +46,50 @@
               </q-icon>
             </template>
           </q-input>
-          <div class="text-subtitle">
+          <div>
+            <q-btn
+              class="q-mr-xs"
+              flat
+              no-caps
+              color="primary"
+              :label="buttonText"
+              @click="clkAddAttachment"
+            />
+          </div>
+          <!-- <div class="text-subtitle">
             Insira o cardápio abaixo
           </div>
           <q-file color="teal" filled v-model="fileAttach" label="Escolher arquivo">
             <template v-slot:prepend>
               <q-icon name="cloud_upload" />
             </template>
-          </q-file>
-          <!-- <q-editor
-            v-model="menuContent"
-            min-height="5rem"
-          /> -->
+          </q-file> -->
         </div>
       </div>
+
+      <PhotoHandler
+        :start="startPhotoHandler"
+        :camera="true"
+        :gallery="true"
+        :documents="true"
+        :noCrop="false"
+        @captured="captured"
+        @cancel="cancelPhotoHandler"
+      />
+
     </q-page>
   </q-page-container>
 </template>
 
-<script>
+<script setup>
 import { format } from 'date-fns';
-import { defineComponent } from "vue";
 import useFetch from "../../boot/useFetch";
+import PhotoHandler from '../../components/PhotoHandler.vue'
+import { defineComponent } from "vue";
+</script>
+<script>
+
+
 export default defineComponent({
   name: "CreateMenu",
   data() {
@@ -84,8 +100,10 @@ export default defineComponent({
         from: '',
         to: ''
       },
-      fileAttach: null,
+      fileSelected: null,
       label: '',
+      buttonText: 'Escolher arquivo',
+      startPhotoHandler: false
     };
   },
   mounted() {
@@ -98,6 +116,21 @@ export default defineComponent({
     }
   },
   methods: {
+    captured(img, imgBlob, fileName) {
+      console.log(img, imgBlob, fileName, 'auauau')
+      this.startPhotoHandler = false
+      this.fileSelected = {
+        file: imgBlob,
+        name: fileName
+      }
+      this.buttonText = fileName
+    },
+    clkAddAttachment () {
+      this.startPhotoHandler = true
+    },
+    cancelPhotoHandler () {
+      this.startPhotoHandler = false
+    },
     dateFormater(){
       if (this.menuDate && this.menuDate.from && this.menuDate.to){
         const fromDate = format(this.menuDate.from, 'dd/MM/yyyy');
@@ -109,10 +142,6 @@ export default defineComponent({
       }
     },
     createMenu() {
-    // if(this.menuName === '' || this.menuContent === '' || this.menuDate === ''){
-    //   this.$q.notify('Preencha todos os campos para prosseguir.')
-    //   return
-    // }
       if(this.menuDate.from === '' || this.menuDate.to === ''){
         this.$q.notify('Preencha a Data de aplicação do cardápio!')
         return
@@ -125,16 +154,13 @@ export default defineComponent({
         // Single date format
         this.menuDate = format(this.menuDate, 'yyyy/MM/dd');
       }
-      const file = [{file: this.fileAttach, Name:'menu'}]
       const opt = {
         route: "/desktop/adm/createMenu",
         body: {
-          // name: this.menuName,
-          // content: this.menuContent,
           menuDate: this.menuDate
         },
+        file: [ this.fileSelected ]
       };
-      if(this.fileAttach && this.fileAttach !== null) opt.file = file
       this.$q.loading.show();
       useFetch(opt).then((r) => {
         this.$q.loading.hide()

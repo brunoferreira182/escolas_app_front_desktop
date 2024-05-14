@@ -18,16 +18,7 @@
           <div class="text-caption">Dados de usuário</div>
         </div>
         <div class="col q-pt-sm q-gutter-sm text-right">
-          <q-btn
-            rounded
-            unelevated
-            no-caps
-            v-if = "tab === 'noteList'"
-            color = "primary"
-            @click = "clkDialogNewNoteForUser()"
-          > Novo Recado
-            <q-icon side name="add"/>
-          </q-btn>
+          
           <q-btn
             rounded
             outline
@@ -86,7 +77,7 @@
                 >
                   <img :src="utils.makeFileUrl(userData.image)" />
                 </q-avatar>
-                <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/>
+                <!-- <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/> -->
                 <q-input
                   outlined
                   v-model="userData.name"
@@ -206,22 +197,35 @@
       </div>
       </q-tab-panel>
       <q-tab-panel name="noteList">
+        <q-btn
+          rounded
+          unelevated
+          no-caps
+          v-if = "tab === 'noteList'"
+          color = "primary"
+          @click = "clkDialogNewNoteForUser()"
+          flat
+        > Novo Recado
+          <q-icon side name="add"/>
+        </q-btn>
         <q-list class="q-mt-md" bordered separator>
-          <q-item class="items-center q-mx-sm"
+          <q-item
             v-for="note in notesList"
             :key="note"
-            >
+            dense
+          >
             <q-item-section>
               <q-item-label>{{ note.noteName }}</q-item-label>
               <q-item-label caption>{{ note.noteContent }}</q-item-label>
-              <q-item-label caption>{{ note.createdDate }} às {{ note.hour }}</q-item-label>
+              <q-item-label caption>{{ note.createdDate }}</q-item-label>
             </q-item-section>
-            <q-icon v-if="note.isRead === 1" name="done_all" size="2em" color="green"></q-icon>
-            <q-icon v-if="note.isRead === 0" name="done_all" size="2em" color="gray"></q-icon>
-            <q-item-section class="items-center" side>
-              <q-btn color="red" @click="deleteNote(note._id)" unelevated>
-                <q-icon name="delete" />
-              </q-btn>
+            <q-item-section side>
+              <span>
+                <q-btn round flat color="red" @click="deleteNote(note._id)">
+                  <q-icon name="delete" />
+                </q-btn>
+                <q-icon v-if="note.isRead === 1" name="done_all" color="green"></q-icon>
+              </span>
             </q-item-section>
           </q-item>
         </q-list>
@@ -397,12 +401,24 @@
           </div>
         </q-card>
       </q-dialog>
+
+      <PhotoHandler
+        :start="startPhotoHandler"
+        :camera="true"
+        :gallery="true"
+        :documents="false"
+        :noCrop="false"
+        @captured="captured"
+        @cancel="cancelPhotoHandler"
+      />
+
     </q-page>
   </q-page-container>
 </template>
 
 <script setup>
 import utils from '../../boot/utils'
+import PhotoHandler from '../../components/PhotoHandler.vue'
 </script>
 
 <script>
@@ -455,16 +471,13 @@ export default defineComponent({
       isActive: null,
       relationTypeList: [],
       relationTypeSelected: '' ,
-      notesList: []
+      notesList: [],
+      startPhotoHandler: false,
+      fileSelected: null
     }
   },
   mounted() {
     this.$q.loading.hide()
-    const profileImage = document.getElementById('profile-image-upload')
-    profileImage.onchange = () => {
-      const selectedFile = profileImage.files[0];
-      this.uploadProfileImage(selectedFile)
-    }
   },
   beforeUnMount() {
     this.updateUserData()
@@ -473,6 +486,35 @@ export default defineComponent({
     this.getUserDetailById()
   },
   methods: {
+    clkProfileImage () {
+      this.startPhotoHandler = true
+    },
+    captured(img, imgBlob, fileName) {
+      this.startPhotoHandler = false
+      this.fileSelected = {
+        file: imgBlob,
+        name: fileName
+      }
+      this.uploadProfileImage()
+    },
+    uploadProfileImage () {
+      const opt = {
+        route: '/desktop/users/updateProfileImage',
+        body: {
+          userId: this.$route.query.userId
+        },
+        file: [ this.fileSelected ]
+      }
+      useFetch(opt).then(r => {
+        this.userData.image = r.data.image
+      })
+    },
+    clkAddAttachment () {
+      this.startPhotoHandler = true
+    },
+    cancelPhotoHandler () {
+      this.startPhotoHandler = false
+    },
     inactiveUser() {
       const opt = {
         route: '/desktop/users/inactiveUser',
@@ -511,22 +553,8 @@ export default defineComponent({
         }
       })
     },
-    uploadProfileImage (image) {
-      const opt = {
-        route: '/desktop/users/updateProfileImage',
-        body: {
-          userId: this.$route.query.userId
-        },
-        file: [ { file: image, name: image.name } ]
-      }
-      useFetch(opt).then(r => {
-        this.userData.image = r.data.image
-      })
-    },
-    clkProfileImage () {
-      const profileImage = document.getElementById('profile-image-upload')
-      profileImage.click()
-    },
+    
+    
     clkChild(child) {
       this.$router.push('/users/childDetail?userId=' + child.childId)
     },

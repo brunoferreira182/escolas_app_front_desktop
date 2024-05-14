@@ -103,7 +103,9 @@
 
       <PhotoHandler
         :start="startPhotoHandler"
-        :allFiles="true"
+        :camera="true"
+        :gallery="true"
+        :documents="true"
         :noCrop="true"
         @captured="captured"
         @cancel="cancelPhotoHandler"
