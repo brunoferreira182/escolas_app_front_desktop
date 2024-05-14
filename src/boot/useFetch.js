@@ -52,15 +52,19 @@ const useFetch = async ({
   /// ANEXOS ///////////////////////////////////////
   let form;
   if (file && file.length > 0) {
+    console.log(file, 'entrou nofile')
     newBody.destinationserver = destinationserver
     newBody.destinationroute = destinationroute
     form = new FormData();
     form.append("body", JSON.stringify(newBody));
     file.forEach(async f => {
       const fileName = f.name ? f.name : 'userFile.png';
-      const blob = await fileToBlob(f.file);
+      // const blob = await fileToBlob(f.file);
+      const blob = new Blob([f.file], { type: f.file.type });
       form.append('file', blob, fileName);
+      console.log(f, 'dentro do for da porra')
     });
+    console.log('form', form.entries())
     bodyToSend = form;
   }
   //////////////////////////////////////////////////
@@ -72,7 +76,8 @@ const useFetch = async ({
 
   let ret;
   try {
-    ret = await axios.post(routeMasterServer, bodyToSend);
+    if (method === "GET") ret = await axios.get(routeMasterServer)
+    else ret = await axios.post(routeMasterServer, bodyToSend)
   } catch (e) {
     console.log("AQUI ERRO CATCH", e);
     Loading.hide();

@@ -12,15 +12,13 @@
             </div>
             <div class="col">
               <q-btn
-              color="primary"
-              unelevated
-              no-caps
-              @click = "sendDocumentsToUserById()"
-              rounded
-              dense
-              class="q-pa-sm"
-              label="Enviar Documento"
-              icon="send"
+                color="primary"
+                unelevated
+                no-caps
+                @click="sendDocumentsToUserById"
+                rounded
+                label="Enviar"
+                icon="send"
               />
             </div>
           </div>
@@ -36,31 +34,18 @@
             v-model="documentType"
             label="Tipo de arquivo"
           />
-          <PhotoHandler
-            v-show="startPhotoHandler"
-            :start="startPhotoHandler"
-            :allFiles="true"
-            :noCrop="false"
-            @captured="captured"
-            @cancel="cancelPhotoHandler"
-          />
+          
+          <div v-if= "documentType === 'Boleto' && documentType !== ''" >
+            <q-input outlined v-model= "barCode" label= "Código de barras"/>
+          </div>
           <q-btn
             class="q-mr-xs"
             flat
             no-caps
             color="primary"
-            label="Clique para inserir um arquivo"
+            :label="addFileButtonText"
             @click="clkAddAttachment"
           />
-
-          <!-- <q-file outlined v-model="fileAttach" label="Escolher arquivo">
-            <template v-slot:prepend>
-              <q-icon name="cloud_upload" />
-            </template>
-          </q-file> -->
-          <div v-if= "documentType === 'Boleto' && documentType !== ''" >
-            <q-input outlined v-model= "barCode" label= "Código de barras"/>
-          </div>
           <div
             v-if="userId"
             style="border-radius: 20px;"
@@ -113,37 +98,16 @@
               </div>
             </template>
           </q-table>
-          <!-- <div class="col q-pa-sm items-center">
-            <div class="col q-gutter-lg q-py-sm">
-              <q-input
-                @keyup="getUsersList"
-                outlined
-                dense
-                debounce="300"
-                v-model="filter"
-                placeholder="Procurar usuário"
-              >
-                <template #append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </div>
-            <q-scroll-area style="height: 475px; max-width: auto;">
-                <q-item v-for="(user, i) in userList"
-                  :key="user"
-                  class="bg-grey-3 cursor-pointer"
-                  style="margin-bottom: 3px;"
-                  >
-                  <q-item-section
-                  @click="selectUser(userList[i])"
-                  >
-                    <q-item-label caption>{{ userList[i].name }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-            </q-scroll-area>
-          </div> -->
         </div>
       </div>
+
+      <PhotoHandler
+        :start="startPhotoHandler"
+        :allFiles="true"
+        :noCrop="true"
+        @captured="captured"
+        @cancel="cancelPhotoHandler"
+      />
     </q-page>
   </q-page-container>
 </template>
@@ -164,12 +128,12 @@ export default defineComponent({
       typeArch:[
         'Boleto', 'Outros',
       ],
-      fileAttach: null,
+      fileSelected: null,
+      addFileButtonText: 'Clique para inserir um arquivo',
       userList: [],
       barCode: '',
       user: null,
       documentType: '',
-
       userId: null,
       pagination: {
         page: 1,
@@ -193,10 +157,11 @@ export default defineComponent({
     captured(img, imgBlob, fileName) {
       this.step = 'initial'
       this.startPhotoHandler = false
-      this.sendDocumentsToUserById({
+      this.fileSelected = {
         file: imgBlob,
-        name: fileName,
-      })
+        name: fileName
+      }
+      this.addFileButtonText = fileName
     },
     clkAddAttachment () {
       this.step = 'addAttachment'
@@ -224,50 +189,39 @@ export default defineComponent({
       this.pagination.rowsPerPage = e.pagination.rowsPerPage;
       this.getUsersList();
     },
-<<<<<<< HEAD
-    sendDocumentsToUserById () {
-      // console.log(this.fileAttach, 'mnaern')
-      // this.fileAttach.arrayBuffer().then((arrayBuffer) => {
-      //   const bl = new Blob([new Uint8Array(arrayBuffer)], {type: this.fileAttach.type });
-      //   console.log(bl, 'blob aqui');
-      // });
-      const file = [{file: this.fileAttach, name:'document'}]
-=======
-    sendDocumentsToUserById (file){
-      // const file = [{file: this.fileAttach, name:'document'}]
-      console.log("🚀 ~ sendDocumentsToUserById ~ file:", file)
->>>>>>> 14919954289548dcf3f9a74ea2d84dea3edd4343
+    async sendDocumentsToUserById (file){
+      if (!this.fileSelected) {
+        this.$q.notify('Insira um arquivo.')
+        return
+      }
+      if (this.documentType === 'Boleto' && this.barCode === ''){
+        this.$q.notify('Insíra o código de barras!')
+        return
+      }
       const opt = {
         route : "/desktop/adm/sendFileToUserById",
         body : {
           type: this.documentType,
           userId: this.userId
-        }
+        },
+        file: [ this.fileSelected ]
       };
-      if (file.file) {
-        opt.file = [ file ]
+      if (this.documentType === 'Boleto'){
+        opt.body.barCode = this.barCode
       }
-      // if (this.documentType === 'Boleto' && this.barCode !== ''){
-      //   opt.body.barCode = this.barCode
-      // }
-      // else if (this.documentType === 'Boleto' && this.barCode === ''){
-      //   return this.$q.notify('Insíra o código de barras!')
-      // }
-
       this.$q.loading.show()
-      useFetch(opt).then((r) =>{
-        this.$q.loading.hide()
-        if(!r.error){
-          this.$q.notify('Arquivo enviado!')
-          this.selectUser(null, true)
-          this.fileAttach = null
-          this.barCode = ''
-        }
-        else{
-          this.$q.notify('Falha ao enviar documento!')
-          return
-        }
-      })
+      const r = await useFetch(opt)
+      this.$q.loading.hide()
+      if (r.error) {
+        this.$q.notify('Falha ao enviar documento!')
+        return
+      }
+      this.$q.notify('Arquivo enviado!')
+      this.selectUser(null, true)
+      this.fileSelected = null
+      this.addFileButtonText = 'Clique para inserir um arquivo'
+      this.documentType = ''
+      this.barCode = ''
     },
     getUsersList() {
       const page = this.pagination.page

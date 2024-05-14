@@ -15,7 +15,8 @@
         :rows-per-page-options="[10, 20, 30, 50]"
         :filter="filter"
         v-model:pagination="pagination"
-        @request="nextPage">
+        @request="nextPage"
+      >
         <template #top-right>
           <div class="flex row q-gutter-sm items-center text-right">
             <div class="col">
@@ -105,26 +106,12 @@ export default defineComponent({
     this.getArchivesList();
   },
   methods: {
-    // async convertBlobToBase64(blob) {
-    //   return new Promise((resolve, reject) => {
-    //     const reader = new FileReader();
-    //     reader.onerror = reject;
-    //     reader.onload = () => {
-    //       resolve(reader.result);
-    //     };
-    //     reader.readAsDataURL(blob);
-    //   });
-    // },
     async download(e, r){
       await utils.downloadFile({
         filename: r.file.filename,
         mimetype: r.file.mimetype,
         originalname: r.file.originalname
       })
-    },
-    clkArchive(e, r){
-      const childEventId = r._id
-      // this.$router.push('/admin/eventDetail?childEventId=' + childEventId)
     },
     nextPage(e) {
       this.pagination.page = e.pagination.page;

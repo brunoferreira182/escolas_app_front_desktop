@@ -310,6 +310,14 @@
           </div>
         </q-card>
       </q-dialog>
+
+      <PhotoHandler
+        :start="startPhotoHandler"
+        :allFiles="true"
+        :noCrop="false"
+        @captured="captured"
+        @cancel="cancelPhotoHandler"
+      />
     </q-page>
   </q-page-container>
 </template>
@@ -322,10 +330,12 @@ import utils from '../../boot/utils'
 import { defineComponent, ref } from 'vue'
 import { useTableColumns } from "stores/tableColumns";
 import useFetch from '../../boot/useFetch'
+import PhotoHandler from '../../components/PhotoHandler.vue'
 export default defineComponent({
   name: 'ChildDetail',
   data() {
     return {
+      startPhotoHandler: false,
       dialog: false,
       tab:'info',
       columns: useTableColumns().attendanceList,
@@ -366,7 +376,7 @@ export default defineComponent({
         firstDayOfWeek: 1, // 0-6, 0 - Sunday, 1 Monday, ...
         format24h: true,
         pluralDay: 'dias'
-      }
+      },
     }
   },
   beforeMount() {
@@ -389,6 +399,33 @@ export default defineComponent({
     },
   },
   methods: {
+    captured(fileUrl, fileBlob, fileName) {
+      console.log(fileUrl, fileBlob, fileName)
+      this.updateProfileImg({ file: fileBlob, name: fileName })
+      this.startPhotoHandler = false
+    },
+    cancelPhotoHandler () {
+      this.startPhotoHandler = false
+    },
+    updateProfileImg (file) {
+      const opt = {
+        route: '/desktop/users/updateProfileImage',
+        body: {
+          userId: this.$route.query.userId
+        },
+        file: [ file ]
+      }
+      console.log(opt, 'file aqui')
+      useFetch(opt).then(r => {
+        this.childData.image = r.data.image
+      })
+    },
+    clkProfileImage () {
+      console.log('sdflk')
+      this.startPhotoHandler = true
+      // const profileImage = document.getElementById('profile-image-upload')
+      // profileImage.click()
+    },
     inactiveUser() {
       const opt = {
         route: '/desktop/users/inactiveUser',
@@ -427,22 +464,7 @@ export default defineComponent({
         }
       })
     },
-    uploadProfileImage (image) {
-      const opt = {
-        route: '/desktop/users/updateProfileImage',
-        body: {
-          userId: this.$route.query.userId
-        },
-        file: [ { file: image, name: image.name } ]
-      }
-      useFetch(opt).then(r => {
-        this.childData.image = r.data.image
-      })
-    },
-    clkProfileImage () {
-      const profileImage = document.getElementById('profile-image-upload')
-      profileImage.click()
-    },
+    
     clkResponsible(resp) {
       this.$router.push('/users/userDetail?userId=' + resp.responsibleId)
     },

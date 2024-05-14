@@ -14,6 +14,7 @@
     "@capacitor/camera": "^6.0.0",
     "@capacitor/filesystem": "^6.0.0",
     "@capawesome/capacitor-file-picker": "^6.0.0",
+    "@ionic/pwa-elements": "^3.2.2",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "capacitor": "^0.5.6",
