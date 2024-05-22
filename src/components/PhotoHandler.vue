@@ -83,7 +83,21 @@ onMounted(() => {
 })
 
 watch (props, (n, o) => {
-  if (n.start) openDialog.value = true
+  if (n.start) {
+    let sum = 0
+    if (props.camera) sum++
+    if (props.gallery) sum++
+    if (props.documents) sum++
+    if (sum > 1) {
+      openDialog.value = true
+    } else if (props.camera) {
+      openCamera()
+    } else if (props.gallery) {
+      pickFile('gallery')
+    } else if (props.documents) {
+      pickFile('documents')
+    }
+  }
 })
 
 
