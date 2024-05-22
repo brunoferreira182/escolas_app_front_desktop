@@ -61,7 +61,7 @@ import {
   // Photo 
 } from '@capacitor/camera';
 
-const props = defineProps(['square', 'start', 'noCrop', 'camera', 'gallery', 'documents'])
+const props = defineProps(['square', 'start', 'noCrop', 'camera', 'gallery', 'documents', 'fileTypes'])
 const emits = defineEmits([
   'captured',
   'cancel'
@@ -132,6 +132,7 @@ async function openCamera () {
 async function pickFile (type) {
   let types = ['image/*']
   if (type === 'documents') types = ['*']
+  if (props.fileTypes) types = props.fileTypes
   let res
   try {
     res = await FilePicker.pickMedia({ types, multiple: false });
