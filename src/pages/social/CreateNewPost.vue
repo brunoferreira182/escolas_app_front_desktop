@@ -177,6 +177,8 @@
           outlined
           v-model="postData.resume.img"
           autogrow
+          accept=".png, .jpg, image/*"
+          @rejected="onRejected"
           @update:model-value="createUrlCard(postData.resume.img)"
         />
         <q-btn
@@ -312,6 +314,12 @@ export default defineComponent({
     }
   },
   methods: {
+    onRejected () {
+      this.$q.notify({
+        type: 'negative',
+        message: `A imagem precisa ser formato PNG ou JPG`
+      })
+    },
     uploadImg () {
       this.qeditor = this.qeditor + ('<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Bananas_%28Alabama_Extension%29.jpg/280px-Bananas_%28Alabama_Extension%29.jpg"/>')
     },

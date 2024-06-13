@@ -64,6 +64,8 @@
             label="Foto para evento - Clique aqui para escolher uma imagem"
             outlined
             v-model="eventImg"
+            accept=".png, .jpg, image/*"
+            @rejected="onRejected"
           />
           <q-select
             v-if="requiresClassLink"
@@ -118,6 +120,12 @@ export default defineComponent({
     this.getClassesList()
   },
   methods: {
+    onRejected () {
+      this.$q.notify({
+        type: 'negative',
+        message: `A imagem precisa ser formato PNG ou JPG`
+      })
+    },
     getClassesListWithSearchString(val, update, abort) {
       if(val.length < 3) {
         this.$q.notify('Digite no mínimo 3 caracteres')
