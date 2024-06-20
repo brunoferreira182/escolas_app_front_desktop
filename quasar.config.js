@@ -61,8 +61,8 @@ module.exports = configure(function (/* ctx */) {
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
       publicPath:
-      '/dev/escolas_app/desktop',
-      // '/prod/escolas_app/desktop',
+      // '/dev/escolas_app/desktop',
+      '/prod/escolas_app/desktop',
 
       // analyze: true,
       // env: {},
