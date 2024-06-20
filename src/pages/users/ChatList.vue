@@ -5,15 +5,6 @@
         <div class="col q-pa-md text-left text-h5">
           Chat de Turmas
         </div>
-        <!-- botões ao lado do título -->
-        <!-- <div class="col text-right">
-          <div class="row justify-center items-center">
-            <div class="col">
-            </div>
-            <div class="col">
-            </div>
-          </div>
-        </div> -->
       </div>
       <q-separator class="q-mx-sm " />
       <div class="row align-center">
@@ -21,10 +12,10 @@
             <q-list v-if="resumeMessagesList">
               <q-scroll-area style="height: 84.85vh;">
                 <q-item
-                  class="q-px-none q-py-sm"
+                  :class="`${currentClassChat === item.className ? 'q-px-none q-py-sm bg-blue-3 class-name-border' : 'q-px-none q-py-sm class-name-border'}`"
                   v-for="(item, i) in resumeMessagesList"
                   :key="i"
-                  @click="openClassChat(resumeMessagesList[i]._id)"
+                  @click="openClassChat(resumeMessagesList[i]._id, item.className)"
                   clickable
                 >
                   <q-item-section avatar class="q-pl-sm">
@@ -67,14 +58,43 @@
                 text-color="white"
                 avatar="../../assets/default-avatar.svg"
               >
-              <template v-slot:name>{{message.createdBy.name}}</template>
-              <template v-slot:avatar>
-                <img
-                  class="q-message-avatar q-message-avatar--received"
-                  src="../../assets/default-avatar.svg"
-                >
-              </template>
-              <div> {{message.messageText}} </div>
+                <template v-slot:name></template>
+                <template v-slot:avatar>
+                  <img
+                    class="q-message-avatar q-message-avatar--received"
+                    src="../../assets/default-avatar.svg"
+                  >
+                </template>
+                <div>
+                  <p class="text-subtitle text-grey-8">
+                    {{message.createdBy.name}}
+                  </p>
+                  <div
+                    v-if="message.messageFile &&
+                    Object.keys(message.messageFile).length > 0"
+                  >
+
+                    <img
+                      v-if="message.messageFile.mimetype && message.messageFile.mimetype.includes('image')"
+                      style="border-radius:0.5rem; max-width: 260px;"
+                      :src="utils.attachmentsAddress() + message.messageFile.filename"
+                      @click="openImageModal(message.messageFile.filename)"
+                    >
+                    <span v-else style="display:flex;align-items: center;" >
+                      <span>{{ message.messageFile.originalname }}</span>
+                    </span>
+                    <div v-if="message.imageCaption">
+                      {{ message.imageCaption }}
+                    </div>
+                  </div>
+                  {{message.messageText}}
+                  <div
+                    class="text-caption text-subtitle q-mt-sm text-grey-8"
+                    v-if="message.createdAt"
+                  >
+                    {{ message.createdAt.createdAtLocale }}
+                  </div>
+                </div>
               </q-chat-message>
               <q-chat-message
                 sent
@@ -147,7 +167,7 @@ import utils from "../../boot/utils"
 import useFetch from '../../boot/useFetch'
 
 export default {
-  name: 'MessengerChat',
+  name: 'ChatList',
   data() {
     return {
       inputStatus: 'message',
@@ -158,7 +178,8 @@ export default {
       classIdSelected: '',
       messagesInClass: [],
       lastMessage: '',
-      resumeMessagesList: null
+      resumeMessagesList: null,
+      currentClassChat: '',
     }
   },
   beforeMount() {
@@ -220,7 +241,8 @@ export default {
         this.$refs.chatscrollarea.setScrollPercentage('vertical',2)
       })
     },
-    openClassChat(classId) {
+    openClassChat(classId, className) {
+      this.currentClassChat = className
       this.classIdSelected = classId
       this.selectedClassMessages = null
       const opt = {
@@ -229,7 +251,7 @@ export default {
           classId: classId
         }
       }
-      useFetch(opt).then((r) => {
+      useFetch(opt).then(r => {
         this.selectedClassMessages = r.data
         r.data.forEach(message => {
           this.messagesInClass.push(message.messageText)
@@ -245,7 +267,10 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.class-name-border{
+  border-radius: 2rem;
+}
 .fixed-bot {
   position: absolute;
   bottom: 0;
