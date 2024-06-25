@@ -213,6 +213,11 @@ const useUtils = {
           route: "/admin/archiveList",
           icon: "backup",
         },
+        {
+          label: "Configuração de departamentos",
+          route: "/admin/departmentsList",
+          icon: "apartment",
+        },
       ],
       users: [
         {
@@ -266,6 +271,23 @@ const useUtils = {
           label: 'Lista de recados',
           route: '/social/notesList',
           icon: 'note'
+        },
+      ],
+      departments: [
+        {
+          label: "Não tratadas",
+          route: "/departments/solicitationsNotTreated",
+          icon: "add_circle",
+        },
+        {
+          label: "Em tratamento",
+          route: "/departments/solicitationsInTreatment",
+          icon: "timelapse",
+        },
+        {
+          label: "Em tratamento",
+          route: "/departments/solicitationsClosed",
+          icon: "task_alt",
         },
       ],
     };

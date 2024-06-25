@@ -2,6 +2,45 @@ import { defineStore } from "pinia";
 
 export const useTableColumns = defineStore("tableColumns", {
   state: () => ({
+    solicitationsList: [
+      {
+        name: "departmentName",
+        align: "left",
+        label: "Departamento",
+        field: "departmentName",
+        sortable: true,
+      },
+      {
+        name: "openedBy",
+        align: "left",
+        label: "Aberto por",
+        field: "openedBy",
+        sortable: true,
+      },
+      {
+        name: "createdAt",
+        align: "left",
+        label: "Data de abertura",
+        field: "createdAt",
+        sortable: true,
+      },
+    ],
+    departmentsList: [
+      {
+        name: "name",
+        align: "left",
+        label: "Nome",
+        field: "name",
+        sortable: true,
+      },
+      {
+        name: "isActive",
+        align: "left",
+        label: "Ativo",
+        field: "isActive",
+        sortable: true,
+      },
+    ],
     notesList: [
       {
         name: "noteName",

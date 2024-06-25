@@ -301,16 +301,17 @@ export default defineComponent({
     utils.getPermissions().then((r) => {
       this.permissions = r.data;
       this.permissions[0].id ? this.activeRightDrawer = this.permissions[0].id  : this.activeRightDrawer = 0
-      if (
-        this.$route.path === "/" ||
-        this.$route.path === "/plans" ||
-        this.$route.path === "/plans/home"
-      ) {
-        this.options = utils.getDrawerOptions("plans");
-        this.active = this.options[0].label;
-      } else {
-        this.options = utils.getDrawerOptions(this.$route.path.split("/")[1]);
-      }
+      // if (
+      //   this.$route.path === "/" ||
+      //   this.$route.path === "/plans" ||
+      //   this.$route.path === "/plans/home"
+      // ) {
+      //   this.options = utils.getDrawerOptions("plans");
+      //   this.active = this.options[0].label;
+      // } else {
+      //   this.options = utils.getDrawerOptions(this.$route.path.split("/")[1]);
+      // }
+      this.options = utils.getDrawerOptions(this.$route.path.split("/")[1]);
       this.permissions.forEach((element) => {
         if (this.$route.path.split("/")[1] === element.role.toLowerCase()) {
 
@@ -318,11 +319,11 @@ export default defineComponent({
           this.indexMenu1 = this.permissions.indexOf(element);
         }
       });
-      this.options.forEach((element) => {
-        if (this.$route.fullPath === element.route) {
-          this.active = element.label;
-        }
-      });
+      // this.options.forEach((element) => {
+      //   if (this.$route.fullPath === element.route) {
+      //     this.active = element.label;
+      //   }
+      // });
     });
     // this.getStatusNotifications()
     this.drawerData = this.drawer;
