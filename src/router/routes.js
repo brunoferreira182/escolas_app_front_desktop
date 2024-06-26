@@ -21,6 +21,9 @@ const routes = [
       { path: "/admin/menuList", component: () => import("pages/admin/MenuList.vue"),},
       { path: "/admin/createMenu", component: () => import("pages/admin/CreateMenu.vue"),},
       { path: "/admin/menuDetail", component: () => import("pages/admin/MenuDetail.vue"),},
+      { path: "/admin/departmentsList", component: () => import("pages/admin/DepartmentsList.vue"),},
+      { path: "/admin/newDepartment", component: () => import("pages/admin/NewDepartment.vue"),},
+      { path: "/admin/departmentDetail", component: () => import("pages/admin/DepartmentDetail.vue"),},
 
 
 
@@ -51,6 +54,12 @@ const routes = [
       { path: '/social/notesList', component: () => import('pages/social/NotesList.vue') },
       { path: '/social/createNewNote', component: () => import('pages/social/CreateNewNote.vue') },
       { path: '/social/noteDetail', component: () => import('pages/social/NoteDetail.vue') },
+
+      // departments
+      { path: '/departments', redirect: '/departments/solicitationsNotTreated' },
+      { path: '/departments/solicitationsNotTreated', component: () => import('src/pages/departments/SolicitationsNotTreated.vue') },
+      // { path: '/departments/solicitationsInTreatment', component: () => import('src/pages/departments/SolicitationsInTreatment.vue') },
+      // { path: '/departments/solicitationsClosed', component: () => import('src/pages/departments/SolicitationsClosed.vue') },
     ]
   },
   {
