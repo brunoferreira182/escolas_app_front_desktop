@@ -204,26 +204,34 @@ export default defineComponent({
         route : "/desktop/adm/sendFileToUserById",
         body : {
           type: this.documentType,
-          userId: this.userId
+          userId: this.userId,
+          resume: {
+            title:  this.documentType,
+            detail: {
+              userId: this.userId,
+
+            }
+          }
         },
         file: [ this.fileSelected ]
       };
       if (this.documentType === 'Boleto'){
         opt.body.barCode = this.barCode
+        opt.body.resume.detail.barCode = this.barCode
       }
       this.$q.loading.show()
       const r = await useFetch(opt)
       this.$q.loading.hide()
-      if (r.error) {
-        this.$q.notify('Falha ao enviar documento!')
+      if (!r.error) {
+        this.$q.notify('Arquivo enviado!')
+        this.selectUser(null, true)
+        this.fileSelected = null
+        this.addFileButtonText = 'Clique para inserir um arquivo'
+        this.documentType = ''
+        this.barCode = ''
         return
       }
-      this.$q.notify('Arquivo enviado!')
-      this.selectUser(null, true)
-      this.fileSelected = null
-      this.addFileButtonText = 'Clique para inserir um arquivo'
-      this.documentType = ''
-      this.barCode = ''
+      this.$q.notify('Falha ao enviar documento!')
     },
     getUsersList() {
       const page = this.pagination.page
