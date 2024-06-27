@@ -34,7 +34,7 @@
             v-model="documentType"
             label="Tipo de arquivo"
           />
-          
+
           <div v-if= "documentType === 'Boleto' && documentType !== ''" >
             <q-input outlined v-model= "barCode" label= "Código de barras"/>
           </div>
@@ -209,7 +209,6 @@ export default defineComponent({
             title:  this.documentType,
             detail: {
               userId: this.userId,
-
             }
           }
         },
