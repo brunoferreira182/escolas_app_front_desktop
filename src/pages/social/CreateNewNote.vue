@@ -90,23 +90,20 @@ export default defineComponent({
           noteData: this.noteData,
           resume: {
             title:  this.noteData.noteName,
-            detail: {
-              noteData: {
-                noteDescription: '',
-                date: '',
-              },
-            }
+            noteDescription: this.noteData.noteDescription,
+            noteDate: this.noteData.date,
           }
         },
       };
       this.$q.loading.show();
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Recado criado com sucesso!')
+        if(!r.error){
+          this.$q.notify('Recado criado com sucesso!')
           this.$router.back()
+          return
+        }
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
       });
     },
   },

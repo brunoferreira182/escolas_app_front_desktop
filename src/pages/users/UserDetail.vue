@@ -18,7 +18,7 @@
           <div class="text-caption">Dados de usuário</div>
         </div>
         <div class="col q-pt-sm q-gutter-sm text-right">
-          
+
           <q-btn
             rounded
             outline
@@ -361,7 +361,7 @@
           </div>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="dialogNewNoteForUser.open" @hide="dialogNewNoteForUser.data = {}">
+      <q-dialog v-model="dialogNewNoteForUser.open" @hide="dialogNewNoteForUser.data = {}" @show="dialogNewNoteForUser.data = userData">
         <q-card style="border-radius: 1rem; width: 480px; padding: 10px">
           <div>
             <div class="text-h6 q-py-sm text-center">
@@ -553,8 +553,8 @@ export default defineComponent({
         }
       })
     },
-    
-    
+
+
     clkChild(child) {
       this.$router.push('/users/childDetail?userId=' + child.childId)
     },
@@ -659,9 +659,11 @@ export default defineComponent({
       const opt = {
         route: "/desktop/users/insertNewUserNote",
         body: {
-          // noteName: data.noteName,
           noteContent: data.noteContent,
-          userReceiver: this.$route.query.userId
+          userReceiver: this.$route.query.userId,
+          resume: {
+            title:  this.noteData.noteName,
+          }
         }
       };
       useFetch(opt).then((r) => {
@@ -781,9 +783,7 @@ export default defineComponent({
         }
       };
       useFetch(opt).then((r) => {
-        if (r.error) {
-          this.$q.notify("Ocorreu um erro, tente novamente por favor");
-        } else {
+        if (!r.error) {
           this.userData = r.data.userData
           this.childrenData = r.data.childData
           r.data.allPermissions ? this.allPermissions = r.data.allPermissions :
@@ -802,6 +802,9 @@ export default defineComponent({
               }
             });
           });
+          return
+        } else {
+          this.$q.notify("Ocorreu um erro, tente novamente por favor");
         }
       });
     },
