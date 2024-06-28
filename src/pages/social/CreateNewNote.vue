@@ -87,7 +87,16 @@ export default defineComponent({
       const opt = {
         route: "/desktop/social/createNote",
         body: {
-          noteData: this.noteData
+          noteData: this.noteData,
+          resume: {
+            title:  this.noteData.noteName,
+            detail: {
+              noteData: {
+                noteDescription: '',
+                date: '',
+              },
+            }
+          }
         },
       };
       this.$q.loading.show();

@@ -207,16 +207,13 @@ export default defineComponent({
           userId: this.userId,
           resume: {
             title:  this.documentType,
-            detail: {
-              userId: this.userId,
-            }
           }
         },
         file: [ this.fileSelected ]
       };
       if (this.documentType === 'Boleto'){
         opt.body.barCode = this.barCode
-        opt.body.resume.detail.barCode = this.barCode
+        opt.body.resume.barCode = this.barCode
       }
       this.$q.loading.show()
       const r = await useFetch(opt)
