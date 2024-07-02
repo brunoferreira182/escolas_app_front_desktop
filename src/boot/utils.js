@@ -285,7 +285,7 @@ const useUtils = {
           icon: "timelapse",
         },
         {
-          label: "Em tratamento",
+          label: "Finalizadas",
           route: "/departments/solicitationsClosed",
           icon: "task_alt",
         },
