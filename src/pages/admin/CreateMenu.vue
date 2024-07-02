@@ -157,18 +157,26 @@ export default defineComponent({
       const opt = {
         route: "/desktop/adm/createMenu",
         body: {
-          menuDate: this.menuDate
+          type: 'mealMenu',
+          menuDate: this.menuDate,
+          resume: {
+            title:  'Cardápio mensal',
+            detail: {
+              menuDate: this.menuDate,
+            }
+          }
         },
         file: [ this.fileSelected ]
       };
       this.$q.loading.show();
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Cardápio criado com sucesso!')
+        if(!r.error){
+          this.$q.notify('Cardápio criado com sucesso!')
           this.$router.back()
+          return
+        }
+        this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
       });
     },
   },
