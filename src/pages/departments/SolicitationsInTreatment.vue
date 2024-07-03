@@ -3,7 +3,7 @@
     <q-page>
       <q-table
         flat class="bg-accent"
-        title="Solicitações novas"
+        title="Solicitações em tratamento"
         :columns="columnsData"
         :rows="solicitations"
         row-key="_id"
@@ -27,7 +27,7 @@ import gif from 'assets/gif.gif'
 import { useTableColumns } from "stores/tableColumns";
 
 export default defineComponent({
-  name: "SolicitationsNotTreated",
+  name: "SolicitationsInTreatment",
   data() {
     return {
       gif,
@@ -61,7 +61,7 @@ export default defineComponent({
           searchString: this.filter,
           sortBy: this.pagination.sortBy,
           isActive: '1',
-          status: ['notRead']
+          status: ['inTreatment']
         },
       };
       const r = await useFetch(opt)
