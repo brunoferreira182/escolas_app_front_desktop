@@ -158,12 +158,10 @@ export default defineComponent({
         route: "/desktop/adm/createMenu",
         body: {
           type: 'mealMenu',
+          scope: 'public',
           menuDate: this.menuDate,
           resume: {
-            title:  'Cardápio mensal',
-            detail: {
-              menuDate: this.menuDate,
-            }
+            menuDate: this.menuDate,
           }
         },
         file: [ this.fileSelected ]

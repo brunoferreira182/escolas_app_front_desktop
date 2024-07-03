@@ -45,7 +45,7 @@
             rounded
             color="primary"
             unelevated
-            @click="updateDepartmentDetail"
+            @click="clkSave"
             no-caps
             label="Salvar"
           />
@@ -71,7 +71,7 @@
         <q-tab-panel name="infos" v-if="departmentData">
           <div class="row justify-around q-pa-md" >
             <div class="col-12 q-gutter-md" align="start">
-              
+
               <q-input
                 outlined
                 label="Nome"
@@ -83,7 +83,7 @@
                 v-model="departmentData.departmentData.description"
               />
             </div>
-            
+
           </div>
         </q-tab-panel>
         <q-tab-panel name="users" class="no-padding">
@@ -169,7 +169,7 @@
               </q-table>
             </div>
           </div>
-          
+
         </q-tab-panel>
       </q-tab-panels>
 
@@ -252,7 +252,7 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-      
+
     </q-page>
   </q-page-container>
 </template>
@@ -338,7 +338,6 @@ export default defineComponent({
       if (r.error) return
       this.getDepartmentDetail()
     },
-    async updateDepartmentDetail () {},
     async getUsers() {
       const opt = {
         route: "/desktop/adm/getUsers",
@@ -377,14 +376,15 @@ export default defineComponent({
       const opt = {
         route: "/desktop/adm/updateDepartment",
         body: {
-          departmentData: this.departmentData
+          departmentId: this.$route.query.departmentId,
+          departmentData: this.departmentData.departmentData
         }
       }
       this.$q.loading.show()
       const r = await useFetch(opt)
       this.$q.loading.hide()
       if (r.error) return
-      // this.$router.push('/admin/departmentDetail?departmentId=' + r.data.departmentId)
+      this.getDepartmentDetail()
     }
   },
 });

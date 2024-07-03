@@ -19,10 +19,6 @@
       <q-separator class="q-mx-md" />
       <div class="row justify-around q-pa-md" >
         <div class="col-12 q-gutter-md" align="start">
-          <!-- <div class="text-h5">
-            Preencha os dados
-          </div> -->
-          <!-- <div class="no-margin q-px-md text-caption">Departamento</div> -->
           <q-input
             outlined
             v-model="departmentData.name"
@@ -72,7 +68,7 @@ export default defineComponent({
       const r = await useFetch(opt)
       this.$q.loading.hide()
       if (r.error) return
-      // this.$router.push('/admin/departmentDetail?departmentId=' + r.data.departmentId)
+      this.$router.push('/admin/departmentDetail?departmentId=' + r.data.departmentId)
     }
   },
 });
