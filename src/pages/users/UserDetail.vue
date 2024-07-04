@@ -78,14 +78,6 @@
                     </q-tooltip>
                   </div>
                 </q-avatar>
-                <!-- <q-avatar
-                  class="cursor-pointer"
-                  size="150px"
-                  @click="clkProfileImage"
-                >
-                  <img :src="utils.makeFileUrl(userData.image)" />
-                </q-avatar> -->
-                <!-- <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/> -->
                 <q-input
                   outlined
                   v-model="userData.name"
