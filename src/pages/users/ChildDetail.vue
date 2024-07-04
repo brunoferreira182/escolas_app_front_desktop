@@ -423,7 +423,6 @@ export default defineComponent({
       })
     },
     clkProfileImage () {
-      console.log('sdflk')
       this.startPhotoHandler = true
       // const profileImage = document.getElementById('profile-image-upload')
       // profileImage.click()
@@ -466,7 +465,7 @@ export default defineComponent({
         }
       })
     },
-    
+
     clkResponsible(resp) {
       this.$router.push('/users/userDetail?userId=' + resp.responsibleId)
     },

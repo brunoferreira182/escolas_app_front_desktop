@@ -177,7 +177,7 @@
         <q-card style="border-radius: 1rem" class="app-font">
           <q-card-section>
             <div class="text-h6 text-center">
-              Tem certeza que deseja {{ isActive ? "inativar" : "ativar" }}?
+              Tem certeza que deseja {{ departmentData.isActive === 1 ? "inativar" : "ativar" }}?
             </div>
           </q-card-section>
           <q-card-actions align="center">
@@ -194,7 +194,7 @@
               label="Confirmar"
               no-caps
               color="primary"
-              @click="departmentData.isActive ? updateDepartmentStatus('activate') : updateDepartmentStatus('inactivate')"
+              @click="departmentData.isActive === 1 ? updateDepartmentStatus('inactive') : updateDepartmentStatus('active')"
             />
           </q-card-actions>
         </q-card>
@@ -309,6 +309,26 @@ export default defineComponent({
       this.dialogAddUserToDepartment.data = user
       this.dialogAddUserToDepartment.open = true
     },
+    async updateDepartmentStatus(status){
+      const opt = {
+        route: "/desktop/adm/updateDepartmentStatus",
+        body: {
+          departmentId: this.$route.query.departmentId
+        }
+      }
+      if(status === 'active'){
+        opt.body.isActive = 1
+      }else{
+        opt.body.isActive = 0
+      }
+      this.$q.loading.show()
+      const r = await useFetch(opt)
+      this.$q.loading.hide()
+      if (r.error) return
+      this.getDepartmentDetail()
+      this.$q.notify(status === 'active' ? 'Departamento ativo com sucesso' : 'Departamento inativado com sucesso')
+      this.dialogInactiveDepartment = false
+    },
     async removeUsersFromDepartment () {
       const opt = {
         route: "/desktop/adm/removeUserFromDepartment",
@@ -384,6 +404,7 @@ export default defineComponent({
       const r = await useFetch(opt)
       this.$q.loading.hide()
       if (r.error) return
+      this.$q.notify('Departamento atualizado com sucesso')
       this.getDepartmentDetail()
     }
   },

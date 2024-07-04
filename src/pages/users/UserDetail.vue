@@ -70,13 +70,21 @@
                 Informações
               </div>
               <div class="q-gutter-lg q-py-md" v-if="userData && userData !== ''">
-                <q-avatar
+                <q-avatar size="150px" >
+                  <img :src="utils.makeFileUrl(userData.image)" class="avatar-image" />
+                  <div class="camera-icon cursor-pointer" @click="clkProfileImage">
+                    <q-tooltip>
+                      Trocar foto
+                    </q-tooltip>
+                  </div>
+                </q-avatar>
+                <!-- <q-avatar
                   class="cursor-pointer"
                   size="150px"
                   @click="clkProfileImage"
                 >
                   <img :src="utils.makeFileUrl(userData.image)" />
-                </q-avatar>
+                </q-avatar> -->
                 <!-- <input type="file" id="profile-image-upload" hidden accept="image/png, image/jpeg"/> -->
                 <q-input
                   outlined
@@ -489,22 +497,20 @@ export default defineComponent({
     clkProfileImage () {
       this.startPhotoHandler = true
     },
-    captured(img, imgBlob, fileName) {
+    captured(fileUrl, fileBlob, fileName) {
+      console.log(fileUrl, fileBlob, fileName)
+      this.updateProfileImg({ file: fileBlob, name: fileName })
       this.startPhotoHandler = false
-      this.fileSelected = {
-        file: imgBlob,
-        name: fileName
-      }
-      this.uploadProfileImage()
     },
-    uploadProfileImage () {
+    updateProfileImg (file) {
       const opt = {
         route: '/desktop/users/updateProfileImage',
         body: {
           userId: this.$route.query.userId
         },
-        file: [ this.fileSelected ]
+        file: [ file ]
       }
+      console.log(opt, 'file aqui')
       useFetch(opt).then(r => {
         this.userData.image = r.data.image
       })
@@ -812,6 +818,26 @@ export default defineComponent({
 })
 </script>
 <style scoped>
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .camera-icon {
+    position: absolute;
+    bottom: 5px;
+    right: -16px;
+    width: 36px; /* Ajuste o tamanho conforme necessário */
+    height: 36px; /* Ajuste o tamanho conforme necessário */
+    background-image: url('../../assets/camera-svgrepo-com.svg'); /* Substitua pelo caminho do seu ícone de câmera */
+    background-size: cover;
+    fill: #000000;
+  }
 .visions-field {
   border: 1px solid #c2c2c2;
   padding: 7px;
