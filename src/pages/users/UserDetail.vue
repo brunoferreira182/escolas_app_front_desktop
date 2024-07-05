@@ -593,6 +593,7 @@ export default defineComponent({
         body: {
           userId: this.$route.query.userId,
           name: this.userData.name,
+          email: this.userData.email,
           document: this.userData.document,
           phone: this.userData.phone,
           registerNumber: this.userData.registerNumber

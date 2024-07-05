@@ -34,6 +34,13 @@
             v-model="documentType"
             label="Tipo de arquivo"
           />
+          <q-input
+            v-if="documentType === 'Outros'"
+            outlined
+            debounce="300"
+            v-model="documentTypeEdited"
+            label="Informe o nome do arquivo"
+          />
 
           <div v-if= "documentType === 'Boleto' && documentType !== ''" >
             <q-input outlined v-model= "barCode" label= "Código de barras"/>
@@ -128,8 +135,9 @@ export default defineComponent({
   data() {
     return {
       typeArch:[
-        'Boleto', 'Outros',
+        'Boleto', 'Outros'
       ],
+      documentTypeEdited: '',
       fileSelected: null,
       addFileButtonText: 'Clique para inserir um arquivo',
       userList: [],
@@ -200,6 +208,7 @@ export default defineComponent({
         this.$q.notify('Insíra o código de barras!')
         return
       }
+      if(this.documentType === 'Outros'){this.documentType = this.documentTypeEdited}
       const opt = {
         route : "/desktop/adm/sendFileToUserById",
         body : {
