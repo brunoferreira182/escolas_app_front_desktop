@@ -18,6 +18,16 @@
         </div>
         <div class="col text-right q-gutter-x-sm">
           <q-btn
+            label="Clonar turma"
+            rounded
+            outline
+            color="purple-8"
+            icon="content_copy"
+            unelevated
+            no-caps
+            @click="dialogCloneClass.open = true"
+          />
+          <q-btn
             v-if="isActive === 1"
             @click="dialogInactiveClass = true"
             rounded
@@ -302,7 +312,7 @@
                 :rows-per-page-options="[10, 20, 30, 50]"
                 :filter="filter"
                 :title="selectedFilter.type === 'user' ? 'Adicionar usuário' : 'Adicionar aluno'"
-                :rows="childrenList"
+                :rows="usersList"
                 @row-click="clkManageChildOrUser"
                 :virtual-scroll-item-size="48"
                 v-model:pagination="pagination"
@@ -524,7 +534,77 @@
             </div>
           </q-tab-panel>
       </q-tab-panels>
+      <q-dialog v-model="dialogCloneClass.open" >
+        <q-card style="border-radius: 1rem; width: 100%" class="text-center">
+          <q-card-section>
+            <h6 class="text-center q-ma-none">Atenção</h6>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-subtitle1">
+              Selecione os dados a ser clonados
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <q-checkbox
+              v-for="option in cloneOptions"
+              :key="option.value"
+              v-model="selectedOptions"
+              :val="option.value"
+              :label="option.label"
+              @update:model-value="selectCloneOptions(option.value)"
+            />
+          </q-card-section>
+          <q-card-section>
+            <q-item
+              v-for="(u, uindex) in dialogCloneClass.usersCloneList"
+              :key="uindex"
 
+              style="border-radius: 0.5rem;"
+              class="bg-grey-4 q-ma-sm"
+            >
+              <q-item-section avatar>
+                <q-avatar>
+                  <img :src="utils.makeFileUrl(u.image)">
+                </q-avatar>
+              </q-item-section>
+              <q-item-section
+                class="text-wrap cursor-pointer"
+                lines="2"
+                @click="clkUserInClass(u)"
+              >
+                {{ u.userName }}
+                <div class="text-caption">
+                  {{ u.userFunction }}
+                </div>
+              </q-item-section>
+              <q-item-section side >
+                <div class="text-grey-8 q-gutter-xs">
+                  <q-btn
+                    @click="dialogCloneClass.usersCloneList.splice(uindex, 1)"
+                    class="gt-xs"
+                    size="12px"
+                    color="red-8"
+                    flat
+                    dense
+                    round
+                    icon="delete"
+                  >
+                    <q-tooltip> Deletar usuário da lista </q-tooltip>
+                  </q-btn>
+                </div>
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+          <q-card-actions align="center">
+            <q-btn no-caps color="red-8" outline rounded unelevated>
+              Cancelar
+            </q-btn>
+            <q-btn no-caps color="primary" rounded unelevated @click="createClonedClass">
+              Confirmar
+            </q-btn>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <PhotoHandler
         :start="startPhotoHandler"
         :camera="true"
@@ -558,6 +638,19 @@ export default defineComponent({
       classData: {
         name: '',
       },
+      dialogCloneClass: {
+        open: false,
+        usersCloneList: [],
+        classCloneName: '',
+        classCloneType: '',
+        semesterSelected: ''
+      },
+      selectedOptions: [],
+      cloneOptions: [
+        { label: 'Nome da turma', value: 'className' },
+        { label: 'Tipo', value: 'classType' },
+        { label: 'Professores', value: 'teachers' }
+      ],
       familiarSelected: '',
       filter: "",
       dialogInactiveClass: false,
@@ -605,7 +698,6 @@ export default defineComponent({
       childFamilyOptions: [],
       childrenInClassList: [],
       usersList: [],
-      childrenList: [],
       filterDate: '',
       attendance: [],
       startPhotoHandler: false,
@@ -630,6 +722,65 @@ export default defineComponent({
     },
   },
   methods: {
+    selectCloneOptions(option) {
+      const isSelected = this.selectedOptions.includes(option);
+      switch(option) {
+        case 'teachers':
+          if (isSelected) {
+            this.dialogCloneClass.usersCloneList.push(...this.users);
+          } else {
+            this.dialogCloneClass.usersCloneList = [];
+          }
+          break;
+        case 'className':
+          if (isSelected) {
+            this.dialogCloneClass.classCloneName = this.classData.name;
+          } else {
+            this.dialogCloneClass.classCloneName = '';
+          }
+          break;
+        case 'classType':
+          if (isSelected) {
+            this.dialogCloneClass.classCloneType = this.typeSelected;
+          } else {
+            this.dialogCloneClass.classCloneType = '';
+          }
+          break;
+      }
+    },
+    async createClonedClass(){
+      console.log(this.dialogCloneClass,'opkafdposakpdos')
+      const opt = {
+        route: '/desktop/classes/createClonedClass',
+        body: {
+          className: this.dialogCloneClass.classCloneName,
+          classData: {},
+          classClonedId: this.$route.query.classId,
+          users: this.dialogCloneClass.usersCloneList
+        }
+      }
+      switch(this.typeSelected){
+        case 'semesterly':
+          opt.body.classData.type = 'semesterly'
+          opt.body.classData.semesterSelected = this.semesterSelected
+          opt.body.classData.yearSelected = this.yearSelected
+        break;
+        case 'yearly':
+          opt.body.classData.type = 'yearly'
+          opt.body.classData.yearSelected = this.yearSelected
+        break;
+      }
+      this.$q.loading.show()
+      const r = useFetch(opt)
+      this.$q.loading.hide()
+      if(!r.error){
+        console.log(r, 'OPKDOPSAKD')
+        this.$q.notify('Turma clonada com sucesso!')
+
+      }
+
+      console.log(r, 'rerrrrrere')
+    },
     clkProfileImage () {
       this.startPhotoHandler = true
     },
@@ -942,7 +1093,7 @@ export default defineComponent({
         this.functionsOptions = r.data
       });
     },
-    getUsers() {
+    async getUsers() {
       const page = this.pagination.page
       const rowsPerPage = this.pagination.rowsPerPage
       const searchString = this.filter
@@ -957,11 +1108,10 @@ export default defineComponent({
         },
       };
       this.$q.loading.show()
-      useFetch(opt).then((r) => {
+      const r = await useFetch(opt)
         this.$q.loading.hide()
-        this.childrenList = r.data[0].list
+        this.usersList = r.data[0].list
         r.data[0].count[0] ? this.pagination.rowsNumber = r.data[0].count[0].count : this.pagination.rowsNumber = 0
-      });
     },
     getChildrenNotInClass() {
       const page = this.pagination.page
@@ -980,7 +1130,7 @@ export default defineComponent({
       this.$q.loading.show()
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
-        this.childrenList = r.data.list
+        this.usersList = r.data.list
         r.data.count[0] ? this.pagination.rowsNumber = r.data.count[0].count : this.pagination.rowsNumber = 0
       });
     },
@@ -999,8 +1149,8 @@ export default defineComponent({
           return
         }
         this.isActive = r.data.isActive
-        this.users = r.data.users.filter((item) => item.type === 'user');
-        this.childrenInClassList = r.data.users.filter((item) => item.type === 'child');
+        this.users.push(...r.data.users.filter((item) => item.type === 'user'))
+        this.childrenInClassList.push(...r.data.users.filter((item) => item.type === 'child'))
         if(r.data.classData.type === 'semesterly'){
           this.typeSelected = 'semesterly'
           this.classData.name = r.data.className
