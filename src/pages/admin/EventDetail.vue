@@ -88,13 +88,14 @@
           </q-select>
           <q-input
             outlined
-            label="Descrição"
+            label="Descrição (Opcional)"
             v-model="eventDescription"
           />
           <q-input
             outlined
             label="Adicionar um subtipo de atividade"
             hint="Ex: Muito, pouco, nada..."
+            @keydown.enter="addActivitySubtype"
             v-model="eventActivitySubtypeName"
           >
             <template v-slot:after>

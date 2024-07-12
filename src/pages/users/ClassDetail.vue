@@ -821,18 +821,17 @@ export default defineComponent({
       useFetch(opt).then((r) => {
         this.$q.loading.hide()
         if(!r.data){
-          this.$q.notify('deu merda.')
+          this.$q.notify('Ocorreu um problema, tente novamente mais tarde')
           return
         }
         this.$q.loading.hide()
         this.attendance = r.data
-        console.log('lalalala', this.attendance)
       })
     },
     clkUserInClass (user) {
       let route
-      if (user.type === 'child') route = '/users/userDetail?userId='
-      else if (user.type === 'user') route = '/users/childDetail?userId='
+      if (user.type === 'child') route = '/users/childDetail?userId='
+      else if (user.type === 'user') route = '/users/userDetail?userId='
       this.$router.push(route + user.userId)
     },
     clkOpenDialogInsertFamilyMember(child){
