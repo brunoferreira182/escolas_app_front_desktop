@@ -1148,8 +1148,8 @@ export default defineComponent({
           return
         }
         this.isActive = r.data.isActive
-        this.users.push(...r.data.users.filter((item) => item.type === 'user'))
-        this.childrenInClassList.push(...r.data.users.filter((item) => item.type === 'child'))
+        this.users = r.data.users.filter((item) => item.type === 'user');
+        this.childrenInClassList = r.data.users.filter((item) => item.type === 'child');
         if(r.data.classData.type === 'semesterly'){
           this.typeSelected = 'semesterly'
           this.classData.name = r.data.className
