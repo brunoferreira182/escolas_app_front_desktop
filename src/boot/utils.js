@@ -204,6 +204,11 @@ const useUtils = {
           icon: "format_list_numbered",
         },
         {
+          label: "Rematrículas",
+          route: "/admin/registrationsList",
+          icon: "how_to_reg",
+        },
+        {
           label: "Cardápios",
           route: "/admin/menuList",
           icon: "restaurant_menu",
