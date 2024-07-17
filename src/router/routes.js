@@ -60,6 +60,8 @@ const routes = [
       { path: '/departments/solicitationsNotTreated', component: () => import('src/pages/departments/SolicitationsNotTreated.vue') },
       { path: '/departments/solicitationsInTreatment', component: () => import('src/pages/departments/SolicitationsInTreatment.vue') },
       { path: '/departments/solicitationsClosed', component: () => import('src/pages/departments/SolicitationsClosed.vue') },
+      { path: '/departments/solicitationsOpened', component: () => import('src/pages/departments/SolicitationsOpened.vue') },
+
       { path: '/departments/solicitationDetails', component: () => import('src/pages/departments/SolicitationDetails.vue') },
     ]
   },

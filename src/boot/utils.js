@@ -280,6 +280,11 @@ const useUtils = {
           icon: "add_circle",
         },
         {
+          label: "Em aberto",
+          route: "/departments/SolicitationsOpened",
+          icon: "volunteer_activism",
+        },
+        {
           label: "Em tratamento",
           route: "/departments/solicitationsInTreatment",
           icon: "timelapse",
