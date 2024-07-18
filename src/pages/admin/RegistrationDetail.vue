@@ -141,6 +141,7 @@ methods: {
     const opt = {
       route: "/desktop/adm/updateRegistration",
       body: {
+        registrationId: this.$route.query.registrationId,
         title: this.registrationData.title,
         initialDate: this.registrationData.initialDate,
         finalDate: this.registrationData.finalDate,
@@ -152,7 +153,8 @@ methods: {
     useFetch(opt).then((r) => {
       this.$q.loading.hide();
       if (!r.error) {
-        this.registrationData = {};
+        this.$q.notify('Rematrícula atualizada!')
+        this.getRegistrationDetailById()
         return;
       }
       this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
