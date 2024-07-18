@@ -76,7 +76,7 @@
             type="date"
             mask="##/##/####"
             label="Data fim"
-            v-model="registrationData.endDate"
+            v-model="registrationData.finalDate"
           />
           <q-input
             outlined
@@ -126,7 +126,7 @@ export default defineComponent({
         title:'',
         description:'',
         initialDate:'',
-        endDate:'',
+        finalDate:'',
         periodRef:'',
       },
       isActive: null,
@@ -137,9 +137,6 @@ export default defineComponent({
   mounted() {
     this.$q.loading.hide();
   },
-  // beforeMount(){
-  //   this.getFunctionDetailById()|
-  // },
   methods: {
     createRegistration(){
       const opt = {
@@ -147,7 +144,7 @@ export default defineComponent({
         body: {
           title: this.registrationData.title,
           initialDate: this.registrationData.initialDate,
-          endDate: this.registrationData.endDate,
+          finalDate: this.registrationData.finalDate,
           periodRef: this.registrationData.periodRef,
           description: this.registrationData.description,
         },
@@ -157,84 +154,12 @@ export default defineComponent({
         this.$q.loading.hide()
         if(!r.error){
           this.registrationData = {}
+          this.$q.notify('Rematrícula criada com sucesso!')
+          const registrationId = r.data
+          this.$router.push('/registrationDetail?registrationId=' + registrationId)
           return
         }
         this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-      });
-    },
-    getFunctionDetailById(){
-      const opt = {
-        route: "/desktop/adm/getFunctionDetailById",
-        body: {
-          functionId: this.$route.query.functionId
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        }
-          this.isAdm = r.data.isAdm
-          this.functionName = r.data.name
-          this.functionDescription = r.data.description
-          this.isActive = r.data.isActive
-      });
-    },
-    inactivateFunction() {
-      const opt = {
-        route: "/desktop/adm/inactivateFunction",
-        body: {
-          functionId: this.$route.query.functionId,
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Tipo de função inativada com sucesso!')
-          this.$router.back()
-      });
-    },
-    activateFunction() {
-      const opt = {
-        route: "/desktop/adm/activateFunction",
-        body: {
-          functionId: this.$route.query.functionId,
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Tipo de função ativada com sucesso!')
-          this.$router.back()
-      });
-    },
-    updateFunction() {
-      const opt = {
-        route: "/desktop/adm/updateFunction",
-        body: {
-          functionId: this.$route.query.functionId,
-          functionName: this.functionName,
-          functionDescription: this.functionDescription,
-          isAdm: this.isAdm,
-          canSendMessagesInClassChat: this.canSendMessagesInClassChat
-        },
-      };
-      this.$q.loading.show();
-      useFetch(opt).then((r) => {
-        this.$q.loading.hide()
-        if(r.error){
-          this.$q.notify('Ocorreu um erro, tente novamente mais tarde.')
-          return
-        } this.$q.notify('Tipo de função atualizada com sucesso!')
-          this.$router.back()
       });
     },
   },

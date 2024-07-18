@@ -70,7 +70,7 @@
           type="date"
           mask="##/##/####"
           label="Data fim"
-          v-model="registrationData.endDate"
+          v-model="registrationData.finalDate"
         />
         <q-input
           outlined
@@ -123,7 +123,7 @@ data() {
       title: "",
       description: "",
       initialDate: "",
-      endDate: "",
+      finalDate: "",
       periodRef: "",
     },
     isActive: null,
@@ -144,7 +144,7 @@ methods: {
       body: {
         title: this.registrationData.title,
         initialDate: this.registrationData.initialDate,
-        endDate: this.registrationData.endDate,
+        finalDate: this.registrationData.finalDate,
         periodRef: this.registrationData.periodRef,
         description: this.registrationData.description,
       },

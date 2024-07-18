@@ -58,25 +58,30 @@
 					</div>
 				</template>
 				<template #body-cell-status="props">
-					<q-td :props="props">
-						<q-chip
-							outline
-							v-if="props.row.isActive === 1"
-							color="green-8"
-							size="14px"
-						>
-							Ativo
-						</q-chip>
-						<q-chip
-							outline
-							v-if="props.row.isActive === 0"
-							color="red-8"
-							size="14px"
-						>
-							Inativo
-						</q-chip>
-					</q-td>
-				</template>
+          <q-td :props="props">
+            <q-chip
+              outline
+              :color="`${ props.row.isActive === 1 ? 'green-8' : 'red-8'}`"
+              size="14px"
+            >
+              {{  props.row.isActive === 1 ? 'Ativo' : 'Inativo' }}
+            </q-chip>
+          </q-td>
+        </template>
+				<template #body-cell-initialDate="props">
+          <q-td :props="props">
+						{{ props.row.initialDate.split('-')[2] }}/
+						{{ props.row.initialDate.split('-')[1] }}/
+						{{ props.row.initialDate.split('-')[0] }}
+          </q-td>
+        </template>
+				<template #body-cell-finalDate="props">
+          <q-td :props="props">
+						{{ props.row.finalDate.split('-')[2] }}/
+						{{ props.row.finalDate.split('-')[1] }}/
+						{{ props.row.finalDate.split('-')[0] }}
+          </q-td>
+        </template>
 			</q-table>
 		</q-page>
 	</q-page-container>
