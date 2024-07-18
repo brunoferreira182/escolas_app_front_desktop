@@ -29,7 +29,7 @@
           Ativar rematrícula
         </q-btn>
         <q-btn
-          @click="createRegistration"
+          @click="updateRegistration"
           rounded
           color="primary"
           unelevated
@@ -50,7 +50,6 @@
         <q-input
           outlined
           label="Título"
-          hint="Ex: Representante de classe, professor(a)"
           v-model="registrationData.title"
         />
         <q-input
@@ -86,7 +85,7 @@
           <q-card-section>
             <div class="text-h6 text-center">
               Tem certeza que deseja
-              {{ isActive ? "inativar" : "ativar" }} essa função?
+              {{ isActive ? "inativar" : "ativar" }} essa rematrícula?
             </div>
           </q-card-section>
           <q-card-actions align="center">
@@ -103,7 +102,7 @@
               label="Confirmar"
               no-caps
               color="primary"
-              @click="isActive ? inactivateFunction() : activateFunction()"
+              @click="isActive ? inactiveStatus() : activeStatus()"
             />
           </q-card-actions>
         </q-card>
@@ -138,9 +137,9 @@ beforeMount(){
   this.getRegistrationDetailById()
 },
 methods: {
-  createRegistration() {
+  updateRegistration() {
     const opt = {
-      route: "/desktop/adm/createRegistration",
+      route: "/desktop/adm/updateRegistration",
       body: {
         title: this.registrationData.title,
         initialDate: this.registrationData.initialDate,
@@ -169,71 +168,56 @@ methods: {
     this.$q.loading.show();
     useFetch(opt).then((r) => {
       this.$q.loading.hide();
-      if (r.error) {
-        this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
+      if (!r.error) {
+        this.registrationData = r.data
+        this.isActive = r.data.isActive
         return;
       }
-      this.registrationData = r.data
+      this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
     });
   },
-  inactivateFunction() {
+  inactiveStatus() {
     const opt = {
-      route: "/desktop/adm/inactivateFunction",
+      route: "/desktop/adm/changeRegistrationStatus",
       body: {
-        functionId: this.$route.query.functionId,
+        registrationId: this.$route.query.registrationId,
+        isActive: 'inactive'
       },
     };
     this.$q.loading.show();
     useFetch(opt).then((r) => {
       this.$q.loading.hide();
-      if (r.error) {
-        this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
+      if (!r.error) {
+        this.$q.notify("Rematrícula inativada!");
+        this.getRegistrationDetailById()
+        this.dialogInactiveFunction = false
         return;
       }
-      this.$q.notify("Tipo de função inativada com sucesso!");
-      this.$router.back();
+      this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
     });
   },
-  activateFunction() {
+  activeStatus() {
     const opt = {
-      route: "/desktop/adm/activateFunction",
+      route: "/desktop/adm/changeRegistrationStatus",
       body: {
-        functionId: this.$route.query.functionId,
+        registrationId: this.$route.query.registrationId,
+        isActive: 'active'
       },
     };
     this.$q.loading.show();
     useFetch(opt).then((r) => {
       this.$q.loading.hide();
-      if (r.error) {
-        this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
+      if (!r.error) {
+        this.$q.notify("Rematrícula Ativada!");
+        this.getRegistrationDetailById()
+        this.dialogInactiveFunction = false
         return;
       }
-      this.$q.notify("Tipo de função ativada com sucesso!");
-      this.$router.back();
+      this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
+
     });
   },
-  updateFunction() {
-    const opt = {
-      route: "/desktop/adm/updateFunction",
-      body: {
-        functionId: this.$route.query.functionId,
-        functionName: this.functionName,
-        functionDescription: this.functionDescription,
-        isAdm: this.isAdm,
-        canSendMessagesInClassChat: this.canSendMessagesInClassChat,
-      },
-    };
-    this.$q.loading.show();
-    useFetch(opt).then((r) => {
-      this.$q.loading.hide();
-      if (r.error) {
-        this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
-        return;
-      }
-      this.$q.notify("Tipo de função atualizada com sucesso!");
-      this.$router.back();
-    });
-  },
+ 
 },
 });
 </script>

@@ -56,7 +56,6 @@
           <q-input
             outlined
             label="Título"
-            hint="Ex: Representante de classe, professor(a)"
             v-model="registrationData.title"
           />
           <q-input
