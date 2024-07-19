@@ -45,7 +45,7 @@
             </q-chip>
           </q-td>
         </template>
-				<template #body-cell-initialDate="props">
+				<!-- <template #body-cell-initialDate="props">
           <q-td :props="props">
 						{{ props.row.initialDate.split('-')[2] }}/{{ props.row.initialDate.split('-')[1] }}/{{ props.row.initialDate.split('-')[0] }}
           </q-td>
@@ -54,7 +54,7 @@
           <q-td :props="props">
 						{{ props.row.finalDate.split('-')[2] }}/{{ props.row.finalDate.split('-')[1] }}/{{ props.row.finalDate.split('-')[0] }}
           </q-td>
-        </template>
+        </template> -->
 			</q-table>
 		</q-page>
 	</q-page-container>
@@ -68,7 +68,7 @@ export default defineComponent({
 	name: "RegistrationsList",
 	data() {
 		return {
-			columnsData: useTableColumns().registrationsList,
+			columnsData: useTableColumns().registrationsRequestList,
 			registrationsList: [],
 			selectStatus: ["Ativos", "Inativos"],
 			selectFilter: null,
@@ -90,8 +90,8 @@ export default defineComponent({
 	},
 	methods: {
 		clkOpenRegistrationDetail(e, r){
-			const registrationId = r._id
-			this.$router.push('/admin/registrationDetail?registrationId=' + registrationId)
+			const regRequestId = r._id
+			this.$router.push('/admin/registrationsRequestedDetail?regRequestId=' + regRequestId)
 		},
 		getRegistrationsRequest() {
 			const page = this.pagination.page
@@ -99,7 +99,7 @@ export default defineComponent({
 			const searchString = this.filter
 			const sortBy = this.pagination.sortBy
 			const opt = {
-				route: "/desktop/adm/getRegistrationsRequest",
+				route: "/desktop/adm/getRegistrationsRequestList",
 				body: {
 					page: page,
 					rowsPerPage: rowsPerPage,

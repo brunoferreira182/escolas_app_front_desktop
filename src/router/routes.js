@@ -27,6 +27,7 @@ const routes = [
       { path: "/admin/registrationsList", component: () => import("pages/admin/RegistrationsList.vue"),},
       { path: "/admin/newRegistration", component: () => import("pages/admin/NewRegistration.vue"),},
       { path: "/admin/registrationsRequested", component: () => import("pages/admin/RegistrationsRequested.vue"),},
+      { path: "/admin/registrationsRequestedDetail", component: () => import("pages/admin/RegistrationsRequestedDetail.vue"),},
       { path: "/admin/registrationDetail", component: () => import("pages/admin/RegistrationDetail.vue"),},
 
 
