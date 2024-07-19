@@ -3,12 +3,14 @@
     <q-dialog v-model="openDialog" class="app-font" @hide="clkBack">
       <q-card style="border-radius: 1rem;">
         <q-card-section>
-          <div class="text-h6 text-center">Escolha uma opção</div>
+          <div class="text-h6 text-center">
+            {{ $route.path === '/admin/registrationsRequestedDetail' ? 'Inserir boleto' : 'Escolha uma opção'}}
+          </div>
         </q-card-section>
 
         <q-card-actions>
-          <q-btn color="primary" flat no-caps label="Câmera" @click="openCamera" v-if="camera" />
-          <q-btn color="primary" flat no-caps label="Galeria" @click="pickFile('gallery')" v-if="gallery"/>
+          <q-btn color="primary" flat no-caps label="Câmera" @click="openCamera" v-if="camera && $route.path !== '/admin/registrationsRequestedDetail'" />
+          <q-btn color="primary" flat no-caps label="Galeria" @click="pickFile('gallery')" v-if="gallery && $route.path !== '/admin/registrationsRequestedDetail'"/>
           <q-btn color="primary" flat no-caps label="Arquivo" @click="pickFile('documents')" v-if="documents" />
           <q-btn color="red-8" flat no-caps label="Cancelar" @click="clkBack" />
         </q-card-actions>
@@ -54,11 +56,11 @@ import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { Capacitor } from '@capacitor/core'
 import utils from '../boot/utils';
 
-import { 
-  Camera, 
-  CameraResultType, 
-  CameraSource, 
-  // Photo 
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  // Photo
 } from '@capacitor/camera';
 
 const props = defineProps(['square', 'start', 'noCrop', 'camera', 'gallery', 'documents', 'fileTypes'])
@@ -141,7 +143,7 @@ async function pickFile (type) {
     return
   }
   const file = res.files[0];
-  
+
   if (file.path) {
     const fileSrc = Capacitor.convertFileSrc(file.path);
     const fileTemp = await fetch(fileSrc)

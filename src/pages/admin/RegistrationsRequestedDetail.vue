@@ -19,9 +19,35 @@
         </div>
       </div>
       <q-separator class="q-mx-md" />
-      <div class="row justify-around q-pa-md">
-        <div class="col-12 q-gutter-md" align="start">
-          <div class="text-h5">Dados</div>
+      <div class="row justify-start q-pa-md">
+        <div class="col-8 q-gutter-md" align="start">
+          <div class="text-h5">Crianças</div>
+          <q-list>
+            <q-item v-for="(child, index) in registrationRequestData"
+              :key="child"
+              style="background-color:darkgrey; border-radius: 1rem; margin: 6px;"
+            >
+              <q-item-section avatar>
+                <q-avatar>
+                  <img :src="utils.makeFileUrl(child.childImage)">
+                </q-avatar>
+              </q-item-section>
+              <q-item-section class="text-capitalize">
+                {{ child.childName }}
+              </q-item-section>
+              <q-item-section>
+                <q-btn
+                  class="q-mr-xs"
+                  flat
+                  rounded
+                  no-caps
+                  color="primary"
+                  :label="addFileButtonText"
+                  @click="clkAddAttachment(index)"
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
         <q-dialog
           v-model="dialogInactiveFunction"
@@ -53,27 +79,43 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+        <PhotoHandler
+          :start="startPhotoHandler"
+          :camera="true"
+          :gallery="true"
+          :documents="true"
+          :noCrop="true"
+          @captured="captured"
+          @cancel="cancelPhotoHandler"
+        />
       </div>
     </q-page>
   </q-page-container>
-  </template>
-  <script>
-  import { defineComponent } from "vue";
-  import useFetch from "../../boot/useFetch";
-  export default defineComponent({
+</template>
+
+<script setup>
+import utils from '../../boot/utils'
+</script>
+
+<script>
+import useFetch from "../../boot/useFetch";
+import PhotoHandler from '../../components/PhotoHandler.vue'
+import { defineComponent } from "vue";
+export default defineComponent({
+  components: {
+    PhotoHandler
+  },
   name: "RegistrationsRequestedDetail",
   data() {
     return {
-      registrationData: {
-        title: "",
-        description: "",
-        initialDate: "",
-        finalDate: "",
-        periodRef: "",
-      },
+      registrationRequestData: [],
       isActive: null,
       dialogInactiveFunction: false,
+      startPhotoHandler: false,
       canSendMessagesInClassChat: false,
+      fileSelected: null,
+      addFileButtonText: 'Clique para inserir o boleto',
+      currentChildIndex: null, // Adiciona essa linha
     };
   },
   mounted() {
@@ -83,6 +125,28 @@
     this.getRegistrationRequestedDetailById()
   },
   methods: {
+    captured(img, imgBlob, fileName) {
+      this.step = 'initial'
+      this.startPhotoHandler = false
+      this.fileSelected = {
+        file: imgBlob,
+        name: fileName
+      }
+      this.addFileButtonText = fileName
+
+      if (this.currentChildIndex !== null) {
+        this.registrationRequestData[this.currentChildIndex].file = this.fileSelected;
+      }
+    },
+    clkAddAttachment(index) {
+      this.currentChildIndex = index; // Define o índice da criança atual
+      this.step = 'addAttachment'
+      this.startPhotoHandler = true
+    },
+    cancelPhotoHandler() {
+      this.startPhotoHandler = false
+      this.step = 'initial'
+    },
     updateRegistration() {
       const opt = {
         route: "/desktop/adm/updateRegistration",
@@ -117,8 +181,7 @@
       useFetch(opt).then((r) => {
         this.$q.loading.hide();
         if (!r.error) {
-          this.registrationData = r.data
-          this.isActive = r.data.isActive
+          this.registrationRequestData = r.data.childData
           return;
         }
         this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
@@ -162,10 +225,8 @@
           return;
         }
         this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
-
       });
     },
-
   },
-  });
-  </script>
+});
+</script>
