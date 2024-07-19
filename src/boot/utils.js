@@ -209,6 +209,11 @@ const useUtils = {
           icon: "how_to_reg",
         },
         {
+          label: "Rematrículas solicitadas",
+          route: "/admin/registrationsRequested",
+          icon: "notification_important",
+        },
+        {
           label: "Cardápios",
           route: "/admin/menuList",
           icon: "restaurant_menu",

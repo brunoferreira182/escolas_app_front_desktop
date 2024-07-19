@@ -500,7 +500,7 @@ export default defineComponent({
       const opt = {
         route: '/desktop/users/removeRelation',
         body: {
-          responsibleId: this.dialogDeleteResponsable.data._id
+          responsibleId: this.dialogDeleteResponsable.data.responsibleId
         },
       }
       this.$q.loading.show()

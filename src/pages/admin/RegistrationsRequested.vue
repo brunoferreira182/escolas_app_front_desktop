@@ -3,7 +3,7 @@
 		<q-page>
 			<q-table
 				flat class="bg-accent"
-				title="Rematrículas"
+				title="Rematrículas solicitadas"
 				:columns="columnsData"
 				:rows="registrationsList"
 				row-key="_id"
@@ -20,7 +20,7 @@
 					<div class="flex row q-gutter-sm items-center text-right">
 						<div class="col">
 							<q-input
-								@keyup="getRegistrations"
+								@keyup="getRegistrationsRequest"
 								outlined
 								dense
 								debounce="300"
@@ -31,18 +31,6 @@
 									<q-icon name="search" />
 								</template>
 							</q-input>
-						</div>
-						<div class="col text-right">
-							<q-btn
-								@click="$router.push('/admin/newRegistration')"
-								color="primary"
-								unelevated
-								no-caps
-								rounded
-								icon="add"
-								class="q-pa-sm text-caption"
-								label="Abrir rematrícula"
-								/>
 						</div>
 					</div>
 				</template>
@@ -98,20 +86,20 @@ export default defineComponent({
 		this.$q.loading.hide();
 	},
 	beforeMount() {
-		this.getRegistrations();
+		this.getRegistrationsRequest();
 	},
 	methods: {
 		clkOpenRegistrationDetail(e, r){
 			const registrationId = r._id
 			this.$router.push('/admin/registrationDetail?registrationId=' + registrationId)
 		},
-		getRegistrations() {
+		getRegistrationsRequest() {
 			const page = this.pagination.page
 			const rowsPerPage = this.pagination.rowsPerPage
 			const searchString = this.filter
 			const sortBy = this.pagination.sortBy
 			const opt = {
-				route: "/desktop/adm/getRegistrations",
+				route: "/desktop/adm/getRegistrationsRequest",
 				body: {
 					page: page,
 					rowsPerPage: rowsPerPage,
