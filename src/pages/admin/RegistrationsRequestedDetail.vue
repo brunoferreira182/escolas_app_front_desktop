@@ -21,7 +21,7 @@
       <q-separator class="q-mx-md" />
       <div class="row justify-start q-pa-md">
         <div class="col-8 q-gutter-md" align="start">
-          <q-card style="border-radius: 1rem" class="q-pa-md" square>
+          <q-card flat bordered  class="q-pa-md" square>
             <p>
               Solicitante
             </p>
@@ -36,7 +36,7 @@
             <q-list>
               <q-item v-for="(child, index) in childData"
                 :key="child"
-                style="background-color:darkgrey; border-radius: 1rem; margin: 6px;"
+                style="background-color:lightskyblue; border-radius: 1rem; margin: 6px;"
               >
                 <q-item-section avatar>
                   <q-avatar>
@@ -53,7 +53,7 @@
                     rounded
                     no-caps
                     color="primary"
-                    :label="addFileButtonText"
+                    :label="child.file && child.file.name ? child.file.name : addFileButtonText"
                     @click="clkAddAttachment(index)"
                   />
                 </q-item-section>
@@ -150,7 +150,7 @@ export default defineComponent({
       this.addFileButtonText = fileName
 
       if (this.currentChildIndex !== null) {
-        this.registrationRequestData[this.currentChildIndex].file = this.fileSelected;
+        this.childData[this.currentChildIndex].file = this.fileSelected;
       }
     },
     clkAddAttachment(index) {
