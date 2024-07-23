@@ -21,33 +21,45 @@
       <q-separator class="q-mx-md" />
       <div class="row justify-start q-pa-md">
         <div class="col-8 q-gutter-md" align="start">
-          <div class="text-h5">Crianças</div>
-          <q-list>
-            <q-item v-for="(child, index) in registrationRequestData"
-              :key="child"
-              style="background-color:darkgrey; border-radius: 1rem; margin: 6px;"
-            >
-              <q-item-section avatar>
-                <q-avatar>
-                  <img :src="utils.makeFileUrl(child.childImage)">
-                </q-avatar>
-              </q-item-section>
-              <q-item-section class="text-capitalize">
-                {{ child.childName }}
-              </q-item-section>
-              <q-item-section>
-                <q-btn
-                  class="q-mr-xs"
-                  flat
-                  rounded
-                  no-caps
-                  color="primary"
-                  :label="addFileButtonText"
-                  @click="clkAddAttachment(index)"
-                />
-              </q-item-section>
-            </q-item>
-          </q-list>
+          <q-card style="border-radius: 1rem" class="q-pa-md" square>
+            <p>
+              Solicitante
+            </p>
+
+            <q-avatar>
+              <img :src="utils.makeFileUrl(registrationRequestData?.createdBy?.image?.filename)">
+            </q-avatar>
+            <div class="text-h5 q-py-sm">
+              {{ registrationRequestData?.createdBy.name }}
+            </div>
+            <div class="text-h5">Crianças</div>
+            <q-list>
+              <q-item v-for="(child, index) in childData"
+                :key="child"
+                style="background-color:darkgrey; border-radius: 1rem; margin: 6px;"
+              >
+                <q-item-section avatar>
+                  <q-avatar>
+                    <img :src="utils.makeFileUrl(child.childImage)">
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section class="text-capitalize">
+                  {{ child.childName }}
+                </q-item-section>
+                <q-item-section>
+                  <q-btn
+                    class="q-mr-xs"
+                    flat
+                    rounded
+                    no-caps
+                    color="primary"
+                    :label="addFileButtonText"
+                    @click="clkAddAttachment(index)"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card>
         </div>
         <q-dialog
           v-model="dialogInactiveFunction"
@@ -94,6 +106,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import utils from '../../boot/utils'
 </script>
 
@@ -108,14 +121,16 @@ export default defineComponent({
   name: "RegistrationsRequestedDetail",
   data() {
     return {
-      registrationRequestData: [],
+      registrationRequestData: null,
+      childData: [],
       isActive: null,
       dialogInactiveFunction: false,
       startPhotoHandler: false,
       canSendMessagesInClassChat: false,
       fileSelected: null,
       addFileButtonText: 'Clique para inserir o boleto',
-      currentChildIndex: null, // Adiciona essa linha
+
+      currentChildIndex: null,
     };
   },
   mounted() {
@@ -181,7 +196,8 @@ export default defineComponent({
       useFetch(opt).then((r) => {
         this.$q.loading.hide();
         if (!r.error) {
-          this.registrationRequestData = r.data.childData
+          this.childData = r.data.childData
+          this.registrationRequestData = r.data
           return;
         }
         this.$q.notify("Ocorreu um erro, tente novamente mais tarde.");
